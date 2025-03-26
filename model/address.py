@@ -1,52 +1,53 @@
 import uuid
 
-from paprika import *
-
-
-@data
 class Address(object):
-    __address_id = uuid.uuid4()
-    __number: int
     __street: str
+    __street_number: int
     __city: str
     __zip_code: str
 
-    def __init__(self, street, city, zip_code):
+    def __init__(self, street: str, street_number: int, city: str, zip_code: str):
+        self.__address_id = uuid.uuid4()
         self.__street = street
+        self.__street_number = street_number
         self.__city = city
         self.__zip_code = zip_code
 
     @property
-    def __number(self):
-        return self.__number
-
-    @__number.setter
-    def __number(self, value):
-        try:
-            self.__number = int(value)
-        except ValueError:
-            print("Invalid number")
+    def address_id(self):
+        return self.__address_id
 
     @property
-    def __street(self):
+    def street(self):
         return self.__street
 
-    @__street.setter
-    def __street(self, value):
+    @street.setter
+    def street(self, value: str):
         self.__street = value
 
     @property
-    def __city(self):
+    def street_number(self):
+        return self.__street_number
+
+    @street_number.setter
+    def street_number(self, value: int):
+        if isinstance(value, int):
+            self.__street_number = value
+        else:
+            print("Street number must be an integer.")
+
+    @property
+    def city(self):
         return self.__city
 
-    @__city.setter
-    def __city(self, value):
+    @city.setter
+    def city(self, value: str):
         self.__city = value
 
     @property
-    def __zip_code(self):
+    def zip_code(self):
         return self.__zip_code
 
-    @__zip_code.setter
-    def __zip_code(self, value):
+    @zip_code.setter
+    def zip_code(self, value: str):
         self.__zip_code = value
