@@ -16,27 +16,27 @@ class Guest(object):
         return self.__guest_id
 
     @property
-    def street(self):
+    def first_name(self):
         return self.__first_name
 
-    @street.setter
-    def street(self, value: str):
+    @first_name.setter
+    def first_name(self, value: str):
         self.__first_name = value
 
     @property
-    def city(self):
+    def last_name(self):
         return self.__last_name
 
-    @city.setter
-    def city(self, value: str):
+    @last_name.setter
+    def last_name(self, value: str):
         self.__last_name = value
 
     @property
-    def zip_code(self):
+    def email(self):
         return self.__email
 
-    @zip_code.setter
-    def zip_code(self, value: str):
+    @email.setter
+    def email(self, value: str):
         self.__email = value
 
     @property
