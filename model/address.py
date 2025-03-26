@@ -1,4 +1,8 @@
 import uuid
+
+from paprika import *
+
+@data
 class Address(object):
     _address_id = uuid.uuid4()
     _street = ""
@@ -9,4 +13,3 @@ class Address(object):
         self._street = street
         self._city = city
         self._zip_code = zip_code
-
