@@ -6,7 +6,7 @@ from hotelreservation.model.room import Room
 
 
 class Booking(object):
-    def __init__(self, guest: Guest, room: Room, check_in_date: str, check_out_date: str, total_amount: int,
+    def __init__(self, guest: Guest, room: Room, check_in_date: str, check_out_date: str, total_amount: float,
                  is_cancelled: bool = False):
         self.__booking_id = uuid.uuid4()
         self.__guest = guest
@@ -56,7 +56,7 @@ class Booking(object):
         return self.__total_amount
 
     @total_amount.setter
-    def total_amount(self, value: int):
+    def total_amount(self, value: float):
         self.__total_amount = value
 
     @property

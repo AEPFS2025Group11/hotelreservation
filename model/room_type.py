@@ -16,7 +16,7 @@ class RoomType(object):
         return self.__description
 
     @description.setter
-    def description(self, value):
+    def description(self, value: str):
         self.__description = value
 
     @property
@@ -24,5 +24,5 @@ class RoomType(object):
         return self.__max_guests
 
     @max_guests.setter
-    def max_guests(self, value):
+    def max_guests(self, value: int):
         self.__max_guests = value

@@ -35,5 +35,5 @@ class Hotel(object):
         return self.__address
 
     @address.setter
-    def address(self, value):
+    def address(self, value: Address):
         self.__address = value
