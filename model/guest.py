@@ -12,7 +12,7 @@ class Guest(object):
         self.__address = address
 
     @property
-    def address_id(self):
+    def guest_id(self):
         return self.__guest_id
 
     @property
