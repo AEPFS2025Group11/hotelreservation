@@ -2,14 +2,12 @@ import uuid
 
 class Address(object):
     __street: str
-    __street_number: int
     __city: str
     __zip_code: str
 
-    def __init__(self, street: str, street_number: int, city: str, zip_code: str):
+    def __init__(self, street: str, city: str, zip_code: str):
         self.__address_id = uuid.uuid4()
         self.__street = street
-        self.__street_number = street_number
         self.__city = city
         self.__zip_code = zip_code
 
@@ -24,17 +22,6 @@ class Address(object):
     @street.setter
     def street(self, value: str):
         self.__street = value
-
-    @property
-    def street_number(self):
-        return self.__street_number
-
-    @street_number.setter
-    def street_number(self, value: int):
-        if isinstance(value, int):
-            self.__street_number = value
-        else:
-            print("Street number must be an integer.")
 
     @property
     def city(self):
