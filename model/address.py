@@ -1,10 +1,6 @@
 import uuid
 
 class Address(object):
-    __street: str
-    __city: str
-    __zip_code: str
-
     def __init__(self, street: str, city: str, zip_code: str):
         self.__address_id = uuid.uuid4()
         self.__street = street
