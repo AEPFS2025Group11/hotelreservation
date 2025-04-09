@@ -1,6 +1,6 @@
 import uuid
 
-from hotelreservation.model.room import Room
+from app.model.room import Room
 
 
 class Facility(object):

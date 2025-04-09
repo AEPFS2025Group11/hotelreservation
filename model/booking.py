@@ -1,8 +1,7 @@
 import uuid
 
-from hotelreservation.model.address import Address
-from hotelreservation.model.guest import Guest
-from hotelreservation.model.room import Room
+from app.model.guest import Guest
+from app.model.room import Room
 
 
 class Booking(object):
@@ -27,6 +26,7 @@ class Booking(object):
     @guest.setter
     def guest(self, value: Guest):
         self.__guest = value
+
     @property
     def room(self):
         return self.__room

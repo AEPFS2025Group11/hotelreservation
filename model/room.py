@@ -1,8 +1,8 @@
 import uuid
 
-from hotelreservation.model.facility import Facility
-from hotelreservation.model.hotel import Hotel
-from hotelreservation.model.room_type import RoomType
+from app.model.facility import Facility
+from app.model.hotel import Hotel
+from app.model.room_type import RoomType
 
 
 class Room(object):

@@ -1,6 +1,6 @@
 import uuid
 
-from hotelreservation.model.booking import Booking
+from app.model.booking import Booking
 
 
 class Invoice(object):

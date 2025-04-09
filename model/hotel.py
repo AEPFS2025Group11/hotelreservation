@@ -1,6 +1,6 @@
 import uuid
 
-from hotelreservation.model.address import Address
+from app.model.address import Address
 
 
 class Hotel(object):
