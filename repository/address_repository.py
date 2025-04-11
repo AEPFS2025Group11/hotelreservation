@@ -9,11 +9,10 @@ class AddressRepository:
     def get_all(self):
         return self.db.query(Address).all()
 
-    def get_address_by_id(self, address_id: int):
+    def get_by_id(self, address_id: int):
         return self.db.query(Address).filter(Address.address_id == address_id).first()
 
-    def add(self, street: str, city: str, zipcode: str):
-        new_address = Address(street=street, city=city, zip_code=zipcode)
-        self.db.add(new_address)
+    def add(self, address: Address):
+        self.db.add(address)
         self.db.commit()
-        return new_address
+        return address

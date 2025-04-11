@@ -8,6 +8,6 @@ class Room(Base):
 
     room_id = Column(Integer, primary_key=True, autoincrement=True)
     hotel_id = Column(Integer, nullable=False, foreign_key=True)
-    room_number = Column(Integer, nullable=False)
+    room_number = Column(Integer, nullable=False, index=True)
     type_id = Column(Integer, nullable=False, foreign_key=True)
     price_per_night = Column(Integer, nullable=False)

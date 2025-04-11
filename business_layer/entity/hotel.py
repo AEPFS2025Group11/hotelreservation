@@ -7,6 +7,6 @@ class Hotel(Base):
     __tablename__ = "hotel"
 
     hotel_id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False)
-    stars = Column(Integer, nullable=False)
+    name = Column(String(50), nullable=False, index=True)
+    stars = Column(Integer, nullable=False, index=True)
     address_id = Column(Integer, nullable=False, foreign_key=True)
