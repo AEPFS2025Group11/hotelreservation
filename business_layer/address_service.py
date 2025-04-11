@@ -1,16 +1,14 @@
-from app.data_access_layer.address_dal import *
+from app.repository.address_repository import AddressRepository
 
 
-def get_all():
-    data = get_all_addresses()
-    return data
+class AddressService:
+    def __init__(self):
+        self.repo = AddressRepository()
 
+    def get_all(self):
+        return self.repo.get_all()
 
-def get_cities():
-    data = get_all_addresses()
-    address_list = []
-    for address in data:
-        if address.city not in address_list:
-            address_list.append(address.city)
-    address_list.sort()
-    return address_list
+    def create(self, street: str, city: str, zipcode: str):
+        if not street or not city or not zipcode:
+            raise ValueError("Street, city, zipcode are required")
+        return self.repo.add(street=street, city=city, zipcode=zipcode)

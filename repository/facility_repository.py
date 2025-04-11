@@ -1,5 +1,5 @@
-from app.data_access_layer.database import SessionLocal
-from app.data_access_layer.entity.facility import Facility
+from app.business_layer.entity.facility import Facility
+from app.util.database import SessionLocal
 
 
 class FacilityRepository:

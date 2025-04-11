@@ -1,5 +1,5 @@
-from app.data_access_layer.database import SessionLocal
-from app.data_access_layer.entity.address import Address
+from app.business_layer.entity.address import Address
+from app.util.database import SessionLocal
 
 
 class AddressRepository:
@@ -9,11 +9,11 @@ class AddressRepository:
     def get_all(self):
         return self.db.query(Address).all()
 
-    def get_address_by_id(self, id: int):
-        return self.db.query(Address).filter(Address.address_id == id).first()
+    def get_address_by_id(self, address_id: int):
+        return self.db.query(Address).filter(Address.address_id == address_id).first()
 
-    def add_user(self, street: str, city: str, zipcode: str):
-        new_user = Address(street=street, city=city, zip_code=zipcode)
-        self.db.add(new_user)
+    def add(self, street: str, city: str, zipcode: str):
+        new_address = Address(street=street, city=city, zip_code=zipcode)
+        self.db.add(new_address)
         self.db.commit()
-        return new_user
+        return new_address

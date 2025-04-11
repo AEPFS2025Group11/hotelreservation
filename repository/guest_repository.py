@@ -1,5 +1,5 @@
-from app.data_access_layer.database import SessionLocal
-from app.data_access_layer.entity.guest import Guest
+from app.business_layer.entity.guest import Guest
+from app.util.database import SessionLocal
 
 
 class GuestRepository:

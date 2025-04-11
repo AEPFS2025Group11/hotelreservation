@@ -1,5 +1,5 @@
-from app.data_access_layer.database import SessionLocal
-from app.data_access_layer.entity.room import Room
+from app.business_layer.entity.room import Room
+from app.util.database import SessionLocal
 
 
 class RoomRepository:
