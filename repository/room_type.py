@@ -1,0 +1,13 @@
+from app.data_access_layer.database import SessionLocal
+from app.data_access_layer.entity.room_type import RoomType
+
+
+class RoomTypeRepository:
+    def __init__(self):
+        self.db = SessionLocal()
+
+    def get_all(self):
+        return self.db.query(RoomType).all()
+
+    def get_by_id(self, type_id: int):
+        return self.db.query().filter(RoomType.type_id == type_id).first()

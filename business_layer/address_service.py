@@ -1,4 +1,4 @@
-from app.data_access.address_dal import *
+from app.data_access_layer.address_dal import *
 
 
 def get_all():
