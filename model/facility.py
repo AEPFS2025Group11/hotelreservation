@@ -1,30 +1,10 @@
-import uuid
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
-from app.model.room import Room
+Base = declarative_base()
 
+class Facility(Base):
+    __tablename__ = "facility"
 
-class Facility(object):
-    def __init__(self, facility_name: str, room: Room):
-        self.__facility_id = uuid.uuid4()
-        self.__facility_name = facility_name
-        self.__room = room
-
-    @property
-    def facility_id(self):
-        return self.__facility_id
-
-    @property
-    def facility_name(self):
-        return self.__facility_name
-
-    @facility_name.setter
-    def facility_name(self, value: str):
-        self.__facility_name = value
-
-    @property
-    def room(self):
-        return self.__room
-
-    @room.setter
-    def room(self, value: Room):
-        self.__room = value
+    facility_id = Column(Integer, primary_key=True, autoincrement=True)
+    facility_name = Column(String, nullable=False)

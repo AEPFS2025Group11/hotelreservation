@@ -1,28 +1,11 @@
-import uuid
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
-class RoomType(object):
-    def __init__(self, description: str, max_guests: int):
-        self.__room_type_id = uuid.uuid4()
-        self.__description = description
-        self.__max_guests = max_guests
+class RoomType(Base):
+    __tablename__ = "room_type"
 
-    @property
-    def room_type_id(self):
-        return self.__room_type_id
-
-    @property
-    def description(self):
-        return self.__description
-
-    @description.setter
-    def description(self, value: str):
-        self.__description = value
-
-    @property
-    def max_guests(self):
-        return self.__max_guests
-
-    @max_guests.setter
-    def max_guests(self, value: int):
-        self.__max_guests = value
+    type_id = Column(Integer, primary_key=True, autoincrement=True)
+    description = Column(String, nullable=False)
+    max_guests = Column(Integer, nullable=False)

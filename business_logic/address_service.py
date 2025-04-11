@@ -10,5 +10,7 @@ def get_cities():
     data = get_all_addresses()
     address_list = []
     for address in data:
-        address_list.append(address.city)
+        if address.city not in address_list:
+            address_list.append(address.city)
+    address_list.sort()
     return address_list

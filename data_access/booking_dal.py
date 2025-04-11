@@ -9,7 +9,7 @@ DB_PATH = os.path.join(BASE_DIR, "../database/hotel_reservation_sample.db")
 def get_all_data() -> List[Tuple]:
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Booking")
+    cursor.execute("SELECT * FROM booking")
     data = cursor.fetchall()
     conn.close()
     return data
