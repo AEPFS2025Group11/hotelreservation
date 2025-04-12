@@ -6,6 +6,10 @@ class AddressIn(BaseModel):
     city: str
     zip_code: str
 
+    model_config = {'from_attributes': True}
+
 
 class AddressOut(AddressIn):
     address_id: int
+
+    model_config = {'from_attributes': True}
