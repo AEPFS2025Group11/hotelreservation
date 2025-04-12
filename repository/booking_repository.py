@@ -1,5 +1,5 @@
-from app.business_layer.entity.booking import Booking
-from app.util.database import SessionLocal
+from app.database.database import SessionLocal
+from app.service.entity.booking import Booking
 
 
 class BookingRepository:

@@ -1,5 +1,5 @@
-from app.business_layer.entity.hotel import Hotel
-from app.util.database import SessionLocal
+from app.database.database import SessionLocal
+from app.service.entity.hotel import Hotel
 
 
 class HotelRepository:

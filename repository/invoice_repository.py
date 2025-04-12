@@ -1,5 +1,5 @@
-from app.business_layer.entity.invoice import Invoice
-from app.util.database import SessionLocal
+from app.database.database import SessionLocal
+from app.service.entity.invoice import Invoice
 
 
 class InvoiceRepository:

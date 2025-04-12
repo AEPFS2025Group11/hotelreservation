@@ -1,7 +1,7 @@
-from app.business_layer.dto.address_schema import AddressSchema
-from app.business_layer.entity.address import Address
-from app.business_layer.mapper.address_mapper import map_to_entity, map_to_dict
 from app.repository.address_repository import AddressRepository
+from app.service.dto.address_schema import AddressSchema
+from app.service.entity.address import Address
+from app.service.mapper.address_mapper import map_to_entity, map_to_dict
 
 
 class AddressService:

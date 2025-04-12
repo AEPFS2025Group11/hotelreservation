@@ -1,5 +1,5 @@
-from app.business_layer.entity.address import Address
-from app.util.database import SessionLocal
+from app.database.database import SessionLocal
+from app.service.entity.address import Address
 
 
 class AddressRepository:
