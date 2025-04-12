@@ -4,8 +4,8 @@ from pydantic import BaseModel
 class AddressIn(BaseModel):
     street: str
     city: str
-    zipcode: str
+    zip_code: str
 
 
 class AddressOut(AddressIn):
-    id: int
+    address_id: int
