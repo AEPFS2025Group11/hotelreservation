@@ -9,8 +9,9 @@ hotel_service = HotelService()
 
 
 @router.get("/", response_model=list[HotelOut])
-async def get_hotels(city: Optional[str] = None, min_stars: Optional[int] = None) -> list[HotelOut]:
-    return hotel_service.get_filtered(city, min_stars)
+async def get_hotels(city: Optional[str] = None, min_stars: Optional[int] = None, capacity: Optional[int] = None) -> \
+list[HotelOut]:
+    return hotel_service.get_filtered(city, min_stars, capacity)
 
 
 @router.get("/{hotel_id}", response_model=HotelOut)

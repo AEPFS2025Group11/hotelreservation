@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.util.base import Base
+from app.service.entity.room import Room  # Import Room directly
 
 
 @dataclass
@@ -17,3 +18,5 @@ class Hotel(Base):
     address_id = Column(Integer, ForeignKey('address.address_id'), nullable=False)
 
     address = relationship("Address", backref="hotel", lazy="joined")
+
+    rooms = relationship("Room", back_populates="hotel", lazy="joined")

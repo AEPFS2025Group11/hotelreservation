@@ -13,8 +13,11 @@ class HotelService:
         self.hotel_repo = HotelRepository()
         self.address_repo = AddressRepository()
 
-    def get_filtered(self, city: Optional[str] = None, min_stars: Optional[int] = None) -> list[HotelOut]:
-        hotels = self.hotel_repo.get_filtered(city, min_stars)
+    def get_filtered(self, city: Optional[str] = None, min_stars: Optional[int] = None,
+                     capacity: Optional[int] = None) -> list[HotelOut]:
+
+        hotels = self.hotel_repo.get_filtered(city, min_stars, capacity)
+
         return [HotelOut.model_validate(h) for h in hotels]
 
     def get_by_id(self, hotel_id: int) -> HotelOut:

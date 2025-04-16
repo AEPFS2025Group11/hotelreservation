@@ -7,6 +7,7 @@ from app.database.database import SessionLocal
 from app.service.dto.hotel_models import HotelIn, HotelUpdate
 from app.service.entity.address import Address
 from app.service.entity.hotel import Hotel
+from app.service.entity.room import Room
 
 
 class HotelRepository:
@@ -54,10 +55,13 @@ class HotelRepository:
     def get_by_address_id(self, address_id) -> Hotel:
         return self.db.query(Hotel).filter(Hotel.address_id == address_id).first()
 
-    def get_filtered(self, city: Optional[str], min_stars: Optional[int]) -> list[Hotel]:
-        query = self.db.query(Hotel).join(Address, Hotel.address_id == Address.address_id)
+    def get_filtered(self, city: Optional[str], min_stars: Optional[int], capacity) -> list[Hotel]:
+        query = self.db.query(Hotel).join(Address, Hotel.address_id == Address.address_id).join(Room,
+                                                                                                Hotel.hotel_id == Room.hotel_id)
         if city:
             query = query.filter(Address.city == city)
         if min_stars is not None:
             query = query.filter(Hotel.stars >= min_stars)
+        if capacity:
+            query = query.filter(Hotel.rooms.any(Room.capacity >= capacity))
         return query.all()
