@@ -9,12 +9,12 @@ hotel_service = HotelService()
 
 
 @router.get("/", response_model=list[HotelOut])
-async def get_hotels(city: Optional[str] = None):
-    return hotel_service.get_filtered(city)
+async def get_hotels(city: Optional[str] = None, min_stars: Optional[int] = None) -> list[HotelOut]:
+    return hotel_service.get_filtered(city, min_stars)
 
 
 @router.get("/{hotel_id}", response_model=HotelOut)
-async def get_hotel(hotel_id: int):
+async def get_hotel(hotel_id: int) -> HotelOut:
     hotel = hotel_service.get_by_id(hotel_id)
     if hotel is None:
         raise HTTPException(status_code=404, detail="Hotel not found")
@@ -22,13 +22,13 @@ async def get_hotel(hotel_id: int):
 
 
 @router.post("/", response_model=HotelOut, status_code=201)
-async def create_hotel(hotel: HotelIn):
+async def create_hotel(hotel: HotelIn) -> HotelOut:
     created_hotel = hotel_service.create(hotel)
     return created_hotel
 
 
 @router.put("/{hotel_id}", response_model=HotelOut)
-async def update_hotel(hotel_id: int, update: HotelUpdate):
+async def update_hotel(hotel_id: int, update: HotelUpdate) -> HotelOut:
     updated_hotel = hotel_service.update(hotel_id, update)
     return updated_hotel
 

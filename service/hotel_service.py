@@ -13,11 +13,8 @@ class HotelService:
         self.hotel_repo = HotelRepository()
         self.address_repo = AddressRepository()
 
-    def get_filtered(self, city: Optional[str]) -> list[HotelOut]:
-        if city:
-            hotels = self._filter_by_city(city)
-            return [HotelOut.model_validate(h) for h in hotels]
-        hotels = self.hotel_repo.get_all()
+    def get_filtered(self, city: Optional[str] = None, min_stars: Optional[int] = None) -> list[HotelOut]:
+        hotels = self.hotel_repo.get_filtered(city, min_stars)
         return [HotelOut.model_validate(h) for h in hotels]
 
     def get_by_id(self, hotel_id: int) -> HotelOut:
@@ -41,12 +38,3 @@ class HotelService:
         if hotel is None:
             raise HTTPException(status_code=404, detail="Hotel not found")
         return self.hotel_repo.delete(hotel_id)
-
-    def _filter_by_city(self, city) -> list[Hotel]:
-        addresses = self.address_repo.get_by_name(city)
-        if not addresses:
-            raise ValueError("City not found")
-        hotels = []
-        for address in addresses:
-            hotels.append(self.hotel_repo.get_by_address_id(address.address_id))
-        return hotels

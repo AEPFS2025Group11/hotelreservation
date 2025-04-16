@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import HTTPException
 from sqlalchemy.orm import joinedload
 
@@ -51,3 +53,11 @@ class HotelRepository:
 
     def get_by_address_id(self, address_id) -> Hotel:
         return self.db.query(Hotel).filter(Hotel.address_id == address_id).first()
+
+    def get_filtered(self, city: Optional[str], min_stars: Optional[int]) -> list[Hotel]:
+        query = self.db.query(Hotel).join(Address, Hotel.address_id == Address.address_id)
+        if city:
+            query = query.filter(Address.city == city)
+        if min_stars is not None:
+            query = query.filter(Hotel.stars >= min_stars)
+        return query.all()
