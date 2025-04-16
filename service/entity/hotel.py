@@ -11,11 +11,11 @@ from app.service.entity.room import Room  # Import Room directly
 class Hotel(Base):
     __tablename__ = "hotel"
 
-    hotel_id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, index=True)
     stars = Column(Integer, nullable=False, index=True)
 
-    address_id = Column(Integer, ForeignKey('address.address_id'), nullable=False)
+    address_id = Column(Integer, ForeignKey('address.id'), nullable=False)
 
     address = relationship("Address", backref="hotel", lazy="joined")
 

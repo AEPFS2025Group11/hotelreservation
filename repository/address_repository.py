@@ -1,21 +1,19 @@
+import logging
 from app.database.database import SessionLocal
 from app.service.entity.address import Address
+from app.repository.base_repository import BaseRepository
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
-class AddressRepository:
+class AddressRepository(BaseRepository):
     def __init__(self):
-        self.db = SessionLocal()
+        db = SessionLocal()
+        super().__init__(db, Address)
 
-    def get_all(self):
-        return self.db.query(Address).all()
-
-    def get_by_id(self, address_id: int):
-        return self.db.query(Address).filter(Address.address_id == address_id).first()
-
-    def add(self, address: Address):
-        self.db.add(address)
-        self.db.commit()
-        return address
-
-    def get_by_name(self, city) -> list[Address]:
-        return self.db.query(Address).filter(Address.city == city)
+    def get_by_name(self, city: str) -> list[Address]:
+        logger.info(f"Fetching addresses by city: {city}")
+        addresses = self.db.query(self.model).filter(self.model.city == city).all()
+        logger.info(f"Found {len(addresses)} address(es) in city {city}")
+        return addresses

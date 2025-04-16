@@ -9,7 +9,7 @@ from app.util.base import Base
 class Address(Base):
     __tablename__ = "address"
 
-    address_id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     street = Column(String, nullable=False, index=True)
     city = Column(String, nullable=False, index=True)
     zip_code = Column(String, nullable=False, index=True)

@@ -8,7 +8,7 @@ class FacilityIn(BaseModel):
 
 
 class FacilityOut(BaseModel):
-    facility_id: int
+    id: int
     facility_name: str
 
     model_config = {'from_attributes': True}

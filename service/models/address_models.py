@@ -10,6 +10,6 @@ class AddressIn(BaseModel):
 
 
 class AddressOut(AddressIn):
-    address_id: int
+    id: int
 
     model_config = {'from_attributes': True}

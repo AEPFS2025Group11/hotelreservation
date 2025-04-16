@@ -63,13 +63,20 @@ class HotelService:
         hotel = self.hotel_repo.create(hotel_data)
         return HotelOut.model_validate(hotel)
 
-    def update(self, hotel_id: int, update_data: HotelUpdate) -> HotelOut:
+    def update(self, hotel_id: int, data: HotelUpdate) -> HotelOut:
         logger.info(f"Updating hotel ID {hotel_id}")
         hotel = self.hotel_repo.get_by_id(hotel_id)
         if hotel is None:
             logger.warning(f"Hotel with ID {hotel_id} not found for update")
             raise HTTPException(status_code=404, detail="Hotel not found")
-        return HotelOut.model_validate(self.hotel_repo.update(hotel_id, update_data))
+
+        if data.name is not None:
+            hotel.name = data.name
+        if data.stars is not None:
+            hotel.stars = data.stars
+
+        updated_hotel = self.hotel_repo.update(hotel)
+        return HotelOut.model_validate(updated_hotel)
 
     def delete(self, hotel_id: int) -> HotelOut:
         logger.info(f"Deleting hotel ID {hotel_id}")

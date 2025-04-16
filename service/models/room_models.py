@@ -16,7 +16,7 @@ class RoomIn(BaseModel):
 
 
 class RoomOut(BaseModel):
-    room_id: int
+    id: int
     room_number: str
     type: RoomTypeOut
     facilities: list[FacilityOut] = []

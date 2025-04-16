@@ -11,7 +11,7 @@ class AddressService:
 
     def create(self, data: dict) -> dict:
         entity = map_to_entity(self.schema, Address, data)
-        saved = self.repo.add(entity)
+        saved = self.repo.create(entity)
         return map_to_dict(self.schema, saved)
 
     def get_all(self) -> list[dict]:

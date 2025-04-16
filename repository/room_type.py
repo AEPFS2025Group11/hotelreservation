@@ -10,4 +10,4 @@ class RoomTypeRepository:
         return self.db.query(RoomType).all()
 
     def get_by_id(self, type_id: int):
-        return self.db.query(RoomType).filter(RoomType.type_id == type_id).first()
+        return self.db.query(RoomType).filter(RoomType.id == type_id).first()

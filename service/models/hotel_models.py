@@ -14,7 +14,7 @@ class HotelIn(BaseModel):
 
 
 class HotelOut(BaseModel):
-    hotel_id: int
+    id: int
     name: str
     stars: int
     address: AddressOut

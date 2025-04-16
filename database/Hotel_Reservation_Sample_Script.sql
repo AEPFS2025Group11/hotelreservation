@@ -1,7 +1,7 @@
 CREATE TABLE hotel
 (
     -- Author: AEP
-    hotel_id   INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     name       TEXT NOT NULL,
     stars      INTEGER,
     address_id INTEGER,
@@ -11,7 +11,7 @@ CREATE TABLE hotel
 CREATE TABLE address
 (
     -- Author: AEP
-    address_id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     street     TEXT NOT NULL,
     city       TEXT NOT NULL,
     zip_code   TEXT
@@ -20,7 +20,7 @@ CREATE TABLE address
 CREATE TABLE guest
 (
     -- Author: AEP
-    guest_id   INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     first_name TEXT NOT NULL,
     last_name  TEXT NOT NULL,
     email      TEXT UNIQUE,
@@ -31,7 +31,7 @@ CREATE TABLE guest
 CREATE TABLE room_type
 (
     -- Author: AEP
-    type_id     INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     description TEXT    NOT NULL UNIQUE, -- E.g., Single, Double, Suite
     max_guests  INTEGER NOT NULL
 );
@@ -39,7 +39,7 @@ CREATE TABLE room_type
 CREATE TABLE room
 (
     -- Author: AEP
-    room_id         INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     hotel_id        INTEGER NOT NULL,
     room_number     TEXT    NOT NULL,
     type_id         INTEGER NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE room
 CREATE TABLE booking
 (
     -- Author: AEP
-    booking_id     INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     guest_id       INTEGER NOT NULL,
     room_id        INTEGER NOT NULL,
     check_in_date  DATE    NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE booking
 CREATE TABLE invoice
 (
     -- Author: AEP
-    invoice_id   INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     booking_id   INTEGER NOT NULL,
     issue_date   DATE    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total_amount REAL    NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE invoice
 CREATE TABLE facility
 (
     -- Author: AEP
-    facility_id   INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     facility_name TEXT NOT NULL UNIQUE
 );
 
@@ -95,7 +95,7 @@ CREATE TABLE room_facility
 );
 
 
-INSERT INTO address (address_id, street, city, zip_code)
+INSERT INTO address (id, street, city, zip_code)
 VALUES (1, 'Bahnhofstrasse 1', 'Zürich', '8001'),
        (2, 'Rue du Rhône 42', 'Genève', '1204'),
        (3, 'Pilatusstrasse 15', 'Luzern', '6003'),
@@ -112,7 +112,7 @@ VALUES (1, 'Bahnhofstrasse 1', 'Zürich', '8001'),
        (14, 'Rue de Lausanne 35', 'Neuchâtel', '2000'),
        (15, 'Hauptstrasse 66', 'Thun', '3600');
 
-INSERT INTO hotel (hotel_id, name, stars, address_id)
+INSERT INTO hotel (id, name, stars, address_id)
 VALUES (1, 'Hotel Baur au Lac', 5, 1),
        (2, 'Four Seasons Hôtel des Bergues', 5, 2),
        (3, 'Grand Hotel National', 5, 3),
@@ -129,7 +129,7 @@ VALUES (1, 'Hotel Baur au Lac', 5, 1),
        (14, 'Beau-Rivage Neuchâtel', 5, 14),
        (15, 'Hotel Seepark', 4, 15);
 
-INSERT INTO guest (guest_id, first_name, last_name, email, address_id)
+INSERT INTO guest (id, first_name, last_name, email, address_id)
 VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', 1),
        (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', 2),
        (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', 3),
@@ -147,7 +147,7 @@ VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', 1),
        (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', 15);
 
 
-INSERT INTO room_type (type_id, description, max_guests)
+INSERT INTO room_type (id, description, max_guests)
 VALUES (1, 'Single', 1),
        (2, 'Double', 2),
        (3, 'Suite', 4),
@@ -155,7 +155,7 @@ VALUES (1, 'Single', 1),
        (5, 'Penthouse', 6);
 
 
-INSERT INTO room (room_id, hotel_id, room_number, type_id, price_per_night)
+INSERT INTO room (id, hotel_id, room_number, type_id, price_per_night)
 VALUES (1, 1, '101', 1, 250.00),
        (2, 1, '102', 2, 400.00),
        (3, 2, '201', 3, 650.00),
@@ -177,7 +177,7 @@ VALUES (1, 1, '101', 1, 250.00),
        (19, 13, '304', 4, 1000.00),
        (20, 14, '405', 5, 1800.00);
 
-INSERT INTO booking (booking_id, guest_id, room_id, check_in_date, check_out_date, is_cancelled, total_amount)
+INSERT INTO booking (id, guest_id, room_id, check_in_date, check_out_date, is_cancelled, total_amount)
 VALUES (1, 1, 1, '2025-06-01', '2025-06-05', 0, 1000.00),
        (2, 2, 2, '2025-07-10', '2025-07-15', 0, 2000.00),
        (3, 3, 3, '2025-08-20', '2025-08-22', 0, 1300.00),
@@ -194,7 +194,7 @@ VALUES (1, 1, 1, '2025-06-01', '2025-06-05', 0, 1000.00),
        (14, 14, 14, '2025-11-10', '2025-11-15', 0, 4000.00),
        (15, 15, 15, '2025-12-01', '2025-12-05', 0, 4800.00);
 
-INSERT INTO invoice (invoice_id, booking_id, issue_date, total_amount)
+INSERT INTO invoice (id, booking_id, issue_date, total_amount)
 VALUES (1, 1, '2025-06-05', 1000.00),
        (2, 2, '2025-07-15', 2000.00),
        (3, 3, '2025-08-22', 1300.00),
@@ -211,7 +211,7 @@ VALUES (1, 1, '2025-06-05', 1000.00),
        (14, 14, '2025-11-15', 4000.00),
        (15, 15, '2025-12-05', 4800.00);
 
-INSERT INTO facility (facility_id, facility_name)
+INSERT INTO facility (id, facility_name)
 VALUES (1, 'WiFi'),
        (2, 'TV'),
        (3, 'Air Conditioning'),

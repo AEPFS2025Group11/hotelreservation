@@ -14,7 +14,7 @@ class RoomTypeIn(BaseModel):
 
 
 class RoomTypeOut(BaseModel):
-    type_id: int
+    id: int
     description: str
     max_guests: int
 
