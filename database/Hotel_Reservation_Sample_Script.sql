@@ -28,7 +28,7 @@ CREATE TABLE guest
     FOREIGN KEY (address_id) REFERENCES address (address_id) ON DELETE SET NULL
 );
 
-CREATE TABLE room_Type
+CREATE TABLE room_type
 (
     -- Author: AEP
     type_id     INTEGER PRIMARY KEY,
