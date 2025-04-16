@@ -11,6 +11,8 @@ class Guest(Base):
     first_name = Column(String(50), nullable=False, index=True)
     last_name = Column(String(50), nullable=False, index=True)
     email = Column(String(50), nullable=False, index=True)
-    address_id = Column(Integer, ForeignKey('address.id'), nullable=False)
 
-    address = relationship("Address", backref="hotel", lazy="joined")
+    address_id = Column(Integer, ForeignKey("address.id"), nullable=False)
+    address = relationship("Address", back_populates="guests", lazy="joined")
+
+    bookings = relationship("Booking", back_populates="guest", lazy="joined")

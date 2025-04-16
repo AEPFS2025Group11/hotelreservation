@@ -14,8 +14,7 @@ class Hotel(Base):
     name = Column(String(50), nullable=False, index=True)
     stars = Column(Integer, nullable=False, index=True)
 
-    address_id = Column(Integer, ForeignKey('address.id'), nullable=False)
-
-    address = relationship("Address", backref="hotel", lazy="joined")
+    address_id = Column(Integer, ForeignKey("address.id"), nullable=False)
+    address = relationship("Address", back_populates="hotel", uselist=False, lazy="joined")
 
     rooms = relationship("Room", back_populates="hotel", lazy="joined")

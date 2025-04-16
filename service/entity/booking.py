@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, Boolean, ForeignKey, Date
+from sqlalchemy.orm import relationship
 
 from app.util.base import Base
 
@@ -13,3 +14,7 @@ class Booking(Base):
     check_out = Column(Date, nullable=False, index=True)
     is_cancelled = Column(Boolean, nullable=False, index=True)
     total_amount = Column(Integer, nullable=False, index=True)
+
+    guest = relationship("Guest", backref="booking", lazy="joined")
+
+    room = relationship("Room", backref="room", lazy="joined")
