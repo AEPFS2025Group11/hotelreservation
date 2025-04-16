@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 
 from fastapi import HTTPException
@@ -16,9 +17,12 @@ class HotelService:
         self.hotel_repo = HotelRepository()
         self.address_repo = AddressRepository()
 
-    def get_hotels(self, city: Optional[str] = None, min_stars: Optional[int] = None,
-                   capacity: Optional[int] = None) -> list[HotelOut]:
-        hotels = self.hotel_repo.get_filtered(city, min_stars, capacity)
+    def get_hotels(self, city: Optional[str] = None,
+                   min_stars: Optional[int] = None,
+                   capacity: Optional[int] = None,
+                   check_in: Optional[date] = None,
+                   check_out: Optional[date] = None) -> list[HotelOut]:
+        hotels = self.hotel_repo.get_filtered(city, min_stars, capacity, check_in, check_out)
         return [HotelOut.model_validate(h) for h in hotels]
 
     def get_by_id(self, hotel_id: int) -> HotelOut:

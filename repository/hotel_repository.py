@@ -1,9 +1,12 @@
+from datetime import date
 from typing import Optional
 
 from fastapi import HTTPException
+from sqlalchemy import or_, and_, select
 from sqlalchemy.orm import joinedload
 
 from app.database.database import SessionLocal
+from app.service.entity.booking import Booking
 from app.service.entity.room_type import RoomType
 from app.service.models.hotel_models import HotelIn, HotelUpdate
 from app.service.entity.address import Address
@@ -56,14 +59,26 @@ class HotelRepository:
     def get_by_address_id(self, address_id) -> Hotel:
         return self.db.query(Hotel).filter(Hotel.address_id == address_id).first()
 
-    def get_filtered(self, city: Optional[str], min_stars: Optional[int], capacity) -> list[Hotel]:
-        query = self.db.query(Hotel).join(Address, Hotel.address_id == Address.address_id).join(Room,
-                                                                                                Hotel.hotel_id == Room.hotel_id).join(
-            RoomType, Room.type_id == RoomType.type_id)
+    def get_filtered(self, city: Optional[str], min_stars: Optional[int], capacity, check_in, check_out) -> list[Hotel]:
+        query = self.db.query(Hotel).join(Hotel.rooms).join(Room.type).join(Hotel.address).options(
+            joinedload(Hotel.rooms).joinedload(Room.type),
+            joinedload(Hotel.address))
+
         if city:
-            query = query.filter(Address.city == city)
-        if min_stars is not None:
+            query = query.join(Hotel.address).filter(Address.city == city)
+
+        if min_stars:
             query = query.filter(Hotel.stars >= min_stars)
+
         if capacity:
-            query = query.filter(Hotel.rooms.any(RoomType.max_guests >= capacity))
-        return query.all()
+            query = query.filter(RoomType.max_guests >= capacity)
+
+        if check_in and check_out:
+            subquery = select(Booking.room_id).where(
+                Booking.check_in_date < check_out,
+                Booking.check_out_date > check_in
+            )
+
+            query = query.filter(~Room.room_id.in_(subquery))
+
+        return query.distinct().all()
