@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.hotel_service import HotelService
+from app.service.models.room_models import RoomOut
 
 router = APIRouter(prefix="/api/hotels", tags=["hotels"])
 hotel_service = HotelService()
@@ -38,3 +39,8 @@ async def update_hotel(hotel_id: int, update: HotelUpdate) -> HotelOut:
 async def delete_hotel(hotel_id: int):
     hotel_service.delete(hotel_id)
     return {"message": "Hotel deleted successfully"}
+
+
+@router.get("/{hotel_id}/rooms", response_model=list[RoomOut])
+def get_rooms_by_hotel(hotel_id: int):
+    return hotel_service.get_rooms(hotel_id)

@@ -4,12 +4,15 @@ from fastapi import HTTPException
 
 from app.repository.address_repository import AddressRepository
 from app.repository.hotel_repository import HotelRepository
+from app.repository.room_repository import RoomRepository
 from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.entity.hotel import Hotel
+from app.service.models.room_models import RoomOut
 
 
 class HotelService:
     def __init__(self):
+        self.room_repo = RoomRepository()
         self.hotel_repo = HotelRepository()
         self.address_repo = AddressRepository()
 
@@ -41,3 +44,10 @@ class HotelService:
         if hotel is None:
             raise HTTPException(status_code=404, detail="Hotel not found")
         return self.hotel_repo.delete(hotel_id)
+
+    def get_rooms(self, hotel_id) -> list[RoomOut]:
+        hotel = self.hotel_repo.get_by_id(hotel_id)
+        if hotel is None:
+            raise HTTPException(status_code=404, detail="Hotel not found")
+        rooms = self.room_repo.get_by_hotel_id(hotel_id)
+        return [RoomOut.model_validate(r) for r in rooms]

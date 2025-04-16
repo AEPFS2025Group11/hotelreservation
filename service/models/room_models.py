@@ -15,9 +15,8 @@ class RoomIn(BaseModel):
 
 class RoomOut(BaseModel):
     room_id: int
-    hotel: HotelOut
     room_number: str
-    type_id: RoomTypeOut
+    type: RoomTypeOut
     price_per_night: float
 
     model_config = {'from_attributes': True}

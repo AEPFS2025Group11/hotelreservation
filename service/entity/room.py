@@ -15,3 +15,5 @@ class Room(Base):
     capacity = Column(Integer, nullable=False)
 
     hotel = relationship("Hotel", back_populates="rooms", lazy="joined")
+
+    type = relationship("RoomType", lazy="joined")
