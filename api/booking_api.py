@@ -62,3 +62,12 @@ async def delete_booking(booking_id: int, service: BookingService = Depends(get_
 async def create_booking(booking: BookingIn, service: BookingService = Depends(get_booking_service)):
     logger.info("POST /api/bookings - Creating new booking")
     return service.create(booking)
+
+
+@router.patch("/{booking_id}/cancel", response_model=BookingOut)
+async def cancel_booking(
+        booking_id: int,
+        service: BookingService = Depends(get_booking_service)
+):
+    logger.info(f"PATCH /api/bookings/{booking_id}/cancel - Cancelling booking")
+    return service.cancel_booking(booking_id)

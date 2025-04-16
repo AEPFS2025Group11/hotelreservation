@@ -31,6 +31,7 @@ class BaseRepository:
 
     def update(self, entity):
         logger.info(f"Updating {self.model.__name__} with ID {entity.id}")
+        entity = self.db.merge(entity)
         self.db.commit()
         self.db.refresh(entity)
         return entity

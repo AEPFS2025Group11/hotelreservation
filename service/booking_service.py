@@ -86,3 +86,25 @@ class BookingService:
         deleted = self.booking_repo.delete(booking_id)
         logger.info(f"Booking ID {booking_id} deleted successfully")
         return BookingOut.model_validate(deleted)
+
+    def cancel_booking(self, booking_id: int) -> BookingOut:
+        booking = self.booking_repo.get_by_id(booking_id)
+        if not booking:
+            logger.warning(f"Booking {booking_id} not found for cancellation")
+            raise HTTPException(status_code=404, detail="Booking not found")
+
+        if booking.is_cancelled:
+            logger.info(f"Booking {booking_id} is already cancelled")
+            raise HTTPException(status_code=400, detail="Booking is already cancelled")
+
+        booking.is_cancelled = True
+        booking.total_amount = 0
+        updated_booking = self.booking_repo.update(booking)
+        logger.info(f"Booking {booking_id} cancelled")
+
+        if booking.invoice:
+            booking.invoice.total_amount = 0
+            self.invoice_service.invoice_repo.update(booking.invoice)
+            logger.info(f"Invoice for booking {booking_id} set to 0 due to cancellation")
+
+        return BookingOut.model_validate(updated_booking)
