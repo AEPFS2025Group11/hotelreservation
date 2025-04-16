@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey, String, Double, Float
 from sqlalchemy.orm import relationship
 
+from app.service.entity.room_facility import room_facility
 from app.util.base import Base
 
 
@@ -16,3 +17,9 @@ class Room(Base):
     hotel = relationship("Hotel", back_populates="rooms", lazy="joined")
 
     type = relationship("RoomType", lazy="joined")
+
+    facilities = relationship(
+        "Facility",
+        secondary=room_facility,
+        back_populates="rooms"
+    )
