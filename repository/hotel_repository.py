@@ -48,3 +48,6 @@ class HotelRepository:
         self.db.delete(hotel)
         self.db.commit()
         return hotel
+
+    def get_by_address_id(self, address_id) -> Hotel:
+        return self.db.query(Hotel).filter(Hotel.address_id == address_id).first()

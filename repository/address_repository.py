@@ -16,3 +16,6 @@ class AddressRepository:
         self.db.add(address)
         self.db.commit()
         return address
+
+    def get_by_name(self, city) -> list[Address]:
+        return self.db.query(Address).filter(Address.city == city)

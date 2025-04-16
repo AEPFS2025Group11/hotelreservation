@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException
 from app.service.dto.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.hotel_service import HotelService
@@ -7,9 +9,8 @@ hotel_service = HotelService()
 
 
 @router.get("/", response_model=list[HotelOut])
-async def list_hotels():
-    hotels = hotel_service.get_all()
-    return hotels
+async def get_hotels(city: Optional[str] = None):
+    return hotel_service.get_filtered(city)
 
 
 @router.get("/{hotel_id}", response_model=HotelOut)
