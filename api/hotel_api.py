@@ -1,7 +1,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from app.service.dto.hotel_models import HotelOut, HotelIn, HotelUpdate
+from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.hotel_service import HotelService
 
 router = APIRouter(prefix="/api/hotels", tags=["hotels"])

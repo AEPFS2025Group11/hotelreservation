@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.service.dto.address_models import AddressOut
+from app.service.models.address_models import AddressOut
 
 
 class HotelIn(BaseModel):

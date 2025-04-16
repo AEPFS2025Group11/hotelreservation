@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 from app.repository.address_repository import AddressRepository
 from app.repository.hotel_repository import HotelRepository
-from app.service.dto.hotel_models import HotelOut, HotelIn, HotelUpdate
+from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.entity.hotel import Hotel
 
 

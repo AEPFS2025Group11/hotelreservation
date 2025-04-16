@@ -4,7 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import joinedload
 
 from app.database.database import SessionLocal
-from app.service.dto.hotel_models import HotelIn, HotelUpdate
+from app.service.entity.room_type import RoomType
+from app.service.models.hotel_models import HotelIn, HotelUpdate
 from app.service.entity.address import Address
 from app.service.entity.hotel import Hotel
 from app.service.entity.room import Room
@@ -57,11 +58,12 @@ class HotelRepository:
 
     def get_filtered(self, city: Optional[str], min_stars: Optional[int], capacity) -> list[Hotel]:
         query = self.db.query(Hotel).join(Address, Hotel.address_id == Address.address_id).join(Room,
-                                                                                                Hotel.hotel_id == Room.hotel_id)
+                                                                                                Hotel.hotel_id == Room.hotel_id).join(
+            RoomType, Room.type_id == RoomType.type_id)
         if city:
             query = query.filter(Address.city == city)
         if min_stars is not None:
             query = query.filter(Hotel.stars >= min_stars)
         if capacity:
-            query = query.filter(Hotel.rooms.any(Room.capacity >= capacity))
+            query = query.filter(Hotel.rooms.any(RoomType.max_guests >= capacity))
         return query.all()

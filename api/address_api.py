@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.service.address_service import AddressService
-from app.service.dto.address_models import AddressOut, AddressIn
+from app.service.models.address_models import AddressOut, AddressIn
 
 router = APIRouter(prefix="/api", tags=["addresses"])
 address_service = AddressService()
