@@ -58,8 +58,8 @@ CREATE TABLE booking
     id INTEGER PRIMARY KEY,
     guest_id       INTEGER NOT NULL,
     room_id        INTEGER NOT NULL,
-    check_in_date  DATE    NOT NULL,
-    check_out_date DATE    NOT NULL,
+    check_in  DATE NOT NULL,
+    check_out DATE NOT NULL,
     is_cancelled   BOOLEAN NOT NULL DEFAULT 0, -- 0 = confirmed, 1 = cancelled
     total_amount   REAL,
     FOREIGN KEY (guest_id) REFERENCES guest (guest_id) ON DELETE CASCADE,
@@ -177,7 +177,7 @@ VALUES (1, 1, '101', 1, 250.00),
        (19, 13, '304', 4, 1000.00),
        (20, 14, '405', 5, 1800.00);
 
-INSERT INTO booking (id, guest_id, room_id, check_in_date, check_out_date, is_cancelled, total_amount)
+INSERT INTO booking (id, guest_id, room_id, check_in, check_out, is_cancelled, total_amount)
 VALUES (1, 1, 1, '2025-06-01', '2025-06-05', 0, 1000.00),
        (2, 2, 2, '2025-07-10', '2025-07-15', 0, 2000.00),
        (3, 3, 3, '2025-08-20', '2025-08-22', 0, 1300.00),
