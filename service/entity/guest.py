@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+from app.util.base import Base
+
 
 class Guest(Base):
     __tablename__ = "guest"
@@ -10,4 +11,6 @@ class Guest(Base):
     first_name = Column(String(50), nullable=False, index=True)
     last_name = Column(String(50), nullable=False, index=True)
     email = Column(String(50), nullable=False, index=True)
-    address_id = Column(Integer, nullable=False, foreign_key=True)
+    address_id = Column(Integer, ForeignKey('address.id'), nullable=False)
+
+    address = relationship("Address", backref="hotel", lazy="joined")
