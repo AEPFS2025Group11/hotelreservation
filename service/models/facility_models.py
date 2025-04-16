@@ -1,9 +1,4 @@
-from typing import Optional
-
 from pydantic import BaseModel
-
-from app.service.models.address_models import AddressOut
-from app.service.models.hotel_models import HotelOut
 
 
 class FacilityIn(BaseModel):

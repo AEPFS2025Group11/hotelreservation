@@ -32,7 +32,7 @@ class HotelService:
                    capacity: Optional[int] = None,
                    check_in: Optional[date] = None,
                    check_out: Optional[date] = None) -> list[HotelOut]:
-        if check_in > check_out:
+        if check_in and check_out and check_in > check_out:
             raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
         hotels = self.hotel_repo.get_filtered(city, min_stars, capacity, check_in, check_out)
         return [HotelOut.model_validate(h) for h in hotels]
@@ -63,7 +63,7 @@ class HotelService:
         hotel = self.hotel_repo.get_by_id(hotel_id)
         if hotel is None:
             raise HTTPException(status_code=404, detail="Hotel not found")
-        if check_in > check_out:
+        if check_in and check_out and check_in > check_out:
             raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
         rooms = self.room_repo.get_by_hotel_id(hotel_id, capacity, check_in, check_out)
         room_dtos = [RoomOut.model_validate(r) for r in rooms]

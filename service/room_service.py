@@ -18,7 +18,7 @@ class RoomService:
                 capacity: Optional[int] = None,
                 check_in: Optional[date] = None,
                 check_out: Optional[date] = None) -> list[RoomOut]:
-        if check_in > check_out:
+        if check_in and check_out and check_in > check_out:
             raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
         rooms = self.room_repo.get_all(city, capacity, check_in, check_out)
         if rooms is None:

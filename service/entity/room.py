@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, String, Double, Float
+from sqlalchemy import Column, Integer, ForeignKey, String, Float
 from sqlalchemy.orm import relationship
 
 from app.service.entity.room_facility import room_facility
