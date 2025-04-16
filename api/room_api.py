@@ -1,3 +1,6 @@
+from datetime import date
+from typing import Optional
+
 from fastapi import APIRouter
 
 from app.service.models.room_models import RoomOut, RoomIn, RoomUpdate
@@ -8,8 +11,11 @@ room_service = RoomService()
 
 
 @router.get("/", response_model=list[RoomOut])
-async def get_rooms() -> list[RoomOut]:
-    return room_service.get_all()
+async def get_rooms(city: Optional[str] = None,
+                    capacity: Optional[int] = None,
+                    check_in: Optional[date] = None,
+                    check_out: Optional[date] = None) -> list[RoomOut]:
+    return room_service.get_all(city, capacity, check_in, check_out)
 
 
 @router.get("/{room_id}", response_model=RoomOut)

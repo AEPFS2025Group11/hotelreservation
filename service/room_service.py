@@ -1,3 +1,6 @@
+from datetime import date
+from typing import Optional
+
 from fastapi import HTTPException
 
 from app.repository.room_repository import RoomRepository
@@ -11,8 +14,13 @@ class RoomService:
         self.room_type_repo = RoomTypeRepository()
         self.room_repo = RoomRepository()
 
-    def get_all(self) -> list[RoomOut]:
-        rooms = self.room_repo.get_all()
+    def get_all(self, city: Optional[str] = None,
+                capacity: Optional[int] = None,
+                check_in: Optional[date] = None,
+                check_out: Optional[date] = None) -> list[RoomOut]:
+        if check_in > check_out:
+            raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
+        rooms = self.room_repo.get_all(city, capacity, check_in, check_out)
         if rooms is None:
             raise HTTPException(status_code=404, detail="No rooms found")
         return [RoomOut.model_validate(r) for r in rooms]

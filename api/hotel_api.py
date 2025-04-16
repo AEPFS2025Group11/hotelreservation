@@ -2,7 +2,6 @@ from datetime import date
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from fastapi.params import Query
 
 from app.service.hotel_service import HotelService
 from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
@@ -48,5 +47,8 @@ async def delete_hotel(hotel_id: int):
 
 
 @router.get("/{hotel_id}/rooms", response_model=list[RoomOut])
-def get_rooms_by_hotel(hotel_id: int, capacity: Optional[int] = None):
-    return hotel_service.get_rooms(hotel_id, capacity)
+def get_rooms_by_hotel(hotel_id: int,
+                       capacity: Optional[int] = None,
+                       check_in: Optional[date] = None,
+                       check_out: Optional[date] = None):
+    return hotel_service.get_rooms(hotel_id, capacity, check_in, check_out)
