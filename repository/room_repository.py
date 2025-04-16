@@ -3,6 +3,7 @@ from sqlalchemy.orm import joinedload
 
 from app.database.database import SessionLocal
 from app.service.entity.room import Room
+from app.service.entity.room_type import RoomType
 
 
 class RoomRepository:
@@ -15,8 +16,11 @@ class RoomRepository:
     def get_by_id(self, room_id: int) -> Room:
         return self.db.query(Room).filter(Room.room_id == room_id).first()
 
-    def get_by_hotel_id(self, hotel_id: int) -> list[Room]:
-        return self.db.query(Room).filter(hotel_id == Room.hotel_id).options(joinedload(Room.type)).all()
+    def get_filtered(self, hotel_id: int, capacity: int) -> list[Room]:
+        query = self.db.query(Room).options(joinedload(Room.type)).filter(Room.hotel_id == hotel_id)
+        if capacity is not None:
+            query = query.join(Room.type).filter(RoomType.max_guests >= capacity)
+        return query.all()
 
     def create(self, room_entity: Room) -> Room:
         self.db.add(room_entity)

@@ -1,8 +1,9 @@
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
+
 from app.service.hotel_service import HotelService
+from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.models.room_models import RoomOut
 
 router = APIRouter(prefix="/api/hotels", tags=["hotels"])
@@ -12,7 +13,7 @@ hotel_service = HotelService()
 @router.get("/", response_model=list[HotelOut])
 async def get_hotels(city: Optional[str] = None, min_stars: Optional[int] = None, capacity: Optional[int] = None) -> \
 list[HotelOut]:
-    return hotel_service.get_filtered(city, min_stars, capacity)
+    return hotel_service.get_hotels(city, min_stars, capacity)
 
 
 @router.get("/{hotel_id}", response_model=HotelOut)
@@ -42,5 +43,5 @@ async def delete_hotel(hotel_id: int):
 
 
 @router.get("/{hotel_id}/rooms", response_model=list[RoomOut])
-def get_rooms_by_hotel(hotel_id: int):
-    return hotel_service.get_rooms(hotel_id)
+def get_rooms_by_hotel(hotel_id: int, capacity: Optional[int] = None):
+    return hotel_service.get_rooms(hotel_id, capacity)
