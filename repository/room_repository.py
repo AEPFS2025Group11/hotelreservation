@@ -30,7 +30,7 @@ class RoomRepository:
         return room_entity
 
     def delete(self, room_id: int):
-        room = self.db.get_by_id(room_id)
+        room = self.db.query(Room).filter(Room.room_id == room_id).first()
         if room is None:
             raise HTTPException(status_code=404, detail="Room not found")
         self.db.delete(room)
