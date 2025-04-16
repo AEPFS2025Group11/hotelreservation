@@ -1,7 +1,7 @@
+import logging
 from datetime import date
 from functools import lru_cache
 from typing import Optional
-import logging
 
 from fastapi import APIRouter, HTTPException, Depends
 
@@ -75,14 +75,14 @@ async def update_hotel(
     return service.update(hotel_id, update)
 
 
-@router.delete("/{hotel_id}", status_code=200)
+@router.delete("/{hotel_id}", status_code=200, response_model=RoomOut)
 async def delete_hotel(
         hotel_id: int,
         service: HotelService = Depends(get_hotel_service)
 ):
     logger.info(f"DELETE /api/hotels/{hotel_id} - Deleting hotel")
-    service.delete(hotel_id)
-    return {"message": "Hotel deleted successfully"}
+
+    return service.delete(hotel_id)
 
 
 @router.get("/{hotel_id}/rooms", response_model=list[RoomOut])

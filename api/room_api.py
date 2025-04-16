@@ -62,11 +62,11 @@ async def update_room(
     return service.update(room_id, update)
 
 
-@router.delete("/{room_id}", status_code=200)
+@router.delete("/{room_id}", status_code=200, response_model=RoomOut)
 async def delete_room(
         room_id: int,
         service: RoomService = Depends(get_room_service)
 ):
     logger.info(f"DELETE /api/rooms/{room_id} - Deleting room")
-    service.delete(room_id)
-    return {"message": "Room deleted successfully"}
+
+    return service.delete(room_id)
