@@ -1,13 +1,8 @@
 from app.database.database import SessionLocal
+from app.repository.base_repository import BaseRepository
 from app.service.entity.invoice import Invoice
 
 
-class InvoiceRepository:
+class InvoiceRepository(BaseRepository):
     def __init__(self):
-        self.db = SessionLocal()
-
-    def get_all(self):
-        return self.db.query(Invoice).all()
-
-    def get_by_id(self, invoice_id: int):
-        return self.db.query().filter(Invoice.id == invoice_id).first()
+        super().__init__(SessionLocal(), Invoice)

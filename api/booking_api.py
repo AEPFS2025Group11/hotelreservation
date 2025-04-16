@@ -1,11 +1,14 @@
-from functools import lru_cache
 import logging
+from functools import lru_cache
 
 from fastapi import APIRouter, Depends
 
 from app.repository.booking_repository import BookingRepository
+from app.repository.invoice_repository import InvoiceRepository
 from app.service.booking_service import BookingService
+from app.service.invoice_service import InvoiceService
 from app.service.models.booking_models import BookingOut, BookingIn, BookingUpdate
+from app.service.models.invoice_models import InvoiceOut
 
 router = APIRouter(prefix="/api/bookings", tags=["bookings"])
 logger = logging.getLogger(__name__)
@@ -13,7 +16,21 @@ logger = logging.getLogger(__name__)
 
 @lru_cache()
 def get_booking_service() -> BookingService:
-    return BookingService(booking_repo=BookingRepository())
+    return BookingService(
+        booking_repo=BookingRepository(),
+        invoice_service=InvoiceService(
+            invoice_repo=InvoiceRepository(),
+            booking_repo=BookingRepository()
+        )
+    )
+
+
+@lru_cache()
+def get_invoice_service() -> InvoiceService:
+    return InvoiceService(
+        invoice_repo=InvoiceRepository(),
+        booking_repo=BookingRepository()
+    )
 
 
 @router.get("/", response_model=list[BookingOut])

@@ -4,6 +4,7 @@ from fastapi import HTTPException
 
 from app.repository.booking_repository import BookingRepository
 from app.service.entity.booking import Booking
+from app.service.invoice_service import InvoiceService
 from app.service.models.booking_models import BookingOut, BookingIn, BookingUpdate
 
 logger = logging.getLogger(__name__)
@@ -11,25 +12,31 @@ logging.basicConfig(level=logging.INFO)
 
 
 class BookingService:
-    def __init__(self, booking_repo: BookingRepository):
+    def __init__(
+            self,
+            booking_repo: BookingRepository,
+            invoice_service: InvoiceService,
+    ):
         self.booking_repo = booking_repo
+        self.invoice_service = invoice_service
 
     def create(self, data: BookingIn) -> BookingOut:
-        logger.info(f"Creating new booking: guest_id={data.guest_id}, room_id={data.room_id}, "
-                    f"check_in={data.check_in}, check_out={data.check_out}")
         overlapping = self.booking_repo.get_overlapping_booking(
             room_id=data.room_id,
             check_in=data.check_in,
             check_out=data.check_out
         )
+
         if overlapping:
-            logger.warning("Booking conflict: room is already booked in the requested time range")
             raise HTTPException(status_code=400, detail="Room is already booked in that time range")
 
         booking = Booking(**data.model_dump())
-        saved = self.booking_repo.create(booking)
-        logger.info(f"Booking created successfully with ID {saved.id}")
-        return BookingOut.model_validate(saved)
+        saved_booking = self.booking_repo.create(booking)
+
+        self.invoice_service.create(saved_booking.id)
+
+        logger.info(f"Booking {saved_booking.id} created and invoice generated")
+        return BookingOut.model_validate(saved_booking)
 
     def get_all(self) -> list[BookingOut]:
         logger.info("Fetching all bookings")

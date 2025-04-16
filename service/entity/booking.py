@@ -17,3 +17,5 @@ class Booking(Base):
 
     guest = relationship("Guest", back_populates="bookings", lazy="joined")
     room = relationship("Room", back_populates="bookings", lazy="joined")
+
+    invoice = relationship("Invoice", back_populates="booking", uselist=False)
