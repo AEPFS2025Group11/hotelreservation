@@ -16,6 +16,8 @@ class Room(Base):
     hotel = relationship("Hotel", back_populates="rooms", lazy="joined")
     type = relationship("RoomType", lazy="joined")
 
+    bookings = relationship("Booking", back_populates="room")
+
     facilities = relationship(
         "Facility",
         secondary=room_facility,

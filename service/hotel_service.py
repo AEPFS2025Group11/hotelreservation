@@ -19,11 +19,11 @@ def add_total_price(check_in, check_out, room_dtos):
     if check_in and check_out:
         nights = (check_out - check_in).days
         if nights <= 0:
-            logger.warning("Attempted to calculate total price with non-positive nights")
+            logger.warning("Invalid number of nights (<= 0) — skipping total price calculation")
             return
         for room in room_dtos:
             room.total_price = room.price_per_night * nights
-        logger.info(f"Added total_price to {len(room_dtos)} room(s) for {nights} night(s)")
+        logger.info(f"Calculated total_price for {len(room_dtos)} room(s) over {nights} night(s)")
 
 
 class HotelService:
@@ -42,38 +42,40 @@ class HotelService:
                    capacity: Optional[int] = None,
                    check_in: Optional[date] = None,
                    check_out: Optional[date] = None) -> list[HotelOut]:
-        logger.info(f"Fetching hotels in city='{city}', min_stars={min_stars}, "
+        logger.info(f"Fetching hotels with filters: city='{city}', min_stars={min_stars}, "
                     f"capacity={capacity}, check_in={check_in}, check_out={check_out}")
         if check_in and check_out and check_in > check_out:
-            logger.warning("Invalid date range: check_out is before check_in")
+            logger.warning("Invalid date range: check_out < check_in")
             raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
+
         hotels = self.hotel_repo.get_filtered(city, min_stars, capacity, check_in, check_out)
-        logger.info(f"Found {len(hotels)} hotel(s) matching the criteria")
+        logger.info(f"{len(hotels)} hotel(s) found")
         return [HotelOut.model_validate(h) for h in hotels]
 
     def get_by_id(self, hotel_id: int) -> HotelOut:
         logger.info(f"Fetching hotel by ID: {hotel_id}")
         hotel = self.hotel_repo.get_by_id(hotel_id)
-        if hotel is None:
-            logger.warning(f"Hotel with ID {hotel_id} not found")
+        if not hotel:
+            logger.warning(f"Hotel ID {hotel_id} not found")
             raise HTTPException(status_code=404, detail="Hotel not found")
         return HotelOut.model_validate(hotel)
 
     def create(self, hotel_data: HotelIn) -> HotelOut:
-        logger.info(f"Creating hotel: {hotel_data.name}")
+        logger.info(f"Creating new hotel: {hotel_data.name}")
         hotel = Hotel(
             name=hotel_data.name,
             stars=hotel_data.stars,
             address_id=hotel_data.address_id
         )
-        hotel = self.hotel_repo.create(hotel)
-        return HotelOut.model_validate(hotel)
+        created = self.hotel_repo.create(hotel)
+        logger.info(f"Hotel created with ID {created.id}")
+        return HotelOut.model_validate(created)
 
     def update(self, hotel_id: int, data: HotelUpdate) -> HotelOut:
         logger.info(f"Updating hotel ID {hotel_id}")
         hotel = self.hotel_repo.get_by_id(hotel_id)
-        if hotel is None:
-            logger.warning(f"Hotel with ID {hotel_id} not found for update")
+        if not hotel:
+            logger.warning(f"Hotel ID {hotel_id} not found for update")
             raise HTTPException(status_code=404, detail="Hotel not found")
 
         if data.name is not None:
@@ -81,37 +83,40 @@ class HotelService:
         if data.stars is not None:
             hotel.stars = data.stars
 
-        updated_hotel = self.hotel_repo.update(hotel)
-        return HotelOut.model_validate(updated_hotel)
+        updated = self.hotel_repo.update(hotel)
+        logger.info(f"Hotel ID {hotel_id} updated successfully")
+        return HotelOut.model_validate(updated)
 
     def delete(self, hotel_id: int) -> HotelOut:
         logger.info(f"Deleting hotel ID {hotel_id}")
         hotel = self.hotel_repo.get_by_id(hotel_id)
-        if hotel is None:
-            logger.warning(f"Hotel with ID {hotel_id} not found for deletion")
+        if not hotel:
+            logger.warning(f"Hotel ID {hotel_id} not found for deletion")
             raise HTTPException(status_code=404, detail="Hotel not found")
-        return HotelOut.model_validate(self.hotel_repo.delete(hotel_id))
 
-    def get_rooms(
-            self,
-            hotel_id: int,
-            capacity: Optional[int] = None,
-            check_in: Optional[date] = None,
-            check_out: Optional[date] = None
-    ) -> list[RoomOut]:
+        deleted = self.hotel_repo.delete(hotel_id)
+        logger.info(f"Hotel ID {hotel_id} deleted")
+        return HotelOut.model_validate(deleted)
+
+    def get_rooms(self,
+                  hotel_id: int,
+                  capacity: Optional[int] = None,
+                  check_in: Optional[date] = None,
+                  check_out: Optional[date] = None
+                  ) -> list[RoomOut]:
         logger.info(f"Fetching rooms for hotel ID {hotel_id} with capacity={capacity}, "
                     f"check_in={check_in}, check_out={check_out}")
         hotel = self.hotel_repo.get_by_id(hotel_id)
-        if hotel is None:
-            logger.warning(f"Hotel with ID {hotel_id} not found when fetching rooms")
+        if not hotel:
+            logger.warning(f"Hotel ID {hotel_id} not found when fetching rooms")
             raise HTTPException(status_code=404, detail="Hotel not found")
 
         if check_in and check_out and check_in > check_out:
-            logger.warning("Invalid date range for room fetch: check_out is before check_in")
+            logger.warning("Invalid date range for room search")
             raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
 
         rooms = self.room_repo.get_by_hotel_id(hotel_id, capacity, check_in, check_out)
-        logger.info(f"Found {len(rooms)} room(s) for hotel ID {hotel_id}")
+        logger.info(f"{len(rooms)} room(s) found for hotel ID {hotel_id}")
         room_dtos = [RoomOut.model_validate(r) for r in rooms]
         add_total_price(check_in, check_out, room_dtos)
         return room_dtos

@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from app.api import address_api, hotel_api, room_api, booking_api
+from app.api import address_api, hotel_api, room_api, booking_api, guest_api
 
 import logging
 
@@ -16,6 +16,7 @@ app.include_router(address_api.router)
 app.include_router(hotel_api.router)
 app.include_router(room_api.router)
 app.include_router(booking_api.router)
+app.include_router(guest_api.router)
 
 
 @app.get("/")

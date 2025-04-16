@@ -22,15 +22,25 @@ class GuestService:
         self.booking_repo = booking_repo
 
     def create(self, data: GuestIn) -> GuestOut:
+        logger.info(f"Creating new guest: {data.first_name} {data.last_name}")
         guest = Guest(**data.model_dump())
         saved = self.guest_repo.create(guest)
+        logger.info(f"Guest created with ID {saved.id}")
         return GuestOut.model_validate(saved)
 
     def get_all(self) -> list[GuestOut]:
-        return [GuestOut.model_validate(b) for b in self.guest_repo.get_all()]
+        logger.info("Fetching all guests")
+        guests = self.guest_repo.get_all()
+        logger.info(f"Found {len(guests)} guest(s)")
+        return [GuestOut.model_validate(g) for g in guests]
 
     def get_by_id(self, guest_id):
-        return GuestOut.model_validate(self.guest_repo.get_by_id(guest_id))
+        logger.info(f"Fetching guest by ID: {guest_id}")
+        guest = self.guest_repo.get_by_id(guest_id)
+        if guest is None:
+            logger.warning(f"Guest with ID {guest_id} not found")
+            raise HTTPException(status_code=404, detail="Guest not found")
+        return GuestOut.model_validate(guest)
 
     def update(self, guest_id: int, data: GuestUpdate) -> GuestOut:
         logger.info(f"Updating guest ID {guest_id}")
@@ -39,6 +49,7 @@ class GuestService:
             logger.warning(f"Guest with ID {guest_id} not found for update")
             raise HTTPException(status_code=404, detail="Guest not found")
 
+        # Apply updates
         if data.first_name is not None:
             guest.first_name = data.first_name
         if data.last_name is not None:
@@ -47,7 +58,9 @@ class GuestService:
             guest.email = data.email
         if data.address_id is not None:
             guest.address_id = data.address_id
+
         updated_guest = self.guest_repo.update(guest)
+        logger.info(f"Guest with ID {guest_id} updated successfully")
         return GuestOut.model_validate(updated_guest)
 
     def delete(self, guest_id: int) -> GuestOut:
@@ -56,7 +69,12 @@ class GuestService:
         if guest is None:
             logger.warning(f"Guest with ID {guest_id} not found for deletion")
             raise HTTPException(status_code=404, detail="Guest not found")
-        return GuestOut.model_validate(self.guest_repo.delete(guest_id))
+        deleted = self.guest_repo.delete(guest_id)
+        logger.info(f"Guest with ID {guest_id} deleted")
+        return GuestOut.model_validate(deleted)
 
     def get_bookings_by_guest_id(self, guest_id: int) -> list[BookingOut]:
-        return [BookingOut.model_validate(b) for b in self.booking_repo.get_by_guest_id(guest_id)]
+        logger.info(f"Fetching bookings for guest ID {guest_id}")
+        bookings = self.booking_repo.get_by_guest_id(guest_id)
+        logger.info(f"Found {len(bookings)} booking(s) for guest ID {guest_id}")
+        return [BookingOut.model_validate(b) for b in bookings]

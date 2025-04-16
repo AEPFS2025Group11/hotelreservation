@@ -11,34 +11,42 @@ logging.basicConfig(level=logging.INFO)
 
 
 class BookingService:
-    def __init__(
-            self,
-            booking_repo: BookingRepository,
-    ):
+    def __init__(self, booking_repo: BookingRepository):
         self.booking_repo = booking_repo
 
     def create(self, data: BookingIn) -> BookingOut:
+        logger.info(f"Creating new booking: guest_id={data.guest_id}, room_id={data.room_id}, "
+                    f"check_in={data.check_in}, check_out={data.check_out}")
         overlapping = self.booking_repo.get_overlapping_booking(
             room_id=data.room_id,
             check_in=data.check_in,
             check_out=data.check_out
         )
-
         if overlapping:
+            logger.warning("Booking conflict: room is already booked in the requested time range")
             raise HTTPException(status_code=400, detail="Room is already booked in that time range")
 
         booking = Booking(**data.model_dump())
         saved = self.booking_repo.create(booking)
+        logger.info(f"Booking created successfully with ID {saved.id}")
         return BookingOut.model_validate(saved)
 
     def get_all(self) -> list[BookingOut]:
-        return [BookingOut.model_validate(b) for b in self.booking_repo.get_all()]
+        logger.info("Fetching all bookings")
+        bookings = self.booking_repo.get_all()
+        logger.info(f"{len(bookings)} booking(s) found")
+        return [BookingOut.model_validate(b) for b in bookings]
 
-    def get_by_id(self, booking_id):
-        return BookingOut.model_validate(self.booking_repo.get_by_id(booking_id))
+    def get_by_id(self, booking_id: int) -> BookingOut:
+        logger.info(f"Fetching booking by ID: {booking_id}")
+        booking = self.booking_repo.get_by_id(booking_id)
+        if booking is None:
+            logger.warning(f"Booking with ID {booking_id} not found")
+            raise HTTPException(status_code=404, detail="Booking not found")
+        return BookingOut.model_validate(booking)
 
     def update(self, booking_id: int, data: BookingUpdate) -> BookingOut:
-        logger.info(f"Updating booking ID {booking_id}")
+        logger.info(f"Updating booking ID {booking_id} with data: {data.model_dump()}")
         booking = self.booking_repo.get_by_id(booking_id)
         if booking is None:
             logger.warning(f"Booking with ID {booking_id} not found for update")
@@ -58,6 +66,7 @@ class BookingService:
             booking.total_amount = data.total_amount
 
         updated_booking = self.booking_repo.update(booking)
+        logger.info(f"Booking ID {booking_id} updated successfully")
         return BookingOut.model_validate(updated_booking)
 
     def delete(self, booking_id: int) -> BookingOut:
@@ -66,4 +75,7 @@ class BookingService:
         if booking is None:
             logger.warning(f"Booking with ID {booking_id} not found for deletion")
             raise HTTPException(status_code=404, detail="Booking not found")
-        return BookingOut.model_validate(self.booking_repo.delete(booking_id))
+
+        deleted = self.booking_repo.delete(booking_id)
+        logger.info(f"Booking ID {booking_id} deleted successfully")
+        return BookingOut.model_validate(deleted)

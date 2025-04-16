@@ -15,6 +15,5 @@ class Booking(Base):
     is_cancelled = Column(Boolean, nullable=False, index=True)
     total_amount = Column(Integer, nullable=False, index=True)
 
-    guest = relationship("Guest", backref="booking", lazy="joined")
-
-    room = relationship("Room", backref="room", lazy="joined")
+    guest = relationship("Guest", back_populates="bookings", lazy="joined")
+    room = relationship("Room", back_populates="bookings", lazy="joined")
