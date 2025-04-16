@@ -3,8 +3,14 @@ from fastapi import FastAPI
 
 from app.api import address_api, hotel_api, room_api, booking_api
 
-app = FastAPI()
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s"
+)
+
+app = FastAPI()
 
 app.include_router(address_api.router)
 app.include_router(hotel_api.router)

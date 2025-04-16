@@ -1,6 +1,7 @@
 from datetime import date
 from functools import lru_cache
 from typing import Optional
+import logging
 
 from fastapi import APIRouter, HTTPException, Depends
 
@@ -12,10 +13,12 @@ from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.models.room_models import RoomOut
 
 router = APIRouter(prefix="/api/hotels", tags=["hotels"])
+logger = logging.getLogger(__name__)
 
 
 @lru_cache()
 def get_hotel_service() -> HotelService:
+    logger.info("Initializing HotelService via lru_cache")
     room_repo = RoomRepository()
     hotel_repo = HotelRepository()
     address_repo = AddressRepository()
@@ -35,6 +38,8 @@ async def get_hotels(
         check_out: Optional[date] = None,
         service: HotelService = Depends(get_hotel_service)
 ) -> list[HotelOut]:
+    logger.info(
+        f"GET /api/hotels - city={city}, min_stars={min_stars}, capacity={capacity}, check_in={check_in}, check_out={check_out}")
     return service.get_hotels(city, min_stars, capacity, check_in, check_out)
 
 
@@ -43,8 +48,10 @@ async def get_hotel(
         hotel_id: int,
         service: HotelService = Depends(get_hotel_service)
 ) -> HotelOut:
+    logger.info(f"GET /api/hotels/{hotel_id} - Fetching hotel")
     hotel = service.get_by_id(hotel_id)
     if hotel is None:
+        logger.warning(f"Hotel with ID {hotel_id} not found")
         raise HTTPException(status_code=404, detail="Hotel not found")
     return hotel
 
@@ -54,6 +61,7 @@ async def create_hotel(
         hotel: HotelIn,
         service: HotelService = Depends(get_hotel_service)
 ) -> HotelOut:
+    logger.info(f"POST /api/hotels - Creating hotel: {hotel.name}")
     return service.create(hotel)
 
 
@@ -63,6 +71,7 @@ async def update_hotel(
         update: HotelUpdate,
         service: HotelService = Depends(get_hotel_service)
 ) -> HotelOut:
+    logger.info(f"PUT /api/hotels/{hotel_id} - Updating hotel")
     return service.update(hotel_id, update)
 
 
@@ -71,6 +80,7 @@ async def delete_hotel(
         hotel_id: int,
         service: HotelService = Depends(get_hotel_service)
 ):
+    logger.info(f"DELETE /api/hotels/{hotel_id} - Deleting hotel")
     service.delete(hotel_id)
     return {"message": "Hotel deleted successfully"}
 
@@ -83,4 +93,5 @@ def get_rooms_by_hotel(
         check_out: Optional[date] = None,
         service: HotelService = Depends(get_hotel_service)
 ):
+    logger.info(f"GET /api/hotels/{hotel_id}/rooms - capacity={capacity}, check_in={check_in}, check_out={check_out}")
     return service.get_rooms(hotel_id, capacity, check_in, check_out)

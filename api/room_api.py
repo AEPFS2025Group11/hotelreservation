@@ -1,6 +1,7 @@
 from datetime import date
 from functools import lru_cache
 from typing import Optional
+import logging
 
 from fastapi import APIRouter, Depends
 
@@ -10,10 +11,12 @@ from app.service.models.room_models import RoomOut, RoomIn, RoomUpdate
 from app.service.room_service import RoomService
 
 router = APIRouter(prefix="/api/rooms", tags=["rooms"])
+logger = logging.getLogger(__name__)
 
 
 @lru_cache()
 def get_room_service() -> RoomService:
+    logger.info("Initializing RoomService via lru_cache")
     room_repo = RoomRepository()
     room_type_repo = RoomTypeRepository()
     return RoomService(room_repo=room_repo, room_type_repo=room_type_repo)
@@ -27,6 +30,7 @@ async def get_rooms(
         check_out: Optional[date] = None,
         service: RoomService = Depends(get_room_service)
 ) -> list[RoomOut]:
+    logger.info(f"GET /api/rooms - city={city}, capacity={capacity}, check_in={check_in}, check_out={check_out}")
     return service.get_all(city, capacity, check_in, check_out)
 
 
@@ -35,6 +39,7 @@ async def get_room(
         room_id: int,
         service: RoomService = Depends(get_room_service)
 ) -> RoomOut:
+    logger.info(f"GET /api/rooms/{room_id} - Fetching room by ID")
     return service.get_by_id(room_id)
 
 
@@ -43,6 +48,7 @@ async def create_room(
         room: RoomIn,
         service: RoomService = Depends(get_room_service)
 ) -> RoomOut:
+    logger.info(f"POST /api/rooms - Creating room with number: {room.room_number}")
     return service.create(room)
 
 
@@ -52,6 +58,7 @@ async def update_room(
         update: RoomUpdate,
         service: RoomService = Depends(get_room_service)
 ) -> RoomOut:
+    logger.info(f"PUT /api/rooms/{room_id} - Updating room")
     return service.update(room_id, update)
 
 
@@ -60,5 +67,6 @@ async def delete_room(
         room_id: int,
         service: RoomService = Depends(get_room_service)
 ):
+    logger.info(f"DELETE /api/rooms/{room_id} - Deleting room")
     service.delete(room_id)
     return {"message": "Room deleted successfully"}
