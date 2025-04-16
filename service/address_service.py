@@ -1,18 +1,23 @@
+import logging
+
 from app.repository.address_repository import AddressRepository
-from app.service.schemas.address_schema import AddressSchema
-from app.service.entity.address import Address
-from app.service.mapper.address_mapper import map_to_entity, map_to_dict
+from app.service.models.address_models import AddressIn, AddressOut
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 class AddressService:
-    def __init__(self):
-        self.repo = AddressRepository()
-        self.schema = AddressSchema()
+    def __init__(
+            self,
+            address_repo: AddressRepository,
+    ):
+        self.address_repo = address_repo
 
-    def create(self, data: dict) -> dict:
-        entity = map_to_entity(self.schema, Address, data)
-        saved = self.repo.create(entity)
-        return map_to_dict(self.schema, saved)
+    def create(self, hotel_data: AddressIn) -> AddressOut:
+        logger.info(f"Creating hotel: {hotel_data.name}")
+        hotel = self.address_repo.create(hotel_data)
+        return AddressOut.model_validate(hotel)
 
-    def get_all(self) -> list[dict]:
-        return [map_to_dict(self.schema, addr) for addr in self.repo.get_all()]
+    def get_all(self) -> list[AddressOut]:
+        return [AddressOut.model_validate(addr) for addr in self.address_repo.get_all()]

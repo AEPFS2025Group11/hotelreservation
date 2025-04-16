@@ -11,5 +11,8 @@ class AddressIn(BaseModel):
 
 class AddressOut(AddressIn):
     id: int
+    street: str
+    city: str
+    zip_code: str
 
     model_config = {'from_attributes': True}
