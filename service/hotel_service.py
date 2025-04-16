@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from app.repository.address_repository import AddressRepository
 from app.repository.hotel_repository import HotelRepository
 from app.repository.room_repository import RoomRepository
+from app.service.entity.hotel import Hotel
 from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.models.room_models import RoomOut
 
@@ -60,7 +61,12 @@ class HotelService:
 
     def create(self, hotel_data: HotelIn) -> HotelOut:
         logger.info(f"Creating hotel: {hotel_data.name}")
-        hotel = self.hotel_repo.create(hotel_data)
+        hotel = Hotel(
+            name=hotel_data.name,
+            stars=hotel_data.stars,
+            address_id=hotel_data.address_id
+        )
+        hotel = self.hotel_repo.create(hotel)
         return HotelOut.model_validate(hotel)
 
     def update(self, hotel_id: int, data: HotelUpdate) -> HotelOut:
