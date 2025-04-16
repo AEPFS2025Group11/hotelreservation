@@ -33,10 +33,10 @@ class RoomRepository(BaseRepository):
             query = query.filter(RoomType.max_guests == capacity)
         if check_in and check_out:
             subquery = select(Booking.room_id).where(
-                Booking.check_in_date < check_out,
-                Booking.check_out_date > check_in
+                Booking.check_in < check_out,
+                Booking.check_out > check_in
             ).subquery()
-            query = query.filter(~Room.room_id.in_(select(subquery.c.room_id)))
+            query = query.filter(~Room.id.in_(select(subquery.c.room_id)))
         return query.all()
 
     def get_by_hotel_id(self, hotel_id: int, capacity: Optional[int] = None,
@@ -49,8 +49,8 @@ class RoomRepository(BaseRepository):
             query = query.join(Room.type).filter(RoomType.max_guests >= capacity)
         if check_in and check_out:
             subquery = select(Booking.room_id).where(
-                Booking.check_in_date < check_out,
-                Booking.check_out_date > check_in
+                Booking.check_in < check_out,
+                Booking.check_out > check_in
             )
-            query = query.filter(~Room.room_id.in_(subquery))
+            query = query.filter(~Room.id.in_(subquery))
         return query.all()

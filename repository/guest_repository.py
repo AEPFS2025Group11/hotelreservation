@@ -10,4 +10,4 @@ class GuestRepository:
         return self.db.query(Guest).all()
 
     def get_by_id(self, guest_id: int):
-        return self.db.query().filter(Guest.guest_id == guest_id).first()
+        return self.db.query().filter(Guest.id == guest_id).first()

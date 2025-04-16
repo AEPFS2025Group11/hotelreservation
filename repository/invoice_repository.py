@@ -10,4 +10,4 @@ class InvoiceRepository:
         return self.db.query(Invoice).all()
 
     def get_by_id(self, invoice_id: int):
-        return self.db.query().filter(Invoice.invoice_id == invoice_id).first()
+        return self.db.query().filter(Invoice.id == invoice_id).first()

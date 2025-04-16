@@ -10,4 +10,4 @@ class FacilityRepository:
         return self.db.query(Facility).all()
 
     def get_by_id(self, facility_id: int):
-        return self.db.query().filter(Facility.facility_id == facility_id).first()
+        return self.db.query().filter(Facility.id == facility_id).first()
