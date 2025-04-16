@@ -1,10 +1,19 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+from app.service.entity.room_facility import room_facility
+from app.util.base import Base
+
 
 class Facility(Base):
     __tablename__ = "facility"
 
     facility_id = Column(Integer, primary_key=True, autoincrement=True)
     facility_name = Column(String, nullable=False, index=True)
+
+    rooms = relationship(
+        "Room",
+        secondary=room_facility,
+        back_populates="facilities"
+    )
