@@ -37,10 +37,12 @@ async def get_rooms(
 @router.get("/{room_id}", response_model=RoomOut)
 async def get_room(
         room_id: int,
+        check_in: Optional[date] = None,
+        check_out: Optional[date] = None,
         service: RoomService = Depends(get_room_service)
 ) -> RoomOut:
     logger.info(f"GET /api/rooms/{room_id} - Fetching room by ID")
-    return service.get_by_id(room_id)
+    return service.get_by_id(room_id, check_in, check_out)
 
 
 @router.post("/", response_model=RoomOut, status_code=201)

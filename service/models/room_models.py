@@ -21,6 +21,7 @@ class RoomOut(BaseModel):
     type: RoomTypeOut
     facilities: list[FacilityOut] = []
     price_per_night: float
+    dynamic_price_per_night: Optional[float] = None
     total_price: Optional[float] = None
 
     model_config = {'from_attributes': True}

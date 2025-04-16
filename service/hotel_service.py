@@ -10,20 +10,10 @@ from app.repository.room_repository import RoomRepository
 from app.service.entity.hotel import Hotel
 from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.service.models.room_models import RoomOut
+from app.util.dynamic_pricing import calculate_dynamic_price
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-
-
-def add_total_price(check_in, check_out, room_dtos):
-    if check_in and check_out:
-        nights = (check_out - check_in).days
-        if nights <= 0:
-            logger.warning("Invalid number of nights (<= 0) — skipping total price calculation")
-            return
-        for room in room_dtos:
-            room.total_price = room.price_per_night * nights
-        logger.info(f"Calculated total_price for {len(room_dtos)} room(s) over {nights} night(s)")
 
 
 class HotelService:
@@ -118,5 +108,9 @@ class HotelService:
         rooms = self.room_repo.get_by_hotel_id(hotel_id, capacity, check_in, check_out)
         logger.info(f"{len(rooms)} room(s) found for hotel ID {hotel_id}")
         room_dtos = [RoomOut.model_validate(r) for r in rooms]
-        add_total_price(check_in, check_out, room_dtos)
+        for room in room_dtos:
+            room.dynamic_price_per_night = calculate_dynamic_price(room.price_per_night, check_in)
+            if check_in and check_out:
+                nights = (check_out - check_in).days
+                room.total_price = room.dynamic_price_per_night * nights
         return room_dtos
