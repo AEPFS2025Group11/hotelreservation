@@ -4,7 +4,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.util.base import Base
-from app.service.entity.room import Room  # Import Room directly
 
 
 @dataclass

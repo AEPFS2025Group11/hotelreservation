@@ -1,5 +1,3 @@
-# app/repository/base_repository.py
-
 import logging
 from fastapi import HTTPException
 
