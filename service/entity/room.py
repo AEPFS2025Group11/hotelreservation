@@ -11,3 +11,4 @@ class Room(Base):
     room_number = Column(Integer, nullable=False, index=True)
     type_id = Column(Integer, nullable=False, foreign_key=True)
     price_per_night = Column(Integer, nullable=False)
+    capacity = Column(Integer, nullable=False)
