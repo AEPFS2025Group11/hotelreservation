@@ -9,6 +9,7 @@ class InvoiceOut(BaseModel):
     booking_id: int
     issue_date: date
     total_amount: int
+    status: str
 
     model_config = {'from_attributes': True}
 
