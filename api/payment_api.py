@@ -1,23 +1,37 @@
+from functools import lru_cache
 from typing import Optional
 
 from fastapi import APIRouter, Depends
-from functools import lru_cache
 
 from app.repository.booking_repository import BookingRepository
 from app.repository.invoice_repository import InvoiceRepository
 from app.repository.payment_repository import PaymentRepository
-from app.service.payment_service import PaymentService
+from app.service import payment_service
+from app.service.booking_service import BookingService
+from app.service.invoice_service import InvoiceService
 from app.service.models.payment_models import PaymentIn, PaymentOut
+from app.service.payment_service import PaymentService
 
 router = APIRouter(prefix="/api/payments", tags=["payments"])
 
 
 @lru_cache()
 def get_payment_service() -> PaymentService:
+    payment_repo = PaymentRepository()
+
     return PaymentService(
-        payment_repo=PaymentRepository(),
-        invoice_repo=InvoiceRepository(),
-        booking_repo=BookingRepository()
+        payment_repo=payment_repo,
+        invoice_service=InvoiceService(
+            invoice_repo=InvoiceRepository(),
+            booking_repo=BookingRepository(),
+        ),
+        booking_service=BookingService(
+            booking_repo=BookingRepository(),
+            invoice_service=InvoiceService(
+                booking_repo=BookingRepository(),
+                invoice_repo=InvoiceRepository(),
+            ),
+        ),
     )
 
 

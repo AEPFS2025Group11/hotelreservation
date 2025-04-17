@@ -72,10 +72,11 @@ CREATE TABLE booking
 CREATE TABLE invoice
 (
     -- Author: AEP
-    id INTEGER PRIMARY KEY,
+    id     INTEGER PRIMARY KEY,
     booking_id   INTEGER NOT NULL,
     issue_date   DATE    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total_amount REAL    NOT NULL,
+    status TEXT NOT NULL,
     FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE
 );
 
@@ -115,7 +116,10 @@ CREATE TABLE payment
     method     TEXT    NOT NULL,
     status     TEXT    NOT NULL DEFAULT 'pending',
     paid_at    DATE,
-    FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE
+    amount     FLOAT   NOT NULL,
+    invoice_id INTEGER NOT NULL,
+    FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE,
+    FOREIGN KEY (invoice_id) REFERENCES invoice (id) ON DELETE CASCADE
 );
 
 
@@ -219,22 +223,22 @@ VALUES (1, 1, 1, '2025-06-01', '2025-06-05', 0, 1000.00),
        (14, 14, 14, '2025-11-10', '2025-11-15', 0, 4000.00),
        (15, 15, 15, '2025-12-01', '2025-12-05', 0, 4800.00);
 
-INSERT INTO invoice (id, booking_id, issue_date, total_amount)
-VALUES (1, 1, '2025-06-05', 1000.00),
-       (2, 2, '2025-07-15', 2000.00),
-       (3, 3, '2025-08-22', 1300.00),
-       (4, 5, '2025-10-07', 9000.00),
-       (5, 4, '2025-09-10', 0.00),
-       (6, 6, '2025-05-15', 2100.00),
-       (7, 7, '2025-06-14', 1300.00),
-       (8, 8, '2025-07-06', 4500.00),
-       (9, 9, '2025-08-15', 0.00),
-       (10, 10, '2025-09-25', 10000.00),
-       (11, 11, '2025-10-06', 2800.00),
-       (12, 12, '2025-10-12', 800.00),
-       (13, 13, '2025-11-05', 1360.00),
-       (14, 14, '2025-11-15', 4000.00),
-       (15, 15, '2025-12-05', 4800.00);
+INSERT INTO invoice (id, booking_id, issue_date, status, total_amount)
+VALUES (1, 1, '2025-06-05', 'paid', 1000.00),
+       (2, 2, '2025-07-15', 'paid', 2000.00),
+       (3, 3, '2025-08-22', 'paid', 1300.00),
+       (4, 5, '2025-10-07', 'paid', 9000.00),
+       (5, 4, '2025-09-10', 'cancelled', 0.00),
+       (6, 6, '2025-05-15', 'paid', 2100.00),
+       (7, 7, '2025-06-14', 'paid', 1300.00),
+       (8, 8, '2025-07-06', 'paid', 4500.00),
+       (9, 9, '2025-08-15', 'cancelled', 0.00),
+       (10, 10, '2025-09-25', 'pending', 5000.00),
+       (11, 11, '2025-10-06', 'paid', 2800.00),
+       (12, 12, '2025-10-12', 'paid', 800.00),
+       (13, 13, '2025-11-05', 'paid', 1360.00),
+       (14, 14, '2025-11-15', 'paid', 4000.00),
+       (15, 15, '2025-12-05', 'paid', 4800.00);
 
 INSERT INTO facility (id, facility_name)
 VALUES (1, 'WiFi'),
@@ -294,17 +298,17 @@ VALUES (1, 1, 5, 'Fantastischer Aufenthalt, alles war perfekt!'),
        (2, 6, 4, 'Tolle Lage, würden wieder kommen.'),
        (5, 7, 1, 'Nie wieder, schlechte Erfahrung.');
 
-INSERT INTO payment (booking_id, method, status, paid_at)
-VALUES (1, 'credit_card', 'paid', '2025-06-01'),
-       (2, 'paypal', 'paid', '2025-07-10'),
-       (3, 'bank_transfer', 'paid', '2025-08-20'),
-       (5, 'credit_card', 'paid', '2025-10-01'),
-       (6, 'paypal', 'paid', '2025-05-10'),
-       (7, 'credit_card', 'paid', '2025-06-12'),
-       (8, 'bank_transfer', 'paid', '2025-07-01'),
-       (10, 'credit_card', 'paid', '2025-09-20'),
-       (11, 'paypal', 'paid', '2025-10-02'),
-       (12, 'credit_card', 'paid', '2025-10-08'),
-       (13, 'credit_card', 'paid', '2025-11-01'),
-       (14, 'bank_transfer', 'paid', '2025-11-10'),
-       (15, 'paypal', 'paid', '2025-12-01');
+INSERT INTO payment (booking_id, method, status, paid_at, amount, invoice_id)
+VALUES (1, 'credit_card', 'paid', '2025-06-05', 1000.00, 1),
+       (2, 'paypal', 'paid', '2025-07-16', 2000.00, 2),
+       (3, 'bank_transfer', 'paid', '2025-08-22', 1300.00, 3),
+       (5, 'credit_card', 'paid', '2025-10-07', 9000.00, 4),
+       (6, 'paypal', 'paid', '2025-05-16', 2100.00, 6),
+       (7, 'credit_card', 'paid', '2025-06-14', 1300.00, 7),
+       (8, 'bank_transfer', 'paid', '2025-07-07', 4500.00, 8),
+       (10, 'credit_card', 'paid', '2025-09-28', 10000.00, 10),
+       (11, 'paypal', 'paid', '2025-10-06', 2800.00, 11),
+       (12, 'credit_card', 'paid', '2025-10-10', 800.00, 12),
+       (13, 'credit_card', 'paid', '2025-11-10', 1360.00, 13),
+       (14, 'bank_transfer', 'paid', '2025-11-19', 4000.00, 14),
+       (15, 'paypal', 'paid', '2025-12-08', 4800.00, 15);

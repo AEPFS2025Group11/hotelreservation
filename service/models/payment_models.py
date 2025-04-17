@@ -4,7 +4,9 @@ from pydantic import BaseModel
 
 class PaymentIn(BaseModel):
     booking_id: int
+    invoice_id: int
     method: str
+    amount: float
 
 
 class PaymentOut(BaseModel):
@@ -13,6 +15,7 @@ class PaymentOut(BaseModel):
     invoice_id: int
     method: str
     status: str
+    amount: float
     paid_at: datetime | None = None
 
     model_config = {'from_attributes': True}

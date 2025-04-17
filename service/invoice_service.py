@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from app.repository.booking_repository import BookingRepository
 from app.repository.invoice_repository import InvoiceRepository
 from app.service.entity.invoice import Invoice
-from app.service.models.invoice_models import InvoiceOut
+from app.service.models.invoice_models import InvoiceOut, InvoiceUpdate
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -46,3 +46,17 @@ class InvoiceService:
             logger.warning(f"Invoice ID {invoice_id} not found")
             raise HTTPException(status_code=404, detail="Invoice not found")
         return InvoiceOut.model_validate(invoice)
+
+    def update(self, invoice_id: int, data: InvoiceUpdate) -> InvoiceOut:
+        logger.info(f"Updating invoice ID {invoice_id}")
+        invoice = self.invoice_repo.get_by_id(invoice_id)
+        if not invoice:
+            logger.warning(f"Invoice ID {invoice_id} not found for update")
+            raise HTTPException(status_code=404, detail="Invoice not found")
+
+        for field, value in data.model_dump(exclude_unset=True).items():
+            setattr(invoice, field, value)
+
+        updated_invoice = self.invoice_repo.update(invoice)
+        logger.info(f"Invoice ID {invoice_id} updated successfully")
+        return InvoiceOut.model_validate(updated_invoice)
