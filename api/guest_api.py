@@ -57,3 +57,9 @@ async def get_bookings_by_guest_id(guest_id: int, upcoming: Optional[bool] = Non
                                    service: GuestService = Depends(get_guest_service)):
     logger.info(f"GET /api/guests/{guest_id}/bookings - Fetching guest bookings")
     return service.get_bookings_by_guest_id(guest_id, upcoming=upcoming)
+
+
+@router.get("/{guest_id}/points")
+async def get_loyalty_points(guest_id: int, service: GuestService = Depends(get_guest_service)):
+    guest = service.get_by_id(guest_id)
+    return {"guest_id": guest.id, "points": guest.loyalty_points}

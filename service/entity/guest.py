@@ -12,6 +12,7 @@ class Guest(Base):
     last_name = Column(String(50), nullable=False, index=True)
     email = Column(String(50), nullable=False, index=True)
     phone_number = Column(String(20), nullable=True)
+    loyalty_points = Column(Integer, default=0)
 
     address_id = Column(Integer, ForeignKey("address.id"), nullable=False)
     address = relationship("Address", back_populates="guests", lazy="joined")

@@ -30,6 +30,7 @@ class GuestOut(BaseModel):
     email: EmailStr
     phone_number: Optional[str]
     address: AddressOut
+    loyalty_points: Optional[int] = 0
 
     model_config = {"from_attributes": True}
 

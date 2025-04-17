@@ -1,12 +1,19 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from fastapi import HTTPException
 
 from app.repository.booking_repository import BookingRepository
+from app.service.entity import Guest
 from app.service.entity.booking import Booking
 from app.service.invoice_service import InvoiceService
 from app.service.models.booking_models import BookingOut, BookingIn, BookingUpdate
+
+LOYALTY_POINTS = 10
+
+AMOUNT_RECENT_BOOKINGS = 3
+
+DAYS = 180
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -33,8 +40,8 @@ class BookingService:
 
         booking = Booking(**data.model_dump())
         saved_booking = self.booking_repo.create(booking)
-
         self.invoice_service.create(saved_booking.id)
+        self.award_loyalty_points(saved_booking)
 
         logger.info(f"Booking {saved_booking.id} created and invoice generated")
         return BookingOut.model_validate(saved_booking)
@@ -74,6 +81,7 @@ class BookingService:
             booking.total_amount = data.total_amount
 
         updated_booking = self.booking_repo.update(booking)
+        self.award_loyalty_points(updated_booking)
         logger.info(f"Booking ID {booking_id} updated successfully")
         return BookingOut.model_validate(updated_booking)
 
@@ -114,3 +122,24 @@ class BookingService:
             logger.info(f"Invoice for booking {booking_id} set to 0 due to cancellation")
 
         return BookingOut.model_validate(updated_booking)
+
+    def award_loyalty_points(self, booking: Booking):
+        guest_id = booking.guest_id
+        recent_bookings = (
+            self.booking_repo.db.query(Booking)
+            .filter(
+                Booking.guest_id == guest_id,
+                Booking.is_cancelled == False,
+                Booking.check_out <= date.today(),
+                Booking.check_out >= date.today() - timedelta(days=DAYS)
+            )
+            .count()
+        )
+
+        print(recent_bookings)
+
+        if recent_bookings >= AMOUNT_RECENT_BOOKINGS:
+            guest = self.booking_repo.db.query(Guest).get(guest_id)
+            guest.loyalty_points += LOYALTY_POINTS
+            self.booking_repo.db.commit()
+            logger.info(f"Awarded loyalty points to guest ID {guest_id}")

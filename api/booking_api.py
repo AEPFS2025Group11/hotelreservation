@@ -8,7 +8,6 @@ from app.repository.invoice_repository import InvoiceRepository
 from app.service.booking_service import BookingService
 from app.service.invoice_service import InvoiceService
 from app.service.models.booking_models import BookingOut, BookingIn, BookingUpdate
-from app.service.models.invoice_models import InvoiceOut
 
 router = APIRouter(prefix="/api/bookings", tags=["bookings"])
 logger = logging.getLogger(__name__)

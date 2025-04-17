@@ -5,7 +5,7 @@ CREATE TABLE hotel
     name       TEXT NOT NULL,
     stars      INTEGER,
     address_id INTEGER,
-    FOREIGN KEY (address_id) REFERENCES address (address_id) ON DELETE SET NULL
+    FOREIGN KEY (address_id) REFERENCES address (id) ON DELETE SET NULL
 );
 
 CREATE TABLE address
@@ -20,13 +20,14 @@ CREATE TABLE address
 CREATE TABLE guest
 (
     -- Author: AEP
-    id           INTEGER PRIMARY KEY,
-    first_name   TEXT NOT NULL,
-    last_name    TEXT NOT NULL,
-    email        TEXT UNIQUE,
-    phone_number TEXT NOT NULL,
-    address_id   INTEGER,
-    FOREIGN KEY (address_id) REFERENCES address (address_id) ON DELETE SET NULL
+    id             INTEGER PRIMARY KEY,
+    first_name     TEXT    NOT NULL,
+    last_name      TEXT    NOT NULL,
+    email          TEXT UNIQUE,
+    phone_number   TEXT    NOT NULL,
+    loyalty_points INTEGER NOT NULL,
+    address_id     INTEGER,
+    FOREIGN KEY (address_id) REFERENCES address (id) ON DELETE SET NULL
 );
 
 CREATE TABLE room_type
@@ -45,8 +46,8 @@ CREATE TABLE room
     room_number     TEXT    NOT NULL,
     type_id         INTEGER NOT NULL,
     price_per_night REAL    NOT NULL,
-    FOREIGN KEY (hotel_id) REFERENCES hotel (hotel_id) ON DELETE CASCADE,
-    FOREIGN KEY (type_id) REFERENCES room_type (type_id) ON DELETE CASCADE
+    FOREIGN KEY (hotel_id) REFERENCES hotel (id) ON DELETE CASCADE,
+    FOREIGN KEY (type_id) REFERENCES room_type (id) ON DELETE CASCADE
 );
 
 -- one-to-many mapping with guest, hotel, room
@@ -63,8 +64,8 @@ CREATE TABLE booking
     check_out    DATE    NOT NULL,
     is_cancelled BOOLEAN NOT NULL DEFAULT 0, -- 0 = confirmed, 1 = cancelled
     total_amount REAL,
-    FOREIGN KEY (guest_id) REFERENCES guest (guest_id) ON DELETE CASCADE,
-    FOREIGN KEY (room_id) REFERENCES Room (room_id) ON DELETE CASCADE
+    FOREIGN KEY (guest_id) REFERENCES guest (id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES Room (id) ON DELETE CASCADE
 );
 
 
@@ -75,7 +76,7 @@ CREATE TABLE invoice
     booking_id   INTEGER NOT NULL,
     issue_date   DATE    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total_amount REAL    NOT NULL,
-    FOREIGN KEY (booking_id) REFERENCES booking (booking_id) ON DELETE CASCADE
+    FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE
 );
 
 CREATE TABLE facility
@@ -91,8 +92,8 @@ CREATE TABLE room_facility
     room_id     INTEGER NOT NULL,
     facility_id INTEGER NOT NULL,
     PRIMARY KEY (room_id, facility_id),
-    FOREIGN KEY (room_id) REFERENCES Room (room_id) ON DELETE CASCADE,
-    FOREIGN KEY (facility_id) REFERENCES facility (facility_id) ON DELETE CASCADE
+    FOREIGN KEY (room_id) REFERENCES Room (id) ON DELETE CASCADE,
+    FOREIGN KEY (facility_id) REFERENCES facility (id) ON DELETE CASCADE
 );
 
 CREATE TABLE review
@@ -142,22 +143,22 @@ VALUES (1, 'Hotel Baur au Lac', 5, 1),
        (14, 'Beau-Rivage Neuchâtel', 5, 14),
        (15, 'Hotel Seepark', 4, 15);
 
-INSERT INTO guest (id, first_name, last_name, email, phone_number, address_id)
-VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', 1),
-       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', '+41 76 234 56 78', 2),
-       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', '+41 78 345 67 89', 3),
-       (4, 'Elena', 'Keller', 'elena.keller@example.ch', '+41 77 456 78 90', 4),
-       (5, 'Marc', 'Weber', 'marc.weber@example.ch', '+41 79 567 89 01', 5),
-       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', '+41 76 678 90 12', 6),
-       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', '+41 78 789 01 23', 7),
-       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', '+41 77 890 12 34', 8),
-       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', '+41 79 901 23 45', 9),
-       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', '+41 76 012 34 56', 10),
-       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', '+41 78 123 45 67', 11),
-       (12, 'Julia', 'Graf', 'julia.graf@example.ch', '+41 77 234 56 78', 12),
-       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', '+41 79 345 67 89', 13),
-       (14, 'Simone', 'Roth', 'simone.roth@example.ch', '+41 76 456 78 90', 14),
-       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', '+41 78 567 89 01', 15);
+INSERT INTO guest (id, first_name, last_name, email, phone_number, loyalty_points, address_id)
+VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', 0, 1),
+       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', '+41 76 234 56 78', 0, 2),
+       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', '+41 78 345 67 89', 0, 3),
+       (4, 'Elena', 'Keller', 'elena.keller@example.ch', '+41 77 456 78 90', 0, 4),
+       (5, 'Marc', 'Weber', 'marc.weber@example.ch', '+41 79 567 89 01', 0, 5),
+       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', '+41 76 678 90 12', 0, 6),
+       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', '+41 78 789 01 23', 0, 7),
+       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', '+41 77 890 12 34', 0, 8),
+       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', '+41 79 901 23 45', 0, 9),
+       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', '+41 76 012 34 56', 0, 10),
+       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', '+41 78 123 45 67', 0, 11),
+       (12, 'Julia', 'Graf', 'julia.graf@example.ch', '+41 77 234 56 78', 0, 12),
+       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', '+41 79 345 67 89', 0, 13),
+       (14, 'Simone', 'Roth', 'simone.roth@example.ch', '+41 76 456 78 90', 0, 14),
+       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', '+41 78 567 89 01', 0, 15);
 
 
 
