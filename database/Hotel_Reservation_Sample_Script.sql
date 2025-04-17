@@ -25,6 +25,9 @@ CREATE TABLE guest
     last_name      TEXT    NOT NULL,
     email          TEXT UNIQUE,
     phone_number   TEXT    NOT NULL,
+    birth_date  DATE NOT NULL,
+    nationality TEXT NOT NULL,
+    gender      TEXT NOT NULL,
     loyalty_points INTEGER NOT NULL,
     address_id     INTEGER,
     FOREIGN KEY (address_id) REFERENCES address (id) ON DELETE SET NULL
@@ -157,23 +160,26 @@ VALUES (1, 'Hotel Baur au Lac', 5, 1),
        (14, 'Beau-Rivage Neuchâtel', 5, 14),
        (15, 'Hotel Seepark', 4, 15);
 
-INSERT INTO guest (id, first_name, last_name, email, phone_number, loyalty_points, address_id)
-VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', 0, 1),
-       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', '+41 76 234 56 78', 0, 2),
-       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', '+41 78 345 67 89', 0, 3),
-       (4, 'Elena', 'Keller', 'elena.keller@example.ch', '+41 77 456 78 90', 0, 4),
-       (5, 'Marc', 'Weber', 'marc.weber@example.ch', '+41 79 567 89 01', 0, 5),
-       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', '+41 76 678 90 12', 0, 6),
-       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', '+41 78 789 01 23', 0, 7),
-       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', '+41 77 890 12 34', 0, 8),
-       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', '+41 79 901 23 45', 0, 9),
-       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', '+41 76 012 34 56', 0, 10),
-       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', '+41 78 123 45 67', 0, 11),
-       (12, 'Julia', 'Graf', 'julia.graf@example.ch', '+41 77 234 56 78', 0, 12),
-       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', '+41 79 345 67 89', 0, 13),
-       (14, 'Simone', 'Roth', 'simone.roth@example.ch', '+41 76 456 78 90', 0, 14),
-       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', '+41 78 567 89 01', 0, 15);
-
+INSERT INTO guest (id, first_name, last_name, email, phone_number, birth_date, nationality, gender, loyalty_points,
+                   address_id)
+VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', '1980-05-12', 'Schweiz', 'MALE', 0, 1),
+       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', '+41 76 234 56 78', '1995-07-24', 'Schweiz', 'FEMALE', 0, 2),
+       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', '+41 78 345 67 89', '1990-01-30', 'Italien', 'MALE', 0, 3),
+       (4, 'Elena', 'Keller', 'elena.keller@example.ch', '+41 77 456 78 90', '1988-09-17', 'Deutschland', 'FEMALE', 0,
+        4),
+       (5, 'Marc', 'Weber', 'marc.weber@example.ch', '+41 79 567 89 01', '1975-03-03', 'Schweiz', 'MALE', 0, 5),
+       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', '+41 76 678 90 12', '2000-11-11', 'Schweiz', 'FEMALE', 0, 6),
+       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', '+41 78 789 01 23', '1983-06-06', 'Österreich', 'MALE', 0,
+        7),
+       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', '+41 77 890 12 34', '1998-04-14', 'Schweiz', 'FEMALE', 0, 8),
+       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', '+41 79 901 23 45', '1992-08-25', 'Italien', 'MALE', 0, 9),
+       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', '+41 76 012 34 56', '1987-12-01', 'Deutschland',
+        'FEMALE', 0, 10),
+       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', '+41 78 123 45 67', '1979-10-22', 'Schweiz', 'MALE', 0, 11),
+       (12, 'Julia', 'Graf', 'julia.graf@example.ch', '+41 77 234 56 78', '1993-02-08', 'Schweiz', 'FEMALE', 0, 12),
+       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', '+41 79 345 67 89', '1991-01-20', 'Frankreich', 'MALE', 0, 13),
+       (14, 'Simone', 'Roth', 'simone.roth@example.ch', '+41 76 456 78 90', '1985-06-30', 'Schweiz', 'FEMALE', 0, 14),
+       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', '+41 78 567 89 01', '1997-09-05', 'Schweiz', 'FEMALE', 0, 15);
 
 
 INSERT INTO room_type (id, description, max_guests)

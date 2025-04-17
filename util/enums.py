@@ -11,3 +11,8 @@ class PaymentStatus(str, Enum):
     PENDING = "pending"
     PAID = "paid"
     CANCELLED = "cancelled"
+
+
+class Gender(str, Enum):
+    MALE = "male"
+    FEMALE = "female"
