@@ -1,5 +1,7 @@
 import logging
+import re
 
+from email_validator import validate_email, EmailSyntaxError, EmailUndeliverableError
 from fastapi import HTTPException
 
 from app.repository.booking_repository import BookingRepository
@@ -12,6 +14,9 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+def is_valid_phone(phone: str) -> bool:
+    return re.match(r"^\+?[0-9\s\-()]{7,20}$", phone) is not None
+
 class GuestService:
     def __init__(
             self,
@@ -23,6 +28,14 @@ class GuestService:
 
     def create(self, data: GuestIn) -> GuestOut:
         logger.info(f"Creating new guest: {data.first_name} {data.last_name}")
+        if data.phone_number is not None:
+            if not is_valid_phone(data.phone_number):
+                raise HTTPException(status_code=400, detail="Invalid phone number format")
+            data.phone_number = data.phone_number
+        try:
+            validate_email(data.email)
+        except (EmailSyntaxError, EmailUndeliverableError) as e:
+            raise HTTPException(status_code=400, detail=str(e))
         guest = Guest(**data.model_dump())
         saved = self.guest_repo.create(guest)
         logger.info(f"Guest created with ID {saved.id}")
@@ -49,13 +62,20 @@ class GuestService:
             logger.warning(f"Guest with ID {guest_id} not found for update")
             raise HTTPException(status_code=404, detail="Guest not found")
 
-        # Apply updates
         if data.first_name is not None:
             guest.first_name = data.first_name
         if data.last_name is not None:
             guest.last_name = data.last_name
         if data.email is not None:
+            try:
+                validate_email(data.email)
+            except (EmailSyntaxError, EmailUndeliverableError) as e:
+                raise HTTPException(status_code=400, detail=str(e))
             guest.email = data.email
+        if data.phone_number is not None:
+            if not is_valid_phone(data.phone_number):
+                raise HTTPException(status_code=400, detail="Invalid phone number format")
+            guest.phone_number = data.phone_number
         if data.address_id is not None:
             guest.address_id = data.address_id
 
