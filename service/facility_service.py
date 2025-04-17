@@ -1,5 +1,3 @@
-# app/service/facility_service.py
-
 import logging
 from fastapi import HTTPException
 

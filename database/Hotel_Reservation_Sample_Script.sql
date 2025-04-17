@@ -95,6 +95,18 @@ CREATE TABLE room_facility
     FOREIGN KEY (facility_id) REFERENCES facility (facility_id) ON DELETE CASCADE
 );
 
+CREATE TABLE review
+(
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    hotel_id INTEGER NOT NULL,
+    guest_id INTEGER NOT NULL,
+    rating   INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment  TEXT,
+
+    FOREIGN KEY (hotel_id) REFERENCES hotel (id) ON DELETE CASCADE,
+    FOREIGN KEY (guest_id) REFERENCES guest (id) ON DELETE CASCADE
+);
+
 
 INSERT INTO address (id, street, city, zip_code)
 VALUES (1, 'Bahnhofstrasse 1', 'Zürich', '8001'),
@@ -261,3 +273,12 @@ VALUES (1, 1),
        (20, 3),
        (20, 4),
        (20, 5);
+
+INSERT INTO review (hotel_id, guest_id, rating, comment)
+VALUES (1, 1, 5, 'Fantastischer Aufenthalt, alles war perfekt!'),
+       (2, 3, 4, 'Sehr schönes Hotel, aber Frühstück war mittelmäßig.'),
+       (3, 5, 3, 'Zimmer war okay, aber Lage nicht optimal.'),
+       (1, 2, 5, 'Super freundliches Personal und saubere Zimmer.'),
+       (4, 4, 2, 'Leider sehr laut in der Nacht.'),
+       (2, 6, 4, 'Tolle Lage, würden wieder kommen.'),
+       (5, 7, 1, 'Nie wieder, schlechte Erfahrung.');

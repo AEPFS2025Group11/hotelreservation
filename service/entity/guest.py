@@ -17,3 +17,5 @@ class Guest(Base):
     address = relationship("Address", back_populates="guests", lazy="joined")
 
     bookings = relationship("Booking", back_populates="guest", lazy="joined")
+
+    reviews = relationship("Review", back_populates="guest", cascade="all, delete-orphan")
