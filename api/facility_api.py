@@ -1,3 +1,4 @@
+import logging
 from functools import lru_cache
 from fastapi import APIRouter, Depends
 
@@ -5,6 +6,7 @@ from app.repository.facility_repository import FacilityRepository
 from app.service.facility_service import FacilityService
 from app.service.models.facility_models import FacilityIn, FacilityOut, FacilityUpdate
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/facilities", tags=["facilities"])
 
 
@@ -14,25 +16,30 @@ def get_service() -> FacilityService:
 
 
 @router.get("/", response_model=list[FacilityOut])
-async def get_all(service: FacilityService = Depends(get_service)):
+async def get_all_facilities(service: FacilityService = Depends(get_service)):
+    logger.info("GET /api/facilities - Fetching all facilities")
     return service.get_all()
 
 
 @router.get("/{facility_id}", response_model=FacilityOut)
-async def get_by_id(facility_id: int, service: FacilityService = Depends(get_service)):
+async def get_facility_by_id(facility_id: int, service: FacilityService = Depends(get_service)):
+    logger.info(f"GET /api/facilities/{facility_id} - Fetching facility by ID")
     return service.get_by_id(facility_id)
 
 
 @router.post("/", response_model=FacilityOut)
-async def create(data: FacilityIn, service: FacilityService = Depends(get_service)):
+async def create_facility(data: FacilityIn, service: FacilityService = Depends(get_service)):
+    logger.info("POST /api/facilities - Creating new facility")
     return service.create(data)
 
 
 @router.put("/{facility_id}", response_model=FacilityOut)
-async def update(facility_id: int, data: FacilityUpdate, service: FacilityService = Depends(get_service)):
+async def update_facility(facility_id: int, data: FacilityUpdate, service: FacilityService = Depends(get_service)):
+    logger.info(f"PUT /api/facilities/{facility_id} - Updating facility")
     return service.update(facility_id, data)
 
 
 @router.delete("/{facility_id}", response_model=FacilityOut)
-async def delete(facility_id: int, service: FacilityService = Depends(get_service)):
+async def delete_facility(facility_id: int, service: FacilityService = Depends(get_service)):
+    logger.info(f"DELETE /api/facilities/{facility_id} - Deleting facility")
     return service.delete(facility_id)
