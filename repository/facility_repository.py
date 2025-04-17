@@ -1,13 +1,8 @@
 from app.database.database import SessionLocal
+from app.repository.base_repository import BaseRepository
 from app.service.entity.facility import Facility
 
 
-class FacilityRepository:
+class FacilityRepository(BaseRepository):
     def __init__(self):
-        self.db = SessionLocal()
-
-    def get_all(self):
-        return self.db.query(Facility).all()
-
-    def get_by_id(self, facility_id: int):
-        return self.db.query().filter(Facility.id == facility_id).first()
+        super().__init__(SessionLocal(), Facility)
