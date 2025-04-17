@@ -11,20 +11,21 @@ CREATE TABLE hotel
 CREATE TABLE address
 (
     -- Author: AEP
-    id INTEGER PRIMARY KEY,
-    street     TEXT NOT NULL,
-    city       TEXT NOT NULL,
-    zip_code   TEXT
+    id       INTEGER PRIMARY KEY,
+    street   TEXT NOT NULL,
+    city     TEXT NOT NULL,
+    zip_code TEXT
 );
 
 CREATE TABLE guest
 (
     -- Author: AEP
-    id INTEGER PRIMARY KEY,
-    first_name TEXT NOT NULL,
-    last_name  TEXT NOT NULL,
-    email      TEXT UNIQUE,
-    address_id INTEGER,
+    id           INTEGER PRIMARY KEY,
+    first_name   TEXT NOT NULL,
+    last_name    TEXT NOT NULL,
+    email        TEXT UNIQUE,
+    phone_number TEXT NOT NULL,
+    address_id   INTEGER,
     FOREIGN KEY (address_id) REFERENCES address (address_id) ON DELETE SET NULL
 );
 
@@ -55,13 +56,13 @@ CREATE TABLE room
 CREATE TABLE booking
 (
     -- Author: AEP
-    id INTEGER PRIMARY KEY,
-    guest_id       INTEGER NOT NULL,
-    room_id        INTEGER NOT NULL,
-    check_in  DATE NOT NULL,
-    check_out DATE NOT NULL,
-    is_cancelled   BOOLEAN NOT NULL DEFAULT 0, -- 0 = confirmed, 1 = cancelled
-    total_amount   REAL,
+    id           INTEGER PRIMARY KEY,
+    guest_id     INTEGER NOT NULL,
+    room_id      INTEGER NOT NULL,
+    check_in     DATE    NOT NULL,
+    check_out    DATE    NOT NULL,
+    is_cancelled BOOLEAN NOT NULL DEFAULT 0, -- 0 = confirmed, 1 = cancelled
+    total_amount REAL,
     FOREIGN KEY (guest_id) REFERENCES guest (guest_id) ON DELETE CASCADE,
     FOREIGN KEY (room_id) REFERENCES Room (room_id) ON DELETE CASCADE
 );
@@ -129,22 +130,23 @@ VALUES (1, 'Hotel Baur au Lac', 5, 1),
        (14, 'Beau-Rivage Neuchâtel', 5, 14),
        (15, 'Hotel Seepark', 4, 15);
 
-INSERT INTO guest (id, first_name, last_name, email, address_id)
-VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', 1),
-       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', 2),
-       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', 3),
-       (4, 'Elena', 'Keller', 'elena.keller@example.ch', 4),
-       (5, 'Marc', 'Weber', 'marc.weber@example.ch', 5),
-       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', 6),
-       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', 7),
-       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', 8),
-       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', 9),
-       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', 10),
-       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', 11),
-       (12, 'Julia', 'Graf', 'julia.graf@example.ch', 12),
-       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', 13),
-       (14, 'Simone', 'Roth', 'simone.roth@example.ch', 14),
-       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', 15);
+INSERT INTO guest (id, first_name, last_name, email, phone_number, address_id)
+VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', 1),
+       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', '+41 76 234 56 78', 2),
+       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', '+41 78 345 67 89', 3),
+       (4, 'Elena', 'Keller', 'elena.keller@example.ch', '+41 77 456 78 90', 4),
+       (5, 'Marc', 'Weber', 'marc.weber@example.ch', '+41 79 567 89 01', 5),
+       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', '+41 76 678 90 12', 6),
+       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', '+41 78 789 01 23', 7),
+       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', '+41 77 890 12 34', 8),
+       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', '+41 79 901 23 45', 9),
+       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', '+41 76 012 34 56', 10),
+       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', '+41 78 123 45 67', 11),
+       (12, 'Julia', 'Graf', 'julia.graf@example.ch', '+41 77 234 56 78', 12),
+       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', '+41 79 345 67 89', 13),
+       (14, 'Simone', 'Roth', 'simone.roth@example.ch', '+41 76 456 78 90', 14),
+       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', '+41 78 567 89 01', 15);
+
 
 
 INSERT INTO room_type (id, description, max_guests)
