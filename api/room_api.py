@@ -64,6 +64,10 @@ async def update_room(
     return service.update(room_id, update)
 
 
+@router.patch("/{room_id}/price", response_model=RoomOut)
+async def update_price(room_id: int, price: float, service: RoomService = Depends(get_room_service)):
+    return service.update_price(room_id, price)
+
 @router.delete("/{room_id}", status_code=200, response_model=RoomOut)
 async def delete_room(
         room_id: int,

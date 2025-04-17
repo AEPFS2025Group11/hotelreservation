@@ -112,3 +112,10 @@ class RoomService:
         deleted_room = self.room_repo.delete(room_id)
         logger.info(f"Room with ID {room_id} successfully deleted")
         return RoomOut.model_validate(deleted_room)
+
+    def update_price(self, room_id: int, new_price: float) -> RoomOut:
+        room = self.room_repo.get_by_id(room_id)
+        if not room:
+            raise HTTPException(status_code=404, detail="Room not found")
+        room.price_per_night = new_price
+        return RoomOut.model_validate(self.room_repo.update(room))
