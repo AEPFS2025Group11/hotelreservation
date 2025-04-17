@@ -19,3 +19,4 @@ class Booking(Base):
     room = relationship("Room", back_populates="bookings", lazy="joined")
 
     invoice = relationship("Invoice", back_populates="booking", uselist=False)
+    payments = relationship("Payment", back_populates="booking")

@@ -3,3 +3,8 @@ from .facility import Facility
 from .room_facility import room_facility
 from .guest import Guest
 from .booking import Booking
+from .address import Address
+from .payment import Payment
+from .hotel import Hotel
+from .invoice import Invoice
+from .review import Review

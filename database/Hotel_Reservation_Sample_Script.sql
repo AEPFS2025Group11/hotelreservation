@@ -108,6 +108,16 @@ CREATE TABLE review
     FOREIGN KEY (guest_id) REFERENCES guest (id) ON DELETE CASCADE
 );
 
+CREATE TABLE payment
+(
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_id INTEGER NOT NULL,
+    method     TEXT    NOT NULL,
+    status     TEXT    NOT NULL DEFAULT 'pending',
+    paid_at    DATE,
+    FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE
+);
+
 
 INSERT INTO address (id, street, city, zip_code)
 VALUES (1, 'Bahnhofstrasse 1', 'Zürich', '8001'),
@@ -283,3 +293,18 @@ VALUES (1, 1, 5, 'Fantastischer Aufenthalt, alles war perfekt!'),
        (4, 4, 2, 'Leider sehr laut in der Nacht.'),
        (2, 6, 4, 'Tolle Lage, würden wieder kommen.'),
        (5, 7, 1, 'Nie wieder, schlechte Erfahrung.');
+
+INSERT INTO payment (booking_id, method, status, paid_at)
+VALUES (1, 'credit_card', 'paid', '2025-06-01'),
+       (2, 'paypal', 'paid', '2025-07-10'),
+       (3, 'bank_transfer', 'paid', '2025-08-20'),
+       (5, 'credit_card', 'paid', '2025-10-01'),
+       (6, 'paypal', 'paid', '2025-05-10'),
+       (7, 'credit_card', 'paid', '2025-06-12'),
+       (8, 'bank_transfer', 'paid', '2025-07-01'),
+       (10, 'credit_card', 'paid', '2025-09-20'),
+       (11, 'paypal', 'paid', '2025-10-02'),
+       (12, 'credit_card', 'paid', '2025-10-08'),
+       (13, 'credit_card', 'paid', '2025-11-01'),
+       (14, 'bank_transfer', 'paid', '2025-11-10'),
+       (15, 'paypal', 'paid', '2025-12-01');
