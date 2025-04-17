@@ -1,5 +1,8 @@
-from datetime import date, datetime
+from datetime import datetime
+
 from pydantic import BaseModel
+
+from app.util.enums import PaymentStatus
 
 
 class PaymentIn(BaseModel):
@@ -14,7 +17,7 @@ class PaymentOut(BaseModel):
     booking_id: int
     invoice_id: int
     method: str
-    status: str
+    status: PaymentStatus
     amount: float
     paid_at: datetime | None = None
 

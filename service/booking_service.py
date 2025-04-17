@@ -107,6 +107,10 @@ class BookingService:
             raise HTTPException(status_code=400, detail="Booking is already cancelled")
 
         now = datetime.now().date()
+        if now >= booking.check_in:
+            logger.warning(f"Booking {booking_id} cannot be cancelled – check-in already started or in the past")
+            raise HTTPException(status_code=400, detail="Cannot cancel booking that has already started or passed")
+
         if booking.check_in - timedelta(days=1) <= now:
             logger.warning(f"Booking {booking_id} cannot be cancelled – less than 24h before check-in")
             raise HTTPException(status_code=400, detail="Cancellation not allowed less than 24h before check-in")

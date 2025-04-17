@@ -10,8 +10,7 @@ from app.service.entity.payment import Payment
 from app.service.invoice_service import InvoiceService
 from app.service.models.invoice_models import InvoiceUpdate
 from app.service.models.payment_models import PaymentIn, PaymentOut
-
-STATUS_PAID = "paid"
+from app.util.enums import PaymentStatus, InvoiceStatus
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -37,22 +36,28 @@ class PaymentService:
         if not invoice or not booking:
             raise HTTPException(status_code=404, detail="Invoice or booking not found")
 
+        payments_before = self.payment_repo.get_by_invoice_id(invoice.id)
+        already_paid = sum(p.amount for p in payments_before if p.status == PaymentStatus.PAID)
+        if already_paid >= invoice.total_amount:
+            logger.info(f"Invoice already paid")
+            raise HTTPException(status_code=400, detail="Invoice already paid")
+
         payment = Payment(
             booking_id=data.booking_id,
             invoice_id=data.invoice_id,
             method=data.method,
-            status=STATUS_PAID,
+            status=PaymentStatus.PAID,
             paid_at=datetime.now(),
             amount=data.amount
         )
         saved = self.payment_repo.create(payment)
         logger.info(f"Payment recorded for booking {data.booking_id}")
 
-        all_payments = self.payment_repo.get_by_invoice_id(invoice.id)
-        total_paid = sum(p.amount for p in all_payments if p.status == STATUS_PAID)
+        payments_after = payments_before + [saved]
+        total_paid = sum(p.amount for p in payments_after if p.status == PaymentStatus.PAID)
 
         if total_paid >= invoice.total_amount:
-            invoice_update = InvoiceUpdate(status=STATUS_PAID)
+            invoice_update = InvoiceUpdate(status=InvoiceStatus.PAID)
             self.invoice_service.update(invoice.id, invoice_update)
             logger.info(f"Invoice {invoice.id} marked as paid")
 
