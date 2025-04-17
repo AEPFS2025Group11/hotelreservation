@@ -1,12 +1,15 @@
-# app/service/invoice_service.py
+import logging
 from datetime import date
-from functools import lru_cache
 
 from fastapi import HTTPException
-from app.repository.invoice_repository import InvoiceRepository
+
 from app.repository.booking_repository import BookingRepository
-from app.service.models.invoice_models import InvoiceOut
+from app.repository.invoice_repository import InvoiceRepository
 from app.service.entity.invoice import Invoice
+from app.service.models.invoice_models import InvoiceOut
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 class InvoiceService:
@@ -29,3 +32,17 @@ class InvoiceService:
         )
         saved = self.invoice_repo.create(invoice)
         return InvoiceOut.model_validate(saved)
+
+    def get_all(self) -> list[InvoiceOut]:
+        logger.info("Fetching all invoices")
+        invoices = self.invoice_repo.get_all()
+        logger.info(f"{len(invoices)} invoice(s) found")
+        return [InvoiceOut.model_validate(i) for i in invoices]
+
+    def get_by_id(self, invoice_id: int) -> InvoiceOut:
+        logger.info(f"Fetching invoice ID {invoice_id}")
+        invoice = self.invoice_repo.get_by_id(invoice_id)
+        if not invoice:
+            logger.warning(f"Invoice ID {invoice_id} not found")
+            raise HTTPException(status_code=404, detail="Invoice not found")
+        return InvoiceOut.model_validate(invoice)

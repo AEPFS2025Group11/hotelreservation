@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta
 
 from fastapi import HTTPException
 
@@ -96,6 +97,11 @@ class BookingService:
         if booking.is_cancelled:
             logger.info(f"Booking {booking_id} is already cancelled")
             raise HTTPException(status_code=400, detail="Booking is already cancelled")
+
+        now = datetime.now().date()
+        if booking.check_in - timedelta(days=1) <= now:
+            logger.warning(f"Booking {booking_id} cannot be cancelled – less than 24h before check-in")
+            raise HTTPException(status_code=400, detail="Cancellation not allowed less than 24h before check-in")
 
         booking.is_cancelled = True
         booking.total_amount = 0
