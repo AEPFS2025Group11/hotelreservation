@@ -36,6 +36,10 @@ class PaymentService:
         if not invoice or not booking:
             raise HTTPException(status_code=404, detail="Invoice or booking not found")
 
+        if booking.is_cancelled:
+            logger.warning(f"Payment rejected: Booking {booking.id} is cancelled")
+            raise HTTPException(status_code=400, detail="Cannot pay for a cancelled booking")
+
         payments_before = self.payment_repo.get_by_invoice_id(invoice.id)
         already_paid = sum(p.amount for p in payments_before if p.status == PaymentStatus.PAID)
         if already_paid >= invoice.total_amount:
