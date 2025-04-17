@@ -1,5 +1,6 @@
 from functools import lru_cache
 import logging
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 
@@ -52,6 +53,7 @@ async def delete_guest(guest_id: int, service: GuestService = Depends(get_guest_
 
 
 @router.get("/{guest_id}/bookings", response_model=list[BookingOut])
-async def get_bookings_by_guest_id(guest_id: int, service: GuestService = Depends(get_guest_service)):
+async def get_bookings_by_guest_id(guest_id: int, upcoming: Optional[bool] = None,
+                                   service: GuestService = Depends(get_guest_service)):
     logger.info(f"GET /api/guests/{guest_id}/bookings - Fetching guest bookings")
-    return service.get_bookings_by_guest_id(guest_id)
+    return service.get_bookings_by_guest_id(guest_id, upcoming=upcoming)

@@ -1,4 +1,6 @@
 import logging
+from datetime import date
+from typing import Optional
 
 from fastapi import HTTPException
 
@@ -66,8 +68,15 @@ class GuestService:
         logger.info(f"Guest with ID {guest_id} deleted")
         return GuestOut.model_validate(deleted)
 
-    def get_bookings_by_guest_id(self, guest_id: int) -> list[BookingOut]:
-        logger.info(f"Fetching bookings for guest ID {guest_id}")
+    def get_bookings_by_guest_id(self, guest_id: int, upcoming: Optional[bool] = None) -> list[BookingOut]:
+        logger.info(f"Fetching bookings for guest ID {guest_id}, upcoming={upcoming}")
         bookings = self.booking_repo.get_by_guest_id(guest_id)
-        logger.info(f"Found {len(bookings)} booking(s) for guest ID {guest_id}")
+
+        today = date.today()
+        if upcoming is True:
+            bookings = [b for b in bookings if b.check_in >= today and not b.is_cancelled]
+        elif upcoming is False:
+            bookings = [b for b in bookings if b.check_out < today or b.is_cancelled]
+
+        logger.info(f"{len(bookings)} filtered booking(s) for guest ID {guest_id}")
         return [BookingOut.model_validate(b) for b in bookings]
