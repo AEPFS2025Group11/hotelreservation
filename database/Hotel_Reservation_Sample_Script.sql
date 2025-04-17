@@ -125,6 +125,13 @@ CREATE TABLE payment
     FOREIGN KEY (invoice_id) REFERENCES invoice (id) ON DELETE CASCADE
 );
 
+CREATE TABLE user
+(
+    id              INTEGER PRIMARY KEY,
+    email           TEXT NOT NULL UNIQUE,
+    hashed_password TEXT NOT NULL,
+    role            TEXT NOT NULL
+);
 
 INSERT INTO address (id, street, city, zip_code)
 VALUES (1, 'Bahnhofstrasse 1', 'Zürich', '8001'),
@@ -318,3 +325,9 @@ VALUES (1, 'credit_card', 'PAID', '2025-06-05', 1000.00, 1),
        (13, 'credit_card', 'PAID', '2025-11-10', 1360.00, 13),
        (14, 'bank_transfer', 'PAID', '2025-11-19', 4000.00, 14),
        (15, 'paypal', 'PAID', '2025-12-08', 4800.00, 15);
+
+
+
+INSERT INTO user (email, hashed_password, role)
+VALUES ('admin@example.com', 'admin123', 'ADMIN'),
+       ('guest@example.com', 'guest123', 'GUEST');

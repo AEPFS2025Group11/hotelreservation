@@ -16,3 +16,8 @@ class PaymentStatus(str, Enum):
 class Gender(str, Enum):
     MALE = "male"
     FEMALE = "female"
+
+
+class Role(str, Enum):
+    ADMIN = "admin"
+    GUEST = "guest"
