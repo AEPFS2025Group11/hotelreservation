@@ -1,10 +1,11 @@
+import logging
+
 import uvicorn
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from app.api import address_api, hotel_api, room_api, booking_api, guest_api, room_type_api, facility_api, invoice_api, \
     review_api, payment_api, statistics_api, auth_api
-
-import logging
 
 logging.basicConfig(
     level=logging.INFO,
@@ -12,6 +13,18 @@ logging.basicConfig(
 )
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:4200",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(address_api.router)
 app.include_router(hotel_api.router)
