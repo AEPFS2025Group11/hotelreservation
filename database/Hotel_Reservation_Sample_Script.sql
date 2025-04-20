@@ -130,7 +130,12 @@ CREATE TABLE user
     id              INTEGER PRIMARY KEY,
     email           TEXT NOT NULL UNIQUE,
     hashed_password TEXT NOT NULL,
-    role            TEXT NOT NULL
+    role       TEXT    NOT NULL,
+    first_name TEXT    NOT NULL,
+    last_name  TEXT    NOT NULL,
+    is_active  BOOLEAN NOT NULL,
+    created_at DATE    NOT NULL,
+    updated_at DATE    NOT NULL
 );
 
 INSERT INTO address (id, street, city, zip_code)
@@ -328,6 +333,8 @@ VALUES (1, 'credit_card', 'PAID', '2025-06-05', 1000.00, 1),
 
 
 
-INSERT INTO user (email, hashed_password, role)
-VALUES ('admin@example.com', 'admin123', 'ADMIN'),
-       ('guest@example.com', 'guest123', 'GUEST');
+INSERT INTO "user" (email, hashed_password, role, first_name, last_name, is_active, created_at, updated_at)
+VALUES ('admin@example.com', '$2b$12$eudKqXqxUQOcbuYwo4hROOe4InTlpfBEG/POJxkB12D2O0XoHbBl.', 'ADMIN', 'Admin', 'User',
+        'true', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('guest@example.com', '$2b$12$eudKqXqxUQOcbuYwo4hROOe4InTlpfBEG/POJxkB12D2O0XoHbBl.', 'GUEST', 'Guest', 'User',
+        'true', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
