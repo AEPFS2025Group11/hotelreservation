@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from app.service.models.facility_models import FacilityOut
+from app.service.models.hotel_models import HotelOut
 from app.service.models.room_type_models import RoomTypeOut
 
 
@@ -18,6 +19,7 @@ class RoomIn(BaseModel):
 class RoomOut(BaseModel):
     id: int
     room_number: str
+    hotel: HotelOut
     type: RoomTypeOut
     facilities: list[FacilityOut] = []
     price_per_night: float

@@ -16,14 +16,14 @@ class ReviewRepository(BaseRepository):
     def get_all(self):
         return (
             self.db.query(self.model)
-            .options(joinedload(self.model.guest), joinedload(self.model.hotel))
+            .options(joinedload(self.model.user), joinedload(self.model.hotel))
             .all()
         )
 
     def get_by_id(self, id_: int):
         review = (
             self.db.query(self.model)
-            .options(joinedload(self.model.guest), joinedload(self.model.hotel))
+            .options(joinedload(self.model.user), joinedload(self.model.hotel))
             .filter(self.model.id == id_)
             .first()
         )

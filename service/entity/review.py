@@ -9,9 +9,9 @@ class Review(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     hotel_id = Column(Integer, ForeignKey("hotel.id"), nullable=False)
-    guest_id = Column(Integer, ForeignKey("guest.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     rating = Column(Integer, nullable=False)
     comment = Column(Text, nullable=True)
 
     hotel = relationship("Hotel", back_populates="reviews")
-    guest = relationship("Guest", back_populates="reviews")
+    user = relationship("User", back_populates="reviews")

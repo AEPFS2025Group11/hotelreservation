@@ -1,8 +1,8 @@
 from app.database.database import SessionLocal
 from app.repository.base_repository import BaseRepository
-from app.service.entity.guest import Guest
+from app.service.entity.user import User
 
 
-class GuestRepository(BaseRepository):
+class UserRepository(BaseRepository):
     def __init__(self):
-        super().__init__(SessionLocal(), Guest)
+        super().__init__(SessionLocal(), User)

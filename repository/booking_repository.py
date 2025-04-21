@@ -15,10 +15,10 @@ class BookingRepository(BaseRepository):
     def __init__(self):
         super().__init__(SessionLocal(), Booking)
 
-    def get_by_guest_id(self, guest_id: int) -> list[Booking]:
-        logger.info(f"Fetching bookings for guest_id={guest_id}")
-        bookings = self.db.query(self.model).filter(self.model.guest_id == guest_id).all()
-        logger.info(f"Found {len(bookings)} booking(s) for guest_id={guest_id}")
+    def get_by_user_id(self, user_id: int) -> list[Booking]:
+        logger.info(f"Fetching bookings for user_id={user_id}")
+        bookings = self.db.query(self.model).filter(self.model.user_id == user_id).all()
+        logger.info(f"Found {len(bookings)} booking(s) for user_id={user_id}")
         return bookings
 
     def get_overlapping_booking(self, room_id: int, check_in: date, check_out: date) -> bool:

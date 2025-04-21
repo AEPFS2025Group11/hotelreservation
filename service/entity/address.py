@@ -17,4 +17,4 @@ class Address(Base):
 
     hotel = relationship("Hotel", back_populates="address", uselist=False)
 
-    guests = relationship("Guest", back_populates="address")
+    users = relationship("User", back_populates="address")

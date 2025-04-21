@@ -3,7 +3,7 @@ from collections import defaultdict
 from datetime import date
 
 from app.repository.booking_repository import BookingRepository
-from app.repository.guest_repository import GuestRepository
+from app.repository.user_repository import UserRepository
 from app.repository.statistics_repository import StatisticsRepository
 
 logger = logging.getLogger(__name__)
@@ -14,11 +14,11 @@ class StatisticsService:
     def __init__(
             self,
             statistics_repo: StatisticsRepository,
-            guest_repo: GuestRepository,
+            user_repo: UserRepository,
             booking_repo: BookingRepository
     ):
         self.repo = statistics_repo
-        self.guest_repo = guest_repo
+        self.user_repo = user_repo
         self.booking_repo = booking_repo
 
     def get_occupancy_by_room_type(self):
@@ -27,14 +27,14 @@ class StatisticsService:
         return [{"room_type": rt, "bookings": count} for rt, count in raw_data]
 
     def get_demographics(self):
-        guests = self.guest_repo.get_all()
+        users = self.user_repo.get_all()
         stats = defaultdict(int)
         now = date.today()
 
-        for guest in guests:
-            if guest.birth_date:
-                age = now.year - guest.birth_date.year - (
-                        (now.month, now.day) < (guest.birth_date.month, guest.birth_date.day)
+        for user in users:
+            if user.birth_date:
+                age = now.year - user.birth_date.year - (
+                        (now.month, now.day) < (user.birth_date.month, user.birth_date.day)
                 )
                 if age < 18:
                     stats["<18"] += 1
@@ -49,10 +49,10 @@ class StatisticsService:
                 else:
                     stats["65+"] += 1
 
-            if guest.nationality:
-                stats[f"country:{guest.nationality}"] += 1
+            if user.nationality:
+                stats[f"country:{user.nationality}"] += 1
 
-            bookings = self.booking_repo.get_by_guest_id(guest.id)
+            bookings = self.booking_repo.get_by_user_id(user.id)
             if len(bookings) > 1:
                 stats["wiederkehrend"] += 1
             else:

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 from app.auth.dependencies import admin_only
 from app.repository.booking_repository import BookingRepository
-from app.repository.guest_repository import GuestRepository
+from app.repository.user_repository import UserRepository
 from app.repository.statistics_repository import StatisticsRepository
 from app.service.statistics_service import StatisticsService
 
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/statistics", tags=["statistics"])
 def get_statistics_service() -> StatisticsService:
     return StatisticsService(
         statistics_repo=StatisticsRepository(),
-        guest_repo=GuestRepository(),
+        user_repo=UserRepository(),
         booking_repo=BookingRepository()
     )
 

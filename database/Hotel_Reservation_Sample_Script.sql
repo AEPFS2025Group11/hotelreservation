@@ -17,21 +17,6 @@ CREATE TABLE address
     zip_code TEXT
 );
 
-CREATE TABLE guest
-(
-    -- Author: AEP
-    id             INTEGER PRIMARY KEY,
-    first_name     TEXT    NOT NULL,
-    last_name      TEXT    NOT NULL,
-    email          TEXT UNIQUE,
-    phone_number   TEXT    NOT NULL,
-    birth_date  DATE NOT NULL,
-    nationality TEXT NOT NULL,
-    gender      TEXT NOT NULL,
-    loyalty_points INTEGER NOT NULL,
-    address_id     INTEGER,
-    FOREIGN KEY (address_id) REFERENCES address (id) ON DELETE SET NULL
-);
 
 CREATE TABLE room_type
 (
@@ -61,14 +46,14 @@ CREATE TABLE booking
 (
     -- Author: AEP
     id           INTEGER PRIMARY KEY,
-    guest_id     INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     room_id      INTEGER NOT NULL,
     check_in     DATE    NOT NULL,
     check_out    DATE    NOT NULL,
     is_cancelled BOOLEAN NOT NULL DEFAULT 0, -- 0 = confirmed, 1 = cancelled
     total_amount REAL,
-    FOREIGN KEY (guest_id) REFERENCES guest (id) ON DELETE CASCADE,
-    FOREIGN KEY (room_id) REFERENCES Room (id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE
 );
 
 
@@ -104,12 +89,12 @@ CREATE TABLE review
 (
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
     hotel_id INTEGER NOT NULL,
-    guest_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     rating   INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
     comment  TEXT,
 
     FOREIGN KEY (hotel_id) REFERENCES hotel (id) ON DELETE CASCADE,
-    FOREIGN KEY (guest_id) REFERENCES guest (id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
 );
 
 CREATE TABLE payment
@@ -128,14 +113,21 @@ CREATE TABLE payment
 CREATE TABLE user
 (
     id              INTEGER PRIMARY KEY,
-    email           TEXT NOT NULL UNIQUE,
-    hashed_password TEXT NOT NULL,
-    role       TEXT    NOT NULL,
-    first_name TEXT    NOT NULL,
-    last_name  TEXT    NOT NULL,
-    is_active  BOOLEAN NOT NULL,
-    created_at DATE    NOT NULL,
-    updated_at DATE    NOT NULL
+    first_name      TEXT    NOT NULL,
+    last_name       TEXT    NOT NULL,
+    email           TEXT    NOT NULL UNIQUE,
+    hashed_password TEXT    NOT NULL,
+    role            TEXT    NOT NULL,
+    is_active       BOOLEAN NOT NULL,
+    phone_number    TEXT,
+    birth_date      DATE,
+    nationality     TEXT,
+    gender          TEXT,
+    loyalty_points  INTEGER,
+    created_at      DATE    NOT NULL,
+    updated_at      DATE    NOT NULL,
+    address_id      INTEGER,
+    FOREIGN KEY (address_id) REFERENCES address (id) ON DELETE SET NULL
 );
 
 INSERT INTO address (id, street, city, zip_code)
@@ -172,26 +164,6 @@ VALUES (1, 'Hotel Baur au Lac', 5, 1),
        (14, 'Beau-Rivage Neuchâtel', 5, 14),
        (15, 'Hotel Seepark', 4, 15);
 
-INSERT INTO guest (id, first_name, last_name, email, phone_number, birth_date, nationality, gender, loyalty_points,
-                   address_id)
-VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', '1980-05-12', 'Schweiz', 'MALE', 0, 1),
-       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', '+41 76 234 56 78', '1995-07-24', 'Schweiz', 'FEMALE', 0, 2),
-       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', '+41 78 345 67 89', '1990-01-30', 'Italien', 'MALE', 0, 3),
-       (4, 'Elena', 'Keller', 'elena.keller@example.ch', '+41 77 456 78 90', '1988-09-17', 'Deutschland', 'FEMALE', 0,
-        4),
-       (5, 'Marc', 'Weber', 'marc.weber@example.ch', '+41 79 567 89 01', '1975-03-03', 'Schweiz', 'MALE', 0, 5),
-       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', '+41 76 678 90 12', '2000-11-11', 'Schweiz', 'FEMALE', 0, 6),
-       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', '+41 78 789 01 23', '1983-06-06', 'Österreich', 'MALE', 0,
-        7),
-       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', '+41 77 890 12 34', '1998-04-14', 'Schweiz', 'FEMALE', 0, 8),
-       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', '+41 79 901 23 45', '1992-08-25', 'Italien', 'MALE', 0, 9),
-       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', '+41 76 012 34 56', '1987-12-01', 'Deutschland',
-        'FEMALE', 0, 10),
-       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', '+41 78 123 45 67', '1979-10-22', 'Schweiz', 'MALE', 0, 11),
-       (12, 'Julia', 'Graf', 'julia.graf@example.ch', '+41 77 234 56 78', '1993-02-08', 'Schweiz', 'FEMALE', 0, 12),
-       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', '+41 79 345 67 89', '1991-01-20', 'Frankreich', 'MALE', 0, 13),
-       (14, 'Simone', 'Roth', 'simone.roth@example.ch', '+41 76 456 78 90', '1985-06-30', 'Schweiz', 'FEMALE', 0, 14),
-       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', '+41 78 567 89 01', '1997-09-05', 'Schweiz', 'FEMALE', 0, 15);
 
 
 INSERT INTO room_type (id, description, max_guests)
@@ -224,7 +196,7 @@ VALUES (1, 1, '101', 1, 250.00),
        (19, 13, '304', 4, 1000.00),
        (20, 14, '405', 5, 1800.00);
 
-INSERT INTO booking (id, guest_id, room_id, check_in, check_out, is_cancelled, total_amount)
+INSERT INTO booking (id, user_id, room_id, check_in, check_out, is_cancelled, total_amount)
 VALUES (1, 1, 1, '2025-06-01', '2025-06-05', 0, 1000.00),
        (2, 2, 2, '2025-07-10', '2025-07-15', 0, 2000.00),
        (3, 3, 3, '2025-08-20', '2025-08-22', 0, 1300.00),
@@ -307,7 +279,7 @@ VALUES (1, 1),
        (20, 4),
        (20, 5);
 
-INSERT INTO review (hotel_id, guest_id, rating, comment)
+INSERT INTO review (hotel_id, user_id, rating, comment)
 VALUES (1, 1, 5, 'Fantastischer Aufenthalt, alles war perfekt!'),
        (2, 3, 4, 'Sehr schönes Hotel, aber Frühstück war mittelmäßig.'),
        (3, 5, 3, 'Zimmer war okay, aber Lage nicht optimal.'),
@@ -333,8 +305,55 @@ VALUES (1, 'credit_card', 'PAID', '2025-06-05', 1000.00, 1),
 
 
 
-INSERT INTO "user" (email, hashed_password, role, first_name, last_name, is_active, created_at, updated_at)
-VALUES ('admin@example.com', '$2b$12$eudKqXqxUQOcbuYwo4hROOe4InTlpfBEG/POJxkB12D2O0XoHbBl.', 'ADMIN', 'Admin', 'User',
-        'true', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-       ('guest@example.com', '$2b$12$eudKqXqxUQOcbuYwo4hROOe4InTlpfBEG/POJxkB12D2O0XoHbBl.', 'GUEST', 'Guest', 'User',
-        'true', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO user (id, first_name, last_name, email, phone_number,
+                  birth_date, nationality, gender, loyalty_points, address_id,
+                  hashed_password, role, is_active, created_at, updated_at)
+VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', '1980-05-12', 'Schweiz', 'MALE', 0, 1,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (2, 'Sophie', 'Meier', 'sophie.meier@example.ch', '+41 76 234 56 78', '1995-07-24', 'Schweiz', 'FEMALE', 0, 2,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (3, 'Luca', 'Rossi', 'luca.rossi@example.ch', '+41 78 345 67 89', '1990-01-30', 'Italien', 'MALE', 0, 3,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (4, 'Elena', 'Keller', 'elena.keller@example.ch', '+41 77 456 78 90', '1988-09-17', 'Deutschland', 'FEMALE', 0,
+        4, '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (5, 'Marc', 'Weber', 'marc.weber@example.ch', '+41 79 567 89 01', '1975-03-03', 'Schweiz', 'MALE', 0, 5,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (6, 'Nina', 'Baumann', 'nina.baumann@example.ch', '+41 76 678 90 12', '2000-11-11', 'Schweiz', 'FEMALE', 0, 6,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (7, 'Thomas', 'Schmid', 'thomas.schmid@example.ch', '+41 78 789 01 23', '1983-06-06', 'Österreich', 'MALE', 0, 7,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (8, 'Laura', 'Brunner', 'laura.brunner@example.ch', '+41 77 890 12 34', '1998-04-14', 'Schweiz', 'FEMALE', 0, 8,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (9, 'Fabio', 'Ricci', 'fabio.ricci@example.ch', '+41 79 901 23 45', '1992-08-25', 'Italien', 'MALE', 0, 9,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (10, 'Anna', 'Zimmermann', 'anna.zimmermann@example.ch', '+41 76 012 34 56', '1987-12-01', 'Deutschland',
+        'FEMALE', 0, 10, '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true,
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       (11, 'Martin', 'Gerber', 'martin.gerber@example.ch', '+41 78 123 45 67', '1979-10-22', 'Schweiz', 'MALE', 0, 11,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (12, 'Julia', 'Graf', 'julia.graf@example.ch', '+41 77 234 56 78', '1993-02-08', 'Schweiz', 'FEMALE', 0, 12,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (13, 'Pascal', 'Hug', 'pascal.hug@example.ch', '+41 79 345 67 89', '1991-01-20', 'Frankreich', 'MALE', 0, 13,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (14, 'Simone', 'Roth', 'simone.roth@example.ch', '+41 76 456 78 90', '1985-06-30', 'Schweiz', 'FEMALE', 0, 14,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+       (15, 'Lena', 'Hofer', 'lena.hofer@example.ch', '+41 78 567 89 01', '1997-09-05', 'Schweiz', 'FEMALE', 0, 15,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP),
+-- Admin user
+       (16, 'Admin', 'User', 'admin@example.com', NULL, NULL, NULL, NULL, NULL, NULL,
+        '$2b$12$eudKqXqxUQOcbuYwo4hROOe4InTlpfBEG/POJxkB12D2O0XoHbBl.', 'ADMIN', true, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP);

@@ -12,7 +12,7 @@ class ReviewService:
         self.repo = repo
 
     def create(self, data: ReviewIn) -> ReviewOut:
-        logger.info(f"Creating review by guest {data.guest_id} for hotel {data.hotel_id}")
+        logger.info(f"Creating review by user {data.user_id} for hotel {data.hotel_id}")
         review = Review(**data.model_dump())
         saved = self.repo.create(review)
         return ReviewOut.model_validate(saved)

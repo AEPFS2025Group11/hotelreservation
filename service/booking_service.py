@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, date
 from fastapi import HTTPException
 
 from app.repository.booking_repository import BookingRepository
-from app.service.entity import Guest
 from app.service.entity.booking import Booking
+from app.service.entity.user import User
 from app.service.invoice_service import InvoiceService
 from app.service.models.booking_models import BookingOut, BookingIn, BookingUpdate
 
@@ -67,8 +67,8 @@ class BookingService:
             logger.warning(f"Booking with ID {booking_id} not found for update")
             raise HTTPException(status_code=404, detail="Booking not found")
 
-        if data.guest_id is not None:
-            booking.guest_id = data.guest_id
+        if data.user_id is not None:
+            booking.user_id = data.user_id
         if data.room_id is not None:
             booking.room_id = data.room_id
         if data.check_in is not None:
@@ -128,11 +128,11 @@ class BookingService:
         return BookingOut.model_validate(updated_booking)
 
     def award_loyalty_points(self, booking: Booking):
-        guest_id = booking.guest_id
+        user_id = booking.user_id
         recent_bookings = (
             self.booking_repo.db.query(Booking)
             .filter(
-                Booking.guest_id == guest_id,
+                Booking.user_id == user_id,
                 Booking.is_cancelled == False,
                 Booking.check_out <= date.today(),
                 Booking.check_out >= date.today() - timedelta(days=DAYS)
@@ -143,7 +143,7 @@ class BookingService:
         print(recent_bookings)
 
         if recent_bookings >= AMOUNT_RECENT_BOOKINGS:
-            guest = self.booking_repo.db.query(Guest).get(guest_id)
-            guest.loyalty_points += LOYALTY_POINTS
+            user = self.booking_repo.db.query(User).get(user_id)
+            user.loyalty_points += LOYALTY_POINTS
             self.booking_repo.db.commit()
-            logger.info(f"Awarded loyalty points to guest ID {guest_id}")
+            logger.info(f"Awarded loyalty points to user ID {user_id}")

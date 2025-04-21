@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class BookingIn(BaseModel):
-    guest_id: int
+    user_id: int
     room_id: int
     check_in: date
     check_out: date
@@ -16,7 +16,7 @@ class BookingIn(BaseModel):
 
 class BookingOut(BaseModel):
     id: int
-    guest_id: int
+    user_id: int
     room_id: int
     check_in: date
     check_out: date
