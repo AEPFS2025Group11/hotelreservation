@@ -147,3 +147,14 @@ class BookingService:
             user.loyalty_points += LOYALTY_POINTS
             self.booking_repo.db.commit()
             logger.info(f"Awarded loyalty points to user ID {user_id}")
+
+    def get_bookings_by_user_id(self, user_id: int) -> list[BookingOut]:
+        logger.info(f"Fetching bookings for user ID {user_id}")
+        bookings = self.booking_repo.get_by_user_id(user_id)
+
+        if not bookings:
+            logger.info(f"No bookings found for user ID {user_id}")
+        else:
+            logger.debug(f"{len(bookings)} booking(s) found for user ID {user_id}")
+
+        return [BookingOut.model_validate(b) for b in bookings]
