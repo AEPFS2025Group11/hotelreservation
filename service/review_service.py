@@ -12,7 +12,7 @@ class ReviewService:
         self.repo = repo
 
     def create(self, data: ReviewIn) -> ReviewOut:
-        logger.info(f"Creating review by user {data.user_id} for hotel {data.hotel_id}")
+        logger.info(f"Creating review for booking {data.booking_id}")
         review = Review(**data.model_dump())
         saved = self.repo.create(review)
         return ReviewOut.model_validate(saved)
@@ -21,8 +21,8 @@ class ReviewService:
         reviews = self.repo.get_by_hotel_id(hotel_id)
         return [ReviewOut.model_validate(r) for r in reviews]
 
-    def update(self, id_: int, data: ReviewUpdate) -> ReviewOut:
-        entity = self.repo.get_by_id(id_)
+    def update(self, review_id: int, data: ReviewUpdate) -> ReviewOut:
+        entity = self.repo.get_by_id(review_id)
         if data.rating is not None:
             entity.rating = data.rating
         if data.comment is not None:

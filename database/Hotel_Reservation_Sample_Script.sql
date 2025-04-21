@@ -88,13 +88,11 @@ CREATE TABLE room_facility
 CREATE TABLE review
 (
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
-    hotel_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    booking_id INTEGER NOT NULL,
     rating   INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
     comment  TEXT,
 
-    FOREIGN KEY (hotel_id) REFERENCES hotel (id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
+    FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE
 );
 
 CREATE TABLE payment
@@ -279,14 +277,14 @@ VALUES (1, 1),
        (20, 4),
        (20, 5);
 
-INSERT INTO review (hotel_id, user_id, rating, comment)
-VALUES (1, 1, 5, 'Fantastischer Aufenthalt, alles war perfekt!'),
-       (2, 3, 4, 'Sehr schönes Hotel, aber Frühstück war mittelmäßig.'),
-       (3, 5, 3, 'Zimmer war okay, aber Lage nicht optimal.'),
-       (1, 2, 5, 'Super freundliches Personal und saubere Zimmer.'),
-       (4, 4, 2, 'Leider sehr laut in der Nacht.'),
-       (2, 6, 4, 'Tolle Lage, würden wieder kommen.'),
-       (5, 7, 1, 'Nie wieder, schlechte Erfahrung.');
+INSERT INTO review (booking_id, rating, comment)
+VALUES (1, 5, 'Fantastischer Aufenthalt, alles war perfekt!'),
+       (2, 4, 'Sehr schönes Hotel, aber Frühstück war mittelmäßig.'),
+       (3, 3, 'Zimmer war okay, aber Lage nicht optimal.'),
+       (4, 5, 'Super freundliches Personal und saubere Zimmer.'),
+       (5, 2, 'Leider sehr laut in der Nacht.'),
+       (6, 4, 'Tolle Lage, würden wieder kommen.'),
+       (7, 1, 'Nie wieder, schlechte Erfahrung.');
 
 INSERT INTO payment (booking_id, method, status, paid_at, amount, invoice_id)
 VALUES (1, 'credit_card', 'PAID', '2025-06-05', 1000.00, 1),

@@ -20,3 +20,5 @@ class Booking(Base):
 
     invoice = relationship("Invoice", back_populates="booking", uselist=False)
     payments = relationship("Payment", back_populates="booking")
+
+    reviews = relationship("Review", back_populates="booking")

@@ -30,7 +30,5 @@ class User(Base):
 
     bookings = relationship("Booking", back_populates="user", lazy="joined")
 
-    reviews = relationship("Review", back_populates="user", cascade="all, delete-orphan")
-
     address_id = Column(Integer, ForeignKey("address.id"), nullable=True)
     address = relationship("Address", back_populates="users")
