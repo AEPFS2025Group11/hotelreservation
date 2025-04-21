@@ -8,6 +8,7 @@ from app.service.entity.booking import Booking
 from app.service.entity.user import User
 from app.service.invoice_service import InvoiceService
 from app.service.models.booking_models import BookingOut, BookingIn, BookingUpdate
+from app.util.enums import InvoiceStatus
 
 LOYALTY_POINTS = 10
 
@@ -115,17 +116,24 @@ class BookingService:
             logger.warning(f"Booking {booking_id} cannot be cancelled – less than 24h before check-in")
             raise HTTPException(status_code=400, detail="Cancellation not allowed less than 24h before check-in")
 
-        booking.is_cancelled = True
-        booking.total_amount = 0
-        updated_booking = self.booking_repo.update(booking)
-        logger.info(f"Booking {booking_id} cancelled")
+        try:
+            booking.is_cancelled = True
+            booking.total_amount = 0
+            updated_booking = self.booking_repo.update(booking)
+            logger.info(f"Booking {booking_id} cancelled")
 
-        if booking.invoice:
-            booking.invoice.total_amount = 0
-            self.invoice_service.invoice_repo.update(booking.invoice)
-            logger.info(f"Invoice for booking {booking_id} set to 0 due to cancellation")
+            if booking.invoice:
+                booking.invoice.total_amount = 0
+                booking.invoice.status = InvoiceStatus.CANCELLED
+                self.invoice_service.invoice_repo.update(booking.invoice)
+                logger.info(f"Invoice for booking {booking_id} cancelled")
 
-        return BookingOut.model_validate(updated_booking)
+            return BookingOut.model_validate(updated_booking)
+
+        except Exception as e:
+            self.booking_repo.db.rollback()
+            logger.error(f"Error while cancelling booking {booking_id}: {e}")
+            raise HTTPException(status_code=500, detail="Fehler beim Stornieren der Buchung.")
 
     def award_loyalty_points(self, booking: Booking):
         user_id = booking.user_id
