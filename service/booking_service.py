@@ -123,10 +123,13 @@ class BookingService:
             logger.info(f"Booking {booking_id} cancelled")
 
             if booking.invoice:
-                booking.invoice.total_amount = 0
-                booking.invoice.status = InvoiceStatus.CANCELLED
-                self.invoice_service.invoice_repo.update(booking.invoice)
-                logger.info(f"Invoice for booking {booking_id} cancelled")
+                invoice = self.invoice_service.invoice_repo.get_by_booking_id(booking.id)
+                if not invoice:
+                    logger.error(f"Invoice not found for booking {booking.id}")
+                else:
+                    invoice.total_amount = 0
+                    invoice.status = InvoiceStatus.CANCELLED
+                    self.invoice_service.invoice_repo.update(invoice)
 
             return BookingOut.model_validate(updated_booking)
 
