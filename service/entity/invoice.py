@@ -15,4 +15,4 @@ class Invoice(Base):
     status = Column(SqlEnum(InvoiceStatus), nullable=False, default="pending")
 
     booking = relationship("Booking", back_populates="invoice")
-    payment = relationship("Payment", back_populates="invoice", uselist=False)
+    payment = relationship("Payment", back_populates="invoice", uselist=False, cascade="all, delete-orphan")

@@ -114,3 +114,6 @@ class HotelService:
                 nights = (check_out - check_in).days
                 room.total_price = room.dynamic_price_per_night * nights
         return room_dtos
+
+    def get_all_hotels(self):
+        return self.hotel_repo.get_all()

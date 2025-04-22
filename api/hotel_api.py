@@ -5,6 +5,7 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Depends
 
+from app.auth.dependencies import admin_only
 from app.repository.address_repository import AddressRepository
 from app.repository.hotel_repository import HotelRepository
 from app.repository.room_repository import RoomRepository
@@ -43,6 +44,15 @@ async def get_hotels(
     return service.get_hotels(city, min_stars, capacity, check_in, check_out)
 
 
+@router.get("/admin", response_model=list[HotelOut], dependencies=[Depends(admin_only)])
+async def get_all_hotels(
+        service: HotelService = Depends(get_hotel_service)
+) -> list[HotelOut]:
+    logger.info(
+        f"GET /api/hotels/admin")
+    return service.get_all_hotels()
+
+
 @router.get("/{hotel_id}", response_model=HotelOut)
 async def get_hotel(
         hotel_id: int,
@@ -75,7 +85,7 @@ async def update_hotel(
     return service.update(hotel_id, update)
 
 
-@router.delete("/{hotel_id}", status_code=200, response_model=RoomOut)
+@router.delete("/{hotel_id}", status_code=200, response_model=HotelOut)
 async def delete_hotel(
         hotel_id: int,
         service: HotelService = Depends(get_hotel_service)

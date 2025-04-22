@@ -17,4 +17,4 @@ class Hotel(Base):
     address_id = Column(Integer, ForeignKey("address.id"), nullable=False)
     address = relationship("Address", back_populates="hotel", uselist=False, lazy="joined")
 
-    rooms = relationship("Room", back_populates="hotel", lazy="joined")
+    rooms = relationship("Room", back_populates="hotel", cascade="all, delete-orphan")

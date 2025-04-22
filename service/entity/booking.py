@@ -18,7 +18,10 @@ class Booking(Base):
     user = relationship("User", back_populates="bookings", lazy="joined")
     room = relationship("Room", back_populates="bookings", lazy="joined")
 
-    invoice = relationship("Invoice", back_populates="booking", uselist=False)
-    payments = relationship("Payment", back_populates="booking")
-
-    reviews = relationship("Review", back_populates="booking")
+    invoice = relationship("Invoice", back_populates="booking", uselist=False, cascade="all, delete-orphan")
+    payments = relationship(
+        "Payment",
+        back_populates="booking",
+        cascade="all, delete-orphan"
+    )
+    reviews = relationship("Review", back_populates="booking", cascade="all, delete-orphan")

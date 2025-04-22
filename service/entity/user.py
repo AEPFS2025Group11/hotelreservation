@@ -28,7 +28,12 @@ class User(Base):
     gender = Column(SqlEnum(Gender), nullable=True)
     loyalty_points = Column(Integer, nullable=True)
 
-    bookings = relationship("Booking", back_populates="user", lazy="joined")
+    bookings = relationship(
+        "Booking",
+        back_populates="user",
+        lazy="joined",
+        cascade="all, delete-orphan"
+    )
 
     address_id = Column(Integer, ForeignKey("address.id"), nullable=True)
     address = relationship("Address", back_populates="users")

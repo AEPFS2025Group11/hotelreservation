@@ -2,6 +2,7 @@ import logging
 
 import uvicorn
 from fastapi import FastAPI
+from sqlalchemy import event, Engine
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api import address_api, hotel_api, room_api, booking_api, room_type_api, facility_api, invoice_api, \
@@ -12,6 +13,14 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s"
 )
+
+
+@event.listens_for(Engine, "connect")
+def enforce_foreign_keys(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
 
 app = FastAPI()
 
