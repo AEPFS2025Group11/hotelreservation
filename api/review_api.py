@@ -29,6 +29,11 @@ def get_by_id(review_id: int, service: ReviewService = Depends(get_service)):
     return service.get_by_id(review_id)
 
 
+@router.get("/bookings/{booking_id}", response_model=ReviewOut)
+def get_by_booking_id(booking_id: int, service: ReviewService = Depends(get_service)):
+    return service.get_by_booking_id(booking_id)
+
+
 @router.put("/{review_id}", response_model=ReviewOut)
 def update(review_id: int, data: ReviewUpdate, service: ReviewService = Depends(get_service)):
     return service.update(review_id, data)

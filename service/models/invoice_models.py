@@ -20,3 +20,5 @@ class InvoiceUpdate(BaseModel):
     issue_date: Optional[date] = None
     total_amount: Optional[float] = None
     status: Optional[InvoiceStatus] = None
+
+    model_config = {'from_attributes': True}

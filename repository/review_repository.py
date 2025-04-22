@@ -13,6 +13,9 @@ class ReviewRepository(BaseRepository):
     def get_by_hotel_id(self, hotel_id: int) -> list[Review]:
         return self.db.query(self.model).filter(self.model.hotel_id == hotel_id).all()
 
+    def get_by_booking_id(self, booking_id: int) -> Review:
+        return self.db.query(self.model).filter(self.model.booking_id == booking_id).first()
+
     def get_all(self):
         return (
             self.db.query(self.model)

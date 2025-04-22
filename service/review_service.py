@@ -1,5 +1,7 @@
 import logging
 
+from fastapi import HTTPException
+
 from app.repository.review_repository import ReviewRepository
 from app.service.entity.review import Review
 from app.service.models.review_models import ReviewIn, ReviewOut, ReviewUpdate
@@ -12,7 +14,9 @@ class ReviewService:
         self.repo = repo
 
     def create(self, data: ReviewIn) -> ReviewOut:
-        logger.info(f"Creating review for booking {data.booking_id}")
+        existing = self.repo.get_by_booking_id(data.booking_id)
+        if existing:
+            raise HTTPException(status_code=400, detail="Diese Buchung wurde bereits bewertet.")
         review = Review(**data.model_dump())
         saved = self.repo.create(review)
         return ReviewOut.model_validate(saved)
@@ -20,6 +24,10 @@ class ReviewService:
     def get_by_hotel_id(self, hotel_id: int) -> list[ReviewOut]:
         reviews = self.repo.get_by_hotel_id(hotel_id)
         return [ReviewOut.model_validate(r) for r in reviews]
+
+    def get_by_booking_id(self, booking_id: int) -> ReviewOut:
+        reviews = self.repo.get_by_booking_id(booking_id)
+        return ReviewOut.model_validate(reviews)
 
     def update(self, review_id: int, data: ReviewUpdate) -> ReviewOut:
         entity = self.repo.get_by_id(review_id)
