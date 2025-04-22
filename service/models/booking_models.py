@@ -2,6 +2,9 @@ from datetime import date
 
 from pydantic import BaseModel
 
+from app.service.models.room_models import RoomOut
+from app.service.models.user_models import UserModel
+
 
 class BookingIn(BaseModel):
     user_id: int
@@ -16,8 +19,8 @@ class BookingIn(BaseModel):
 
 class BookingOut(BaseModel):
     id: int
-    user_id: int
-    room_id: int
+    user: UserModel
+    room: RoomOut
     check_in: date
     check_out: date
     is_cancelled: bool = False

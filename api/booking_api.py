@@ -3,6 +3,7 @@ from functools import lru_cache
 
 from fastapi import APIRouter, Depends
 
+from app.auth.dependencies import admin_only
 from app.repository.booking_repository import BookingRepository
 from app.repository.invoice_repository import InvoiceRepository
 from app.service.booking_service import BookingService
@@ -32,7 +33,7 @@ def get_invoice_service() -> InvoiceService:
     )
 
 
-@router.get("/", response_model=list[BookingOut])
+@router.get("/", response_model=list[BookingOut], dependencies=[Depends(admin_only)])
 async def get_bookings(service: BookingService = Depends(get_booking_service)):
     logger.info("GET /api/bookings - Fetching all bookings")
     return service.get_all()
