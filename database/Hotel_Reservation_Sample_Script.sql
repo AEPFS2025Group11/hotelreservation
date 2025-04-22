@@ -47,7 +47,7 @@ CREATE TABLE booking
     -- Author: AEP
     id           INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    room_id      INTEGER NOT NULL,
+    room_id INTEGER,
     check_in     DATE    NOT NULL,
     check_out    DATE    NOT NULL,
     is_cancelled BOOLEAN NOT NULL DEFAULT 0, -- 0 = confirmed, 1 = cancelled
@@ -87,10 +87,10 @@ CREATE TABLE room_facility
 
 CREATE TABLE review
 (
-    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    id      INTEGER PRIMARY KEY AUTOINCREMENT,
     booking_id INTEGER NOT NULL,
-    rating   INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    comment  TEXT,
+    rating  INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
 
     FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE
 );
@@ -352,6 +352,6 @@ VALUES (1, 'Hans', 'Müller', 'hans.mueller@example.ch', '+41 79 123 45 67', '19
         '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'GUEST', true, CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP),
 -- Admin user
-       (16, 'Admin', 'User', 'admin@example.com', NULL, NULL, NULL, NULL, NULL, NULL,
-        '$2b$12$eudKqXqxUQOcbuYwo4hROOe4InTlpfBEG/POJxkB12D2O0XoHbBl.', 'ADMIN', true, CURRENT_TIMESTAMP,
+       (16, 'Admin', 'User', 'admin@example.com', NULL, NULL, NULL, NULL, 10, NULL,
+        '$2b$12$BlYCTL.mAhm2JWp8eXzBhuKJFQULZxoODK9Tj/V./8xzF5b6NybJC', 'ADMIN', true, CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP);
