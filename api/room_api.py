@@ -5,6 +5,7 @@ import logging
 
 from fastapi import APIRouter, Depends
 
+from app.auth.dependencies import admin_only
 from app.repository.room_repository import RoomRepository
 from app.repository.room_type import RoomTypeRepository
 from app.service.models.room_models import RoomOut, RoomIn, RoomUpdate
@@ -31,7 +32,15 @@ async def get_rooms(
         service: RoomService = Depends(get_room_service)
 ) -> list[RoomOut]:
     logger.info(f"GET /api/rooms - city={city}, capacity={capacity}, check_in={check_in}, check_out={check_out}")
-    return service.get_all(city, capacity, check_in, check_out)
+    return service.get_filtered(city, capacity, check_in, check_out)
+
+
+@router.get("/admin", response_model=list[RoomOut], dependencies=[Depends(admin_only)])
+async def get_rooms(
+        service: RoomService = Depends(get_room_service)
+) -> list[RoomOut]:
+    logger.info(f"GET /api/rooms/admin")
+    return service.get_all()
 
 
 @router.get("/{room_id}", response_model=RoomOut)

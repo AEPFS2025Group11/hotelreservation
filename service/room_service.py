@@ -19,7 +19,7 @@ class RoomService:
         self.room_repo = room_repo
         self.room_type_repo = room_type_repo
 
-    def get_all(self, city: Optional[str] = None,
+    def get_filtered(self, city: Optional[str] = None,
                 capacity: Optional[int] = None,
                 check_in: Optional[date] = None,
                 check_out: Optional[date] = None) -> list[RoomOut]:
@@ -30,7 +30,7 @@ class RoomService:
         if check_in and check_out and check_in > check_out:
             raise HTTPException(status_code=400, detail="Check-out date must be after check-in date")
 
-        rooms = self.room_repo.get_all(city, capacity, check_in, check_out)
+        rooms = self.room_repo.get_filtered(city, capacity, check_in, check_out)
 
         if not rooms:
             raise HTTPException(status_code=404, detail="No rooms found")
@@ -50,6 +50,9 @@ class RoomService:
             room_dtos.append(dto)
 
         return room_dtos
+
+    def get_all(self):
+        return [RoomOut.model_validate(h) for h in self.room_repo.get_all()]
 
     def get_by_id(self, room_id: int, check_in: Optional[date] = None, check_out: Optional[date] = None) -> RoomOut:
         logger.info(f"Fetching room by ID: {room_id}")

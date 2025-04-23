@@ -16,7 +16,7 @@ class RoomRepository(BaseRepository):
     def __init__(self):
         super().__init__(SessionLocal(), Room)
 
-    def get_all(self, city: Optional[str] = None, capacity: Optional[int] = None,
+    def get_filtered(self, city: Optional[str] = None, capacity: Optional[int] = None,
                 check_in: Optional[date] = None, check_out: Optional[date] = None,
                 hotel_id: Optional[int] = None) -> list[Room]:
         query = self.db.query(Room).join(Room.type).join(Room.hotel).options(
