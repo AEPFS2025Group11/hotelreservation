@@ -4,11 +4,11 @@ from functools import lru_cache
 from fastapi import APIRouter, Depends
 
 from app.auth.dependencies import admin_only
-from app.repository.booking_repository import BookingRepository
-from app.repository.invoice_repository import InvoiceRepository
-from app.service.booking_service import BookingService
-from app.service.invoice_service import InvoiceService
-from app.service.models.booking_models import BookingOut, BookingIn, BookingUpdate
+from app.repositories.booking_repository import BookingRepository
+from app.repositories.invoice_repository import InvoiceRepository
+from app.services.booking_service import BookingService
+from app.services.invoice_service import InvoiceService
+from app.services.models.booking_models import BookingOut, BookingIn, BookingUpdate
 
 router = APIRouter(prefix="/api/bookings", tags=["bookings"])
 logger = logging.getLogger(__name__)

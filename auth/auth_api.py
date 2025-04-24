@@ -3,8 +3,8 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException
 
 from app.database.database import SessionLocal
-from app.service.entity.user import User
-from app.service.models.user_models import RegisterUser, AuthResponse, UserModel, LoginUser
+from app.entities.user import User
+from app.services.models.user_models import RegisterUser, AuthResponse, UserModel, LoginUser
 from app.util.enums import Role
 from app.util.jwt import create_access_token
 from app.util.password import hash_password, verify_password

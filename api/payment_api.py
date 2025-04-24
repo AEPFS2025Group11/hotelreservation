@@ -3,14 +3,14 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 
-from app.repository.booking_repository import BookingRepository
-from app.repository.invoice_repository import InvoiceRepository
-from app.repository.payment_repository import PaymentRepository
-from app.service import payment_service
-from app.service.booking_service import BookingService
-from app.service.invoice_service import InvoiceService
-from app.service.models.payment_models import PaymentIn, PaymentOut
-from app.service.payment_service import PaymentService
+from app.repositories.booking_repository import BookingRepository
+from app.repositories.invoice_repository import InvoiceRepository
+from app.repositories.payment_repository import PaymentRepository
+from app.services import payment_service
+from app.services.booking_service import BookingService
+from app.services.invoice_service import InvoiceService
+from app.services.models.payment_models import PaymentIn, PaymentOut
+from app.services.payment_service import PaymentService
 
 router = APIRouter(prefix="/api/payments", tags=["payments"])
 

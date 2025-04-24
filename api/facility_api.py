@@ -2,9 +2,9 @@ import logging
 from functools import lru_cache
 from fastapi import APIRouter, Depends
 
-from app.repository.facility_repository import FacilityRepository
-from app.service.facility_service import FacilityService
-from app.service.models.facility_models import FacilityIn, FacilityOut, FacilityUpdate
+from app.repositories.facility_repository import FacilityRepository
+from app.services.facility_service import FacilityService
+from app.services.models.facility_models import FacilityIn, FacilityOut, FacilityUpdate
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/facilities", tags=["facilities"])

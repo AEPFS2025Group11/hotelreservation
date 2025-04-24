@@ -3,10 +3,9 @@ from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-from rich import status
 
 from app.database.database import SessionLocal
-from app.service.entity.user import User
+from app.entities.user import User
 
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"

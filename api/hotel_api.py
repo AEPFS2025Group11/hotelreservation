@@ -6,12 +6,12 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
 
 from app.auth.dependencies import admin_only
-from app.repository.address_repository import AddressRepository
-from app.repository.hotel_repository import HotelRepository
-from app.repository.room_repository import RoomRepository
-from app.service.hotel_service import HotelService
-from app.service.models.hotel_models import HotelOut, HotelIn, HotelUpdate
-from app.service.models.room_models import RoomOut
+from app.repositories.address_repository import AddressRepository
+from app.repositories.hotel_repository import HotelRepository
+from app.repositories.room_repository import RoomRepository
+from app.services.hotel_service import HotelService
+from app.services.models.hotel_models import HotelOut, HotelIn, HotelUpdate
+from app.services.models.room_models import RoomOut
 
 router = APIRouter(prefix="/api/hotels", tags=["hotels"])
 logger = logging.getLogger(__name__)

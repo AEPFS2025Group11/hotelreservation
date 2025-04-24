@@ -2,9 +2,9 @@ from functools import lru_cache
 
 from fastapi import APIRouter, Depends
 
-from app.repository.review_repository import ReviewRepository
-from app.service.models.review_models import ReviewIn, ReviewOut, ReviewUpdate
-from app.service.review_service import ReviewService
+from app.repositories.review_repository import ReviewRepository
+from app.services.models.review_models import ReviewIn, ReviewOut, ReviewUpdate
+from app.services.review_service import ReviewService
 
 router = APIRouter(prefix="/api/reviews", tags=["reviews"])
 

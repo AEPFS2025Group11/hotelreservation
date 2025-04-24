@@ -3,9 +3,9 @@ from functools import lru_cache
 
 from fastapi import APIRouter, Depends
 
-from app.repository.room_type import RoomTypeRepository
-from app.service.room_type_service import RoomTypeService
-from app.service.models.room_type_models import RoomTypeIn, RoomTypeOut
+from app.repositories.room_type import RoomTypeRepository
+from app.services.room_type_service import RoomTypeService
+from app.services.models.room_type_models import RoomTypeIn, RoomTypeOut
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/room_types", tags=["room_types"])

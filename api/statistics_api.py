@@ -3,10 +3,10 @@ from functools import lru_cache
 from fastapi import APIRouter, Depends
 
 from app.auth.dependencies import admin_only
-from app.repository.booking_repository import BookingRepository
-from app.repository.user_repository import UserRepository
-from app.repository.statistics_repository import StatisticsRepository
-from app.service.statistics_service import StatisticsService
+from app.repositories.booking_repository import BookingRepository
+from app.repositories.user_repository import UserRepository
+from app.repositories.statistics_repository import StatisticsRepository
+from app.services.statistics_service import StatisticsService
 
 router = APIRouter(prefix="/api/statistics", tags=["statistics"])
 

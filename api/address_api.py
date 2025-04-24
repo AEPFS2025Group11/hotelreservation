@@ -3,9 +3,9 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from app.repository.address_repository import AddressRepository
-from app.service.address_service import AddressService
-from app.service.models.address_models import AddressOut, AddressIn
+from app.repositories.address_repository import AddressRepository
+from app.services.address_service import AddressService
+from app.services.models.address_models import AddressOut, AddressIn
 
 router = APIRouter(prefix="/api/addresses", tags=["addresses"])
 logger = logging.getLogger(__name__)

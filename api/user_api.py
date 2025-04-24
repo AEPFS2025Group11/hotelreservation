@@ -3,14 +3,14 @@ from functools import lru_cache
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.repository.booking_repository import BookingRepository
-from app.repository.invoice_repository import InvoiceRepository
-from app.repository.user_repository import UserRepository
-from app.service.booking_service import BookingService
-from app.service.invoice_service import InvoiceService
-from app.service.models.booking_models import BookingOut
-from app.service.models.user_models import UserModel
-from app.service.user_service import UserService
+from app.repositories.booking_repository import BookingRepository
+from app.repositories.invoice_repository import InvoiceRepository
+from app.repositories.user_repository import UserRepository
+from app.services.booking_service import BookingService
+from app.services.invoice_service import InvoiceService
+from app.services.models.booking_models import BookingOut
+from app.services.models.user_models import UserModel
+from app.services.user_service import UserService
 
 logger = logging.getLogger(__name__)
 

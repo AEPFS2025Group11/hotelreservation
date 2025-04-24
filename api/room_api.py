@@ -6,10 +6,10 @@ import logging
 from fastapi import APIRouter, Depends
 
 from app.auth.dependencies import admin_only
-from app.repository.room_repository import RoomRepository
-from app.repository.room_type import RoomTypeRepository
-from app.service.models.room_models import RoomOut, RoomIn, RoomUpdate
-from app.service.room_service import RoomService
+from app.repositories.room_repository import RoomRepository
+from app.repositories.room_type import RoomTypeRepository
+from app.services.models.room_models import RoomOut, RoomIn, RoomUpdate
+from app.services.room_service import RoomService
 
 router = APIRouter(prefix="/api/rooms", tags=["rooms"])
 logger = logging.getLogger(__name__)
