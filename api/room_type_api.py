@@ -17,7 +17,7 @@ def get_service() -> RoomTypeService:
 
 
 @router.get("/", response_model=list[RoomTypeOut])
-async def get_all_room_types(service: RoomTypeService = Depends(get_service)):
+async def get_room_types(service: RoomTypeService = Depends(get_service)):
     logger.info("GET /api/room_types - Fetching all room types")
     return service.get_all()
 

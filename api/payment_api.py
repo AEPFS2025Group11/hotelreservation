@@ -36,12 +36,12 @@ def get_payment_service() -> PaymentService:
 
 
 @router.post("/", response_model=PaymentOut)
-async def pay(data: PaymentIn, service: PaymentService = Depends(get_payment_service)):
+async def create_payment(data: PaymentIn, service: PaymentService = Depends(get_payment_service)):
     return service.create(data)
 
 
 @router.get("/", response_model=list[PaymentOut])
-async def get_all_payments(status: Optional[str] = None, service: PaymentService = Depends(get_payment_service)):
+async def get_payments(status: Optional[str] = None, service: PaymentService = Depends(get_payment_service)):
     return service.get_all(status=status)
 
 

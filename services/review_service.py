@@ -37,8 +37,8 @@ class ReviewService:
             entity.comment = data.comment
         return ReviewOut.model_validate(self.repo.update(entity))
 
-    def delete(self, id_: int) -> ReviewOut:
-        return ReviewOut.model_validate(self.repo.delete(id_))
+    def delete(self, review_id: int) -> ReviewOut:
+        return ReviewOut.model_validate(self.repo.delete(review_id))
 
-    def get_by_id(self, id_: int) -> ReviewOut:
-        return ReviewOut.model_validate(self.repo.get_by_id(id_))
+    def get_by_id(self, review_id: int) -> ReviewOut:
+        return ReviewOut.model_validate(self.repo.get_by_id(review_id))

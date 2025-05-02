@@ -1,6 +1,6 @@
 from app.database.database import SessionLocal
+from app.entities.room_type import RoomType
 from app.repositories.base_repository import BaseRepository
-from app.entities import RoomType
 
 
 class RoomTypeRepository(BaseRepository):

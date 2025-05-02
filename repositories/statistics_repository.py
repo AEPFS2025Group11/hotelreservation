@@ -2,7 +2,7 @@ from sqlalchemy import func
 
 from app.database.database import SessionLocal
 from app.entities import Booking, Room
-from app.entities import RoomType
+from app.entities.room_type import RoomType
 
 
 class StatisticsRepository:

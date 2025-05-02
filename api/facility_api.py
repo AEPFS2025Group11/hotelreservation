@@ -16,7 +16,7 @@ def get_service() -> FacilityService:
 
 
 @router.get("/", response_model=list[FacilityOut])
-async def get_all_facilities(service: FacilityService = Depends(get_service)):
+async def get_facilities(service: FacilityService = Depends(get_service)):
     logger.info("GET /api/facilities - Fetching all facilities")
     return service.get_all()
 

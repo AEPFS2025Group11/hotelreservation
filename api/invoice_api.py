@@ -16,7 +16,7 @@ def get_invoice_service() -> InvoiceService:
 
 
 @router.get("/", response_model=list[InvoiceOut])
-async def get_all(service: InvoiceService = Depends(get_invoice_service)):
+async def get_invoices(service: InvoiceService = Depends(get_invoice_service)):
     return service.get_all()
 
 
