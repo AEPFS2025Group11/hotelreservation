@@ -3,7 +3,7 @@ from sqlalchemy.orm import joinedload
 
 from app.database.database import SessionLocal
 from app.repositories.base_repository import BaseRepository
-from app.entities import Review
+from app.entities import Review, Booking, Room
 
 
 class ReviewRepository(BaseRepository):
@@ -11,7 +11,14 @@ class ReviewRepository(BaseRepository):
         super().__init__(SessionLocal(), Review)
 
     def get_by_hotel_id(self, hotel_id: int) -> list[Review]:
-        return self.db.query(self.model).filter(self.model.hotel_id == hotel_id).all()
+        return (
+            self.db.query(self.model)
+            .join(self.model.booking)
+            .join(Booking.room)
+            .join(Room.hotel)
+            .filter(Room.hotel_id == hotel_id)
+            .all()
+        )
 
     def get_by_booking_id(self, booking_id: int) -> Review:
         return self.db.query(self.model).filter(self.model.booking_id == booking_id).first()

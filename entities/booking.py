@@ -24,4 +24,4 @@ class Booking(Base):
         back_populates="booking",
         cascade="all, delete-orphan"
     )
-    reviews = relationship("Review", back_populates="booking", cascade="all, delete-orphan")
+    review = relationship("Review", back_populates="booking", uselist=False)

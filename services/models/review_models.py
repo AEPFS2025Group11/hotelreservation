@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -12,6 +13,7 @@ class ReviewIn(BaseModel):
 class ReviewOut(BaseModel):
     id: int
     rating: int
+    created_at: date
     comment: Optional[str]
     booking_id: int
 

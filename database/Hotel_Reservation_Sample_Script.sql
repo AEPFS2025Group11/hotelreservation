@@ -89,6 +89,7 @@ CREATE TABLE review
 (
     id      INTEGER PRIMARY KEY AUTOINCREMENT,
     booking_id INTEGER NOT NULL,
+    created_at DATE NOT NULL,
     rating  INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
 
@@ -277,14 +278,14 @@ VALUES (1, 1),
        (20, 4),
        (20, 5);
 
-INSERT INTO review (booking_id, rating, comment)
-VALUES (1, 5, 'Fantastischer Aufenthalt, alles war perfekt!'),
-       (2, 4, 'Sehr schönes Hotel, aber Frühstück war mittelmäßig.'),
-       (3, 3, 'Zimmer war okay, aber Lage nicht optimal.'),
-       (4, 5, 'Super freundliches Personal und saubere Zimmer.'),
-       (5, 2, 'Leider sehr laut in der Nacht.'),
-       (6, 4, 'Tolle Lage, würden wieder kommen.'),
-       (7, 1, 'Nie wieder, schlechte Erfahrung.');
+INSERT INTO review (booking_id, rating, comment, created_at)
+VALUES (1, 5, 'Fantastischer Aufenthalt, alles war perfekt!', '2025-12-10'),
+       (2, 4, 'Sehr schönes Hotel, aber Frühstück war mittelmäßig.', '2025-12-10'),
+       (3, 3, 'Zimmer war okay, aber Lage nicht optimal.', '2025-12-10'),
+       (4, 5, 'Super freundliches Personal und saubere Zimmer.', '2025-12-10'),
+       (5, 2, 'Leider sehr laut in der Nacht.', '2025-12-10'),
+       (6, 4, 'Tolle Lage, würden wieder kommen.', '2025-12-10'),
+       (7, 1, 'Nie wieder, schlechte Erfahrung.', '2025-12-10');
 
 INSERT INTO payment (booking_id, method, status, paid_at, amount, invoice_id)
 VALUES (1, 'credit_card', 'PAID', '2025-06-05', 1000.00, 1),
