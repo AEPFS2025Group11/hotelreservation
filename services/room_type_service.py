@@ -1,15 +1,18 @@
 import logging
-from fastapi import HTTPException
 
-from app.repositories.room_type import RoomTypeRepository
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
+
+from app.database.dependencies import get_db
+from app.repositories.room_type_repository import RoomTypeRepository
 from app.services.models.room_type_models import RoomTypeIn, RoomTypeOut
 
 logger = logging.getLogger(__name__)
 
 
 class RoomTypeService:
-    def __init__(self, repo: RoomTypeRepository):
-        self.repo = repo
+    def __init__(self, db: Session):
+        self.repo = RoomTypeRepository(db)
 
     def get_all(self) -> list[RoomTypeOut]:
         logger.info("Fetching all room types")
@@ -52,3 +55,7 @@ class RoomTypeService:
         deleted = self.repo.delete(id_)
         logger.info(f"Room type ID {id_} deleted")
         return RoomTypeOut.model_validate(deleted)
+
+
+def get_room_type_service(db: Session = Depends(get_db)) -> RoomTypeService:
+    return RoomTypeService(db=db)

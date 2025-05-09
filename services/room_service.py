@@ -2,11 +2,14 @@ import logging
 from datetime import date
 from typing import Optional
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
 
-from app.repositories.room_repository import RoomRepository
-from app.repositories.room_type import RoomTypeRepository
+from app.database.dependencies import get_db
 from app.entities import Room
+from app.repositories.facility_repository import FacilityRepository
+from app.repositories.room_repository import RoomRepository
+from app.repositories.room_type_repository import RoomTypeRepository
 from app.services.models.room_models import RoomOut, RoomUpdate, RoomIn
 from app.util.dynamic_pricing import calculate_dynamic_price
 
@@ -15,14 +18,15 @@ logging.basicConfig(level=logging.INFO)
 
 
 class RoomService:
-    def __init__(self, room_repo: RoomRepository, room_type_repo: RoomTypeRepository):
-        self.room_repo = room_repo
-        self.room_type_repo = room_type_repo
+    def __init__(self, db: Session):
+        self.room_repo = RoomRepository(db)
+        self.room_type_repo = RoomTypeRepository(db)
+        self.facility_repo = FacilityRepository(db)
 
     def get_filtered(self, city: Optional[str] = None,
-                capacity: Optional[int] = None,
-                check_in: Optional[date] = None,
-                check_out: Optional[date] = None) -> list[RoomOut]:
+                     capacity: Optional[int] = None,
+                     check_in: Optional[date] = None,
+                     check_out: Optional[date] = None) -> list[RoomOut]:
 
         logger.info(f"Fetching rooms with filters: city='{city}', capacity={capacity}, "
                     f"check_in={check_in}, check_out={check_out}")
@@ -101,6 +105,13 @@ class RoomService:
             room_entity.price_per_night = data.price_per_night
         if data.type_id is not None:
             room_entity.type_id = data.type_id
+        if data.facility_ids is not None:
+            facilities = self.facility_repo.get_by_ids(data.facility_ids)
+            facilities_in_same_session = [self.room_repo.db.merge(f) for f in facilities]
+            room_entity.facilities = facilities_in_same_session
+            if len(facilities) != len(data.facility_ids):
+                raise HTTPException(status_code=400, detail="One or more facilities not found")
+            room_entity.facilities = facilities
 
         updated_room = self.room_repo.update(room_entity)
         logger.info(f"Room ID {room_id} updated successfully")
@@ -122,3 +133,7 @@ class RoomService:
             raise HTTPException(status_code=404, detail="Room not found")
         room.price_per_night = new_price
         return RoomOut.model_validate(self.room_repo.update(room))
+
+
+def get_room_service(db: Session = Depends(get_db)) -> RoomService:
+    return RoomService(db=db)

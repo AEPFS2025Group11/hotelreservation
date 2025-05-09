@@ -1,33 +1,16 @@
 import logging
 from datetime import date
-from functools import lru_cache
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Depends
 
 from app.auth.dependencies import admin_only
-from app.repositories.address_repository import AddressRepository
-from app.repositories.hotel_repository import HotelRepository
-from app.repositories.room_repository import RoomRepository
-from app.services.hotel_service import HotelService
+from app.services.hotel_service import HotelService, get_hotel_service
 from app.services.models.hotel_models import HotelOut, HotelIn, HotelUpdate
 from app.services.models.room_models import RoomOut
 
 router = APIRouter(prefix="/api/hotels", tags=["hotels"])
 logger = logging.getLogger(__name__)
-
-
-@lru_cache()
-def get_hotel_service() -> HotelService:
-    logger.info("Initializing HotelService via lru_cache")
-    room_repo = RoomRepository()
-    hotel_repo = HotelRepository()
-    address_repo = AddressRepository()
-    return HotelService(
-        room_repo=room_repo,
-        hotel_repo=hotel_repo,
-        address_repo=address_repo
-    )
 
 
 @router.get("/", response_model=list[HotelOut])

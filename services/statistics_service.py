@@ -2,6 +2,10 @@ import logging
 from collections import defaultdict
 from datetime import date
 
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
+from app.database.dependencies import get_db
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.statistics_repository import StatisticsRepository
@@ -13,13 +17,11 @@ logging.basicConfig(level=logging.INFO)
 class StatisticsService:
     def __init__(
             self,
-            statistics_repo: StatisticsRepository,
-            user_repo: UserRepository,
-            booking_repo: BookingRepository
+            db: Session
     ):
-        self.repo = statistics_repo
-        self.user_repo = user_repo
-        self.booking_repo = booking_repo
+        self.repo = StatisticsRepository(db)
+        self.user_repo = UserRepository(db)
+        self.booking_repo = BookingRepository(db)
 
     def get_occupancy_by_room_type(self):
         raw_data = self.repo.get_booking_count_by_room_type()
@@ -72,3 +74,7 @@ class StatisticsService:
                 "einmalig": stats["einmalig"]
             }
         }
+
+
+def get_statistics_service(db: Session = Depends(get_db)) -> StatisticsService:
+    return StatisticsService(db=db)

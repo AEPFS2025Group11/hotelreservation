@@ -1,8 +1,10 @@
 import logging
 from datetime import date
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
 
+from app.database.dependencies import get_db
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.invoice_repository import InvoiceRepository
 from app.entities.invoice import Invoice
@@ -13,25 +15,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 class InvoiceService:
-    def __init__(self, invoice_repo: InvoiceRepository, booking_repo: BookingRepository):
-        self.invoice_repo = invoice_repo
-        self.booking_repo = booking_repo
-
-    def create(self, booking_id: int) -> InvoiceOut:
-        booking = self.booking_repo.get_by_id(booking_id)
-        if not booking:
-            raise HTTPException(status_code=404, detail="Booking not found")
-
-        if booking.invoice:
-            raise HTTPException(status_code=400, detail="Invoice already exists")
-
-        invoice = Invoice(
-            booking_id=booking.id,
-            issue_date=date.today(),
-            total_amount=booking.total_amount
-        )
-        saved = self.invoice_repo.create(invoice)
-        return InvoiceOut.model_validate(saved)
+    def __init__(self, db: Session):
+        self.invoice_repo = InvoiceRepository(db=db)
+        self.booking_repo = BookingRepository(db=db)
 
     def get_all(self) -> list[InvoiceOut]:
         logger.info("Fetching all invoices")
@@ -60,3 +46,7 @@ class InvoiceService:
         updated_invoice = self.invoice_repo.update(invoice)
         logger.info(f"Invoice ID {invoice_id} updated successfully")
         return InvoiceOut.model_validate(updated_invoice)
+
+
+def get_invoice_service(db: Session = Depends(get_db)) -> InvoiceService:
+    return InvoiceService(db=db)

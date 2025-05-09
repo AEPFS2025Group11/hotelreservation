@@ -1,6 +1,9 @@
 import logging
-from fastapi import HTTPException
 
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
+
+from app.database.dependencies import get_db
 from app.repositories.facility_repository import FacilityRepository
 from app.services.models.facility_models import FacilityIn, FacilityOut, FacilityUpdate
 
@@ -9,8 +12,8 @@ logging.basicConfig(level=logging.INFO)
 
 
 class FacilityService:
-    def __init__(self, repo: FacilityRepository):
-        self.repo = repo
+    def __init__(self, db: Session):
+        self.repo = FacilityRepository(db=db)
 
     def get_all(self) -> list[FacilityOut]:
         logger.info("Fetching all facilities")
@@ -53,3 +56,7 @@ class FacilityService:
         deleted = self.repo.delete(id_)
         logger.info(f"Facility ID {id_} deleted")
         return FacilityOut.model_validate(deleted)
+
+
+def get_facility_service(db: Session = Depends(get_db)) -> FacilityService:
+    return FacilityService(db=db)

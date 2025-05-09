@@ -2,8 +2,10 @@ import logging
 from datetime import date
 from typing import Optional
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
 
+from app.database.dependencies import get_db
 from app.repositories.address_repository import AddressRepository
 from app.repositories.hotel_repository import HotelRepository
 from app.repositories.room_repository import RoomRepository
@@ -19,13 +21,11 @@ logging.basicConfig(level=logging.INFO)
 class HotelService:
     def __init__(
             self,
-            room_repo: RoomRepository,
-            hotel_repo: HotelRepository,
-            address_repo: AddressRepository,
+            db: Session
     ):
-        self.room_repo = room_repo
-        self.hotel_repo = hotel_repo
-        self.address_repo = address_repo
+        self.room_repo = RoomRepository(db=db)
+        self.hotel_repo = HotelRepository(db=db)
+        self.address_repo = AddressRepository(db=db)
 
     def get_hotels(self, city: Optional[str] = None,
                    min_stars: Optional[int] = None,
@@ -117,3 +117,7 @@ class HotelService:
 
     def get_all_hotels(self):
         return self.hotel_repo.get_all()
+
+
+def get_hotel_service(db: Session = Depends(get_db)) -> HotelService:
+    return HotelService(db=db)

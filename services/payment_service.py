@@ -2,8 +2,12 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
 
+from app.database.dependencies import get_db
+from app.repositories.booking_repository import BookingRepository
+from app.repositories.invoice_repository import InvoiceRepository
 from app.repositories.payment_repository import PaymentRepository
 from app.services.booking_service import BookingService
 from app.entities.payment import Payment
@@ -19,19 +23,17 @@ logging.basicConfig(level=logging.INFO)
 class PaymentService:
     def __init__(
             self,
-            payment_repo: PaymentRepository,
-            invoice_service: InvoiceService,
-            booking_service: BookingService,
+            db: Session
     ):
-        self.payment_repo = payment_repo
-        self.invoice_service = invoice_service
-        self.booking_service = booking_service
+        self.payment_repo = PaymentRepository(db=db)
+        self.invoice_repo = InvoiceRepository(db=db)
+        self.booking_repo = BookingRepository(db=db)
 
     def create(self, data: PaymentIn) -> PaymentOut:
         logger.info(f"Processing payment for invoice {data.invoice_id} and booking {data.booking_id}")
 
-        invoice = self.invoice_service.get_by_id(data.invoice_id)
-        booking = self.booking_service.get_by_id(data.booking_id)
+        invoice = self.invoice_repo.get_by_id(data.invoice_id)
+        booking = self.booking_repo.get_by_id(data.booking_id)
 
         if not invoice or not booking:
             raise HTTPException(status_code=404, detail="Invoice or booking not found")
@@ -62,7 +64,7 @@ class PaymentService:
 
         if total_paid >= invoice.total_amount:
             invoice_update = InvoiceUpdate(status=InvoiceStatus.PAID)
-            self.invoice_service.update(invoice.id, invoice_update)
+            self.invoice_repo.update(invoice_update)
             logger.info(f"Invoice {invoice.id} marked as paid")
 
         return PaymentOut.model_validate(saved)
@@ -89,3 +91,7 @@ class PaymentService:
 
         logger.info(f"Payment ID {payment_id} cancelled")
         return PaymentOut.model_validate(updated)
+
+
+def get_payment_service(db: Session = Depends(get_db)) -> PaymentService:
+    return PaymentService(db=db)

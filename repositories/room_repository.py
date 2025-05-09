@@ -4,17 +4,16 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from app.database.database import SessionLocal
-from app.entities.room_type import RoomType
-from app.repositories.base_repository import BaseRepository
+from app.entities import Room
 from app.entities.booking import Booking
 from app.entities.hotel import Hotel
-from app.entities import Room
+from app.entities.room_type import RoomType
+from app.repositories.base_repository import BaseRepository
 
 
 class RoomRepository(BaseRepository):
-    def __init__(self):
-        super().__init__(SessionLocal(), Room)
+    def __init__(self, db):
+        super().__init__(db, Room)
 
     def get_filtered(self, city: Optional[str] = None, capacity: Optional[int] = None,
                 check_in: Optional[date] = None, check_out: Optional[date] = None,

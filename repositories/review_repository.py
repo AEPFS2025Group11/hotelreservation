@@ -1,14 +1,13 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import joinedload
 
-from app.database.database import SessionLocal
-from app.repositories.base_repository import BaseRepository
 from app.entities import Review, Booking, Room
+from app.repositories.base_repository import BaseRepository
 
 
 class ReviewRepository(BaseRepository):
-    def __init__(self):
-        super().__init__(SessionLocal(), Review)
+    def __init__(self, db):
+        super().__init__(db, Review)
 
     def get_by_hotel_id(self, hotel_id: int) -> list[Review]:
         return (

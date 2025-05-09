@@ -1,26 +1,15 @@
-from datetime import date
-from functools import lru_cache
-from typing import Optional
 import logging
+from datetime import date
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 
 from app.auth.dependencies import admin_only
-from app.repositories.room_repository import RoomRepository
-from app.repositories.room_type import RoomTypeRepository
 from app.services.models.room_models import RoomOut, RoomIn, RoomUpdate
-from app.services.room_service import RoomService
+from app.services.room_service import RoomService, get_room_service
 
 router = APIRouter(prefix="/api/rooms", tags=["rooms"])
 logger = logging.getLogger(__name__)
-
-
-@lru_cache()
-def get_room_service() -> RoomService:
-    logger.info("Initializing RoomService via lru_cache")
-    room_repo = RoomRepository()
-    room_type_repo = RoomTypeRepository()
-    return RoomService(room_repo=room_repo, room_type_repo=room_type_repo)
 
 
 @router.get("/", response_model=list[RoomOut])
@@ -76,6 +65,7 @@ async def update_room(
 @router.patch("/{room_id}/price", response_model=RoomOut)
 async def update_price(room_id: int, price: float, service: RoomService = Depends(get_room_service)):
     return service.update_price(room_id, price)
+
 
 @router.delete("/{room_id}", status_code=200, response_model=RoomOut)
 async def delete_room(

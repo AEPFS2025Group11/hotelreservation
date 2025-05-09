@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO)
 
 
 class BookingRepository(BaseRepository):
-    def __init__(self):
-        super().__init__(SessionLocal(), Booking)
+    def __init__(self, db):
+        super().__init__(db, Booking)
 
     def get_by_user_id(self, user_id: int) -> list[Booking]:
         logger.info(f"Fetching bookings for user_id={user_id}")

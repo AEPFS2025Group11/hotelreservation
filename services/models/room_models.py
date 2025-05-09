@@ -11,6 +11,7 @@ class RoomIn(BaseModel):
     hotel_id: int
     room_number: str
     type_id: int
+    facility_ids: list[int]
     price_per_night: float
 
     model_config = {'from_attributes': True}
@@ -32,6 +33,7 @@ class RoomOut(BaseModel):
 class RoomUpdate(BaseModel):
     room_number: str
     type_id: int
+    facility_ids: list[int]
     price_per_night: float
 
     model_config = {'from_attributes': True}

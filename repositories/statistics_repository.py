@@ -6,7 +6,7 @@ from app.entities.room_type import RoomType
 
 
 class StatisticsRepository:
-    def __init__(self):
+    def __init__(self, db):
         self.db = SessionLocal()
 
     def get_booking_count_by_room_type(self):

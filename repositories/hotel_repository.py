@@ -5,21 +5,20 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from app.database.database import SessionLocal
-from app.entities.room_type import RoomType
-from app.repositories.base_repository import BaseRepository
-from app.entities.hotel import Hotel
 from app.entities import Room
 from app.entities.address import Address
 from app.entities.booking import Booking
+from app.entities.hotel import Hotel
+from app.entities.room_type import RoomType
+from app.repositories.base_repository import BaseRepository
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
 class HotelRepository(BaseRepository):
-    def __init__(self):
-        super().__init__(SessionLocal(), Hotel)
+    def __init__(self, db):
+        super().__init__(db, Hotel)
 
     def get_filtered(
             self,

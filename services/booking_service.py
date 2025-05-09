@@ -1,11 +1,15 @@
 import logging
 from datetime import datetime, timedelta, date
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
 
+from app.database.dependencies import get_db
+from app.entities import Invoice
 from app.repositories.booking_repository import BookingRepository
 from app.entities.booking import Booking
 from app.entities.user import User
+from app.repositories.invoice_repository import InvoiceRepository
 from app.services.invoice_service import InvoiceService
 from app.services.models.booking_models import BookingOut, BookingIn, BookingUpdate
 from app.util.enums import InvoiceStatus
@@ -23,11 +27,9 @@ logging.basicConfig(level=logging.INFO)
 class BookingService:
     def __init__(
             self,
-            booking_repo: BookingRepository,
-            invoice_service: InvoiceService,
-    ):
-        self.booking_repo = booking_repo
-        self.invoice_service = invoice_service
+            db: Session):
+        self.booking_repo = BookingRepository(db=db)
+        self.invoice_repo = InvoiceRepository(db)
 
     def create(self, data: BookingIn) -> BookingOut:
         overlapping = self.booking_repo.get_overlapping_booking(
@@ -41,9 +43,17 @@ class BookingService:
 
         booking = Booking(**data.model_dump())
         saved_booking = self.booking_repo.create(booking)
-        self.invoice_service.create(saved_booking.id)
+        if not saved_booking:
+            raise HTTPException(status_code=500, detail="Booking was not created")
+        invoice = Invoice(
+            booking_id=booking.id,
+            issue_date=date.today(),
+            total_amount=booking.total_amount
+        )
+        saved_invoice = self.invoice_repo.create(invoice)
+        if not saved_invoice:
+            raise HTTPException(status_code=500, detail="Invoice was not created")
         self.award_loyalty_points(saved_booking)
-
         logger.info(f"Booking {saved_booking.id} created and invoice generated")
         return BookingOut.model_validate(saved_booking)
 
@@ -123,13 +133,13 @@ class BookingService:
             logger.info(f"Booking {booking_id} cancelled")
 
             if booking.invoice:
-                invoice = self.invoice_service.invoice_repo.get_by_booking_id(booking.id)
+                invoice = self.invoice_repo.get_by_booking_id(booking.id)
                 if not invoice:
                     logger.error(f"Invoice not found for booking {booking.id}")
                 else:
                     invoice.total_amount = 0
                     invoice.status = InvoiceStatus.CANCELLED
-                    self.invoice_service.invoice_repo.update(invoice)
+                    self.invoice_repo.update(invoice)
 
             return BookingOut.model_validate(updated_booking)
 
@@ -169,3 +179,7 @@ class BookingService:
             logger.debug(f"{len(bookings)} booking(s) found for user ID {user_id}")
 
         return [BookingOut.model_validate(b) for b in bookings]
+
+
+def get_booking_service(db: Session = Depends(get_db)) -> BookingService:
+    return BookingService(db=db)

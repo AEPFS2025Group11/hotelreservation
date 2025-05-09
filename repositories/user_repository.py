@@ -4,5 +4,5 @@ from app.entities.user import User
 
 
 class UserRepository(BaseRepository):
-    def __init__(self):
-        super().__init__(SessionLocal(), User)
+    def __init__(self, db):
+        super().__init__(db, User)

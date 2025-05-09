@@ -1,39 +1,11 @@
-from functools import lru_cache
 from typing import Optional
 
 from fastapi import APIRouter, Depends
 
-from app.repositories.booking_repository import BookingRepository
-from app.repositories.invoice_repository import InvoiceRepository
-from app.repositories.payment_repository import PaymentRepository
-from app.services import payment_service
-from app.services.booking_service import BookingService
-from app.services.invoice_service import InvoiceService
 from app.services.models.payment_models import PaymentIn, PaymentOut
-from app.services.payment_service import PaymentService
+from app.services.payment_service import PaymentService, get_payment_service
 
 router = APIRouter(prefix="/api/payments", tags=["payments"])
-
-
-@lru_cache()
-def get_payment_service() -> PaymentService:
-    payment_repo = PaymentRepository()
-
-    return PaymentService(
-        payment_repo=payment_repo,
-        invoice_service=InvoiceService(
-            invoice_repo=InvoiceRepository(),
-            booking_repo=BookingRepository(),
-        ),
-        booking_service=BookingService(
-            booking_repo=BookingRepository(),
-            invoice_service=InvoiceService(
-                booking_repo=BookingRepository(),
-                invoice_repo=InvoiceRepository(),
-            ),
-        ),
-    )
-
 
 @router.post("/", response_model=PaymentOut)
 async def create_payment(data: PaymentIn, service: PaymentService = Depends(get_payment_service)):

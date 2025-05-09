@@ -1,8 +1,10 @@
 import logging
 from datetime import datetime
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
 
+from app.database.dependencies import get_db
 from app.repositories.review_repository import ReviewRepository
 from app.entities import Review
 from app.services.models.review_models import ReviewIn, ReviewOut, ReviewUpdate
@@ -11,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class ReviewService:
-    def __init__(self, repo: ReviewRepository):
-        self.repo = repo
+    def __init__(self, db: Session):
+        self.repo = ReviewRepository(db)
 
     def create(self, data: ReviewIn) -> ReviewOut:
         logger.debug("Attempting to create review for booking %s", data.booking_id)
@@ -32,11 +34,12 @@ class ReviewService:
         logger.info("Found %d reviews for hotel %s", len(reviews), hotel_id)
         return [ReviewOut.model_validate(r) for r in reviews]
 
-    def get_by_booking_id(self, booking_id: int) -> ReviewOut:
+    def get_by_booking_id(self, booking_id: int) -> ReviewOut | None:
         logger.debug("Fetching review for booking %s", booking_id)
         review = self.repo.get_by_booking_id(booking_id)
         if not review:
             logger.warning("No review found for booking %s", booking_id)
+            return None
         return ReviewOut.model_validate(review)
 
     def update(self, review_id: int, data: ReviewUpdate) -> ReviewOut:
@@ -62,3 +65,7 @@ class ReviewService:
         if not review:
             logger.warning("Review with ID %s not found", review_id)
         return ReviewOut.model_validate(review)
+
+
+def get_review_service(db: Session = Depends(get_db)) -> ReviewService:
+    return ReviewService(db=db)

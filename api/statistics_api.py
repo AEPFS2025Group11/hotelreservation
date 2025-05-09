@@ -1,23 +1,9 @@
-from functools import lru_cache
-
 from fastapi import APIRouter, Depends
 
 from app.auth.dependencies import admin_only
-from app.repositories.booking_repository import BookingRepository
-from app.repositories.user_repository import UserRepository
-from app.repositories.statistics_repository import StatisticsRepository
-from app.services.statistics_service import StatisticsService
+from app.services.statistics_service import StatisticsService, get_statistics_service
 
 router = APIRouter(prefix="/api/statistics", tags=["statistics"])
-
-
-@lru_cache()
-def get_statistics_service() -> StatisticsService:
-    return StatisticsService(
-        statistics_repo=StatisticsRepository(),
-        user_repo=UserRepository(),
-        booking_repo=BookingRepository()
-    )
 
 
 @router.get("/occupancy-by-room-type", dependencies=[Depends(admin_only)])

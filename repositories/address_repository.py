@@ -1,5 +1,5 @@
 import logging
-from app.database.database import SessionLocal
+
 from app.entities.address import Address
 from app.repositories.base_repository import BaseRepository
 
@@ -8,8 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 class AddressRepository(BaseRepository):
-    def __init__(self):
-        db = SessionLocal()
+    def __init__(self, db):
         super().__init__(db, Address)
 
     def get_by_name(self, city: str) -> list[Address]:

@@ -1,37 +1,13 @@
 import logging
-from functools import lru_cache
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.repositories.booking_repository import BookingRepository
-from app.repositories.invoice_repository import InvoiceRepository
-from app.repositories.user_repository import UserRepository
-from app.services.booking_service import BookingService
-from app.services.invoice_service import InvoiceService
+from app.services.booking_service import BookingService, get_booking_service
 from app.services.models.booking_models import BookingOut
 from app.services.models.user_models import UserModel
-from app.services.user_service import UserService
+from app.services.user_service import UserService, get_user_service
 
 logger = logging.getLogger(__name__)
-
-
-@lru_cache()
-def get_user_service() -> UserService:
-    logger.info("Initializing UserService via lru_cache")
-    user_repo = UserRepository()
-    return UserService(user_repo=user_repo)
-
-
-@lru_cache()
-def get_booking_service() -> BookingService:
-    return BookingService(
-        booking_repo=BookingRepository(),
-        invoice_service=InvoiceService(
-            invoice_repo=InvoiceRepository(),
-            booking_repo=BookingRepository()
-        )
-    )
-
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 

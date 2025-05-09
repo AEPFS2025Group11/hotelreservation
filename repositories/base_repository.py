@@ -1,11 +1,12 @@
 import logging
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
 
 class BaseRepository:
-    def __init__(self, db, model):
+    def __init__(self, db: Session, model):
         self.db = db
         self.model = model
 
