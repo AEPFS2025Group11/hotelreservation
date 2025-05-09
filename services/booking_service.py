@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta, date
 
 from fastapi import HTTPException, Depends
+from jose.jwt import utc_now
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
@@ -78,8 +79,6 @@ class BookingService:
             logger.warning(f"Booking with ID {booking_id} not found for update")
             raise HTTPException(status_code=404, detail="Booking not found")
 
-        if data.user_id is not None:
-            booking.user_id = data.user_id
         if data.room_id is not None:
             booking.room_id = data.room_id
         if data.check_in is not None:
@@ -88,9 +87,23 @@ class BookingService:
             booking.check_out = data.check_out
         if data.is_cancelled is not None:
             booking.is_cancelled = data.is_cancelled
+            invoice = self.invoice_repo.get_by_booking_id(booking_id=booking_id)
+            if invoice:
+                if data.is_cancelled:
+                    invoice.status = InvoiceStatus.CANCELLED
+                    invoice.total_amount = 0
+                elif not data.is_cancelled:
+                    if data.check_in > date.today():
+                        invoice.status = InvoiceStatus.PENDING
+                        invoice.total_amount = data.total_amount
+                    elif data.check_in < date.today():
+                        invoice.status = InvoiceStatus.PAID
+                        invoice.total_amount = data.total_amount
+                self.invoice_repo.update(invoice)
+            else:
+                raise ValueError(f"Keine Rechnung für Buchung mit ID {booking_id} gefunden.")
         if data.total_amount is not None:
             booking.total_amount = data.total_amount
-
         updated_booking = self.booking_repo.update(booking)
         self.award_loyalty_points(updated_booking)
         logger.info(f"Booking ID {booking_id} updated successfully")

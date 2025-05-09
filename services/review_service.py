@@ -21,7 +21,7 @@ class ReviewService:
         existing = self.repo.get_by_booking_id(data.booking_id)
         if existing:
             logger.warning("A review already exists for booking %s", data.booking_id)
-            raise HTTPException(status_code=400, detail="This booking has already been reviewed.")
+            raise HTTPException(status_code=400, detail="Diese Buchung wurde bereits bewertet.")
         review = Review(**data.model_dump())
         review.created_at = datetime.now()
         saved = self.repo.create(review)

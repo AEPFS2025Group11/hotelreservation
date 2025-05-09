@@ -85,6 +85,9 @@ class RoomService:
             logger.warning(f"Room type with ID {room.type_id} not found")
             raise HTTPException(status_code=404, detail="Room type not found")
         room_entity = Room(**room.model_dump())
+        facilities = self.facility_repo.get_by_ids(room.facility_ids)
+        room_entity.facility_ids = facilities
+        print(room_entity)
         created_room = self.room_repo.create(room_entity)
         if created_room is None:
             logger.error("Room creation failed due to unknown internal error")
