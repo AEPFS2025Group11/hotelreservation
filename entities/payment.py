@@ -17,4 +17,4 @@ class Payment(Base):
     amount = Column(Float, nullable=False)
 
     booking = relationship("Booking", back_populates="payments")
-    invoice = relationship("Invoice", back_populates="payment")
+    invoice = relationship("Invoice", back_populates="payments")

@@ -15,4 +15,12 @@ class Invoice(Base):
     status = Column(SqlEnum(InvoiceStatus), nullable=False, default="pending")
 
     booking = relationship("Booking", back_populates="invoice")
-    payment = relationship("Payment", back_populates="invoice", uselist=False, cascade="all, delete-orphan")
+    payments = relationship("Payment", back_populates="invoice", cascade="all, delete-orphan")
+
+    @property
+    def amount_to_pay(self):
+        return self.total_amount - sum(payment.amount for payment in self.payments)
+
+    @property
+    def is_paid(self) -> bool:
+        return self.amount_to_pay <= 0

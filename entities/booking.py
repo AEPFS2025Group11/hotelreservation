@@ -34,3 +34,10 @@ class Booking(Base):
 
         total_paid = sum(p.amount for p in self.payments)
         return total_paid >= self.invoice.total_amount
+
+    @property
+    def has_review(self) -> bool:
+        if not self.review:
+            return False
+        else:
+            return True

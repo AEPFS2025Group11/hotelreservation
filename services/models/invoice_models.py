@@ -1,7 +1,7 @@
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel
-from datetime import date
 
 from app.util.enums import InvoiceStatus
 
@@ -11,6 +11,8 @@ class InvoiceOut(BaseModel):
     booking_id: int
     issue_date: date
     total_amount: int
+    is_paid: bool
+    amount_to_pay: float
     status: InvoiceStatus
 
     model_config = {'from_attributes': True}

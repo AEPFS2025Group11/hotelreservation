@@ -26,6 +26,7 @@ class BookingOut(BaseModel):
     check_in: date
     check_out: date
     is_cancelled: bool = False
+    has_review: bool
     is_paid: bool
     total_amount: float
 

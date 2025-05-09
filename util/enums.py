@@ -27,3 +27,4 @@ class PaymentMethod(str, Enum):
     CREDIT = "credit"
     TWINT = "twint"
     CASH = "cash"
+    PAYPAL = "paypal"
