@@ -21,3 +21,9 @@ class Gender(str, Enum):
 class Role(str, Enum):
     ADMIN = "admin"
     GUEST = "guest"
+
+
+class PaymentMethod(str, Enum):
+    CREDIT = "credit"
+    TWINT = "twint"
+    CASH = "cash"

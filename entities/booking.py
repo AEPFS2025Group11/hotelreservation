@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 
 from app.util.base import Base
+from app.util.enums import InvoiceStatus
 
 
 class Booking(Base):
@@ -25,3 +26,11 @@ class Booking(Base):
         cascade="all, delete-orphan"
     )
     review = relationship('Review', back_populates='booking', cascade='all, delete', passive_deletes=True)
+
+    @property
+    def is_paid(self) -> bool:
+        if not self.invoice or self.invoice.status != InvoiceStatus.PAID:
+            return False
+
+        total_paid = sum(p.amount for p in self.payments)
+        return total_paid >= self.invoice.total_amount

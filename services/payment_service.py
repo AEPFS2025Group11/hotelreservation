@@ -6,13 +6,10 @@ from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
+from app.entities.payment import Payment
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.invoice_repository import InvoiceRepository
 from app.repositories.payment_repository import PaymentRepository
-from app.services.booking_service import BookingService
-from app.entities.payment import Payment
-from app.services.invoice_service import InvoiceService
-from app.services.models.invoice_models import InvoiceUpdate
 from app.services.models.payment_models import PaymentIn, PaymentOut
 from app.util.enums import PaymentStatus, InvoiceStatus
 
@@ -45,7 +42,7 @@ class PaymentService:
         payments_before = self.payment_repo.get_by_invoice_id(invoice.id)
         already_paid = sum(p.amount for p in payments_before if p.status == PaymentStatus.PAID)
         if already_paid >= invoice.total_amount:
-            logger.info(f"Invoice already paid")
+            logger.info(f"Rechnung wurde bereits bezahlt")
             raise HTTPException(status_code=400, detail="Invoice already paid")
 
         payment = Payment(
@@ -63,8 +60,8 @@ class PaymentService:
         total_paid = sum(p.amount for p in payments_after if p.status == PaymentStatus.PAID)
 
         if total_paid >= invoice.total_amount:
-            invoice_update = InvoiceUpdate(status=InvoiceStatus.PAID)
-            self.invoice_repo.update(invoice_update)
+            invoice.status = InvoiceStatus.PAID
+            self.invoice_repo.update(invoice)
             logger.info(f"Invoice {invoice.id} marked as paid")
 
         return PaymentOut.model_validate(saved)
