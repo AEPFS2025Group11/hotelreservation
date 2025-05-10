@@ -30,7 +30,7 @@ class InvoiceService:
         invoice = self.invoice_repo.get_by_id(invoice_id)
         if not invoice:
             logger.warning(f"Invoice ID {invoice_id} not found")
-            raise HTTPException(status_code=404, detail="Invoice not found")
+            raise HTTPException(status_code=404, detail="Invoice konnte nicht gefunden werden.")
         return InvoiceOut.model_validate(invoice)
 
     def update(self, invoice_id: int, data: InvoiceUpdate) -> InvoiceOut:
@@ -38,7 +38,7 @@ class InvoiceService:
         invoice = self.invoice_repo.get_by_id(invoice_id)
         if not invoice:
             logger.warning(f"Invoice ID {invoice_id} not found for update")
-            raise HTTPException(status_code=404, detail="Invoice not found")
+            raise HTTPException(status_code=404, detail="Invoice konnte nicht gefunden werden.")
 
         for field, value in data.model_dump(exclude_unset=True).items():
             setattr(invoice, field, value)

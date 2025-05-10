@@ -26,7 +26,7 @@ def read_user(user_id: int, service: UserService = Depends(get_user_service)):
     user = service.get_user(user_id)
     if not user:
         logger.warning(f"User with ID {user_id} not found")
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Benutzer konnte nicht gefunden werden.")
     logger.debug(f"User found: {user.email}")
     return user
 
@@ -37,7 +37,7 @@ def get_bookings_by_user(user_id: int, service: BookingService = Depends(get_boo
     bookings = service.get_bookings_by_user_id(user_id)
     if not bookings:
         logger.warning(f"No bookings found for user with ID {user_id}")
-        raise HTTPException(status_code=404, detail="Bookings not found")
+        raise HTTPException(status_code=404, detail="Buchung konnte nicht gefunden werden.")
     logger.debug(f"{len(bookings)} bookings found for user ID {user_id}")
     return bookings
 
@@ -48,7 +48,7 @@ def update_user(user_id: int, user: UserModel, service: UserService = Depends(ge
     updated_user = service.update_user(user_id, user)
     if not updated_user:
         logger.warning(f"Update failed: User with ID {user_id} not found")
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Benutzer konnte nicht gefunden werden.")
     logger.debug(f"User {user_id} updated successfully")
     return updated_user
 
@@ -59,6 +59,6 @@ def delete_user(user_id: int, service: UserService = Depends(get_user_service)):
     deleted = service.delete_user(user_id)
     if not deleted:
         logger.warning(f"Delete failed: User with ID {user_id} not found")
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Benutzer konnte nicht gefunden werden.")
     logger.debug(f"User {user_id} deleted successfully")
     return deleted

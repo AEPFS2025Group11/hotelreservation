@@ -37,5 +37,5 @@ class ReviewRepository(BaseRepository):
             .first()
         )
         if not review:
-            raise HTTPException(status_code=404, detail="Review not found")
+            raise HTTPException(status_code=404, detail="Review konnte nicht gefunden werden.")
         return review

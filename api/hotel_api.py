@@ -45,7 +45,7 @@ async def get_hotel(
     hotel = service.get_by_id(hotel_id)
     if hotel is None:
         logger.warning(f"Hotel with ID {hotel_id} not found")
-        raise HTTPException(status_code=404, detail="Hotel not found")
+        raise HTTPException(status_code=404, detail="Hotel konnte nicht gefunden werden.")
     return hotel
 
 

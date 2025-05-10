@@ -41,7 +41,7 @@ class BookingRepository(BaseRepository):
         booking = self.get_by_id(booking_id)
         if not booking:
             logger.warning(f"Booking with ID {booking_id} not found for cancellation")
-            raise HTTPException(status_code=404, detail="Booking not found")
+            raise HTTPException(status_code=404, detail="Booking konnte nicht gefunden werden.")
 
         booking.is_cancelled = True
         self.db.commit()

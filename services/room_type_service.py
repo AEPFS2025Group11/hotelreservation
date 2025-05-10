@@ -24,7 +24,7 @@ class RoomTypeService:
         rt = self.repo.get_by_id(id_)
         if not rt:
             logger.warning(f"Room type with ID {id_} not found")
-            raise HTTPException(status_code=404, detail="Room type not found")
+            raise HTTPException(status_code=404, detail="Zimmertyp konnte nicht gefunden werden.")
         return RoomTypeOut.model_validate(rt)
 
     def create(self, data: RoomTypeIn) -> RoomTypeOut:
@@ -39,7 +39,7 @@ class RoomTypeService:
         entity = self.repo.get_by_id(id_)
         if not entity:
             logger.warning(f"Room type with ID {id_} not found for update")
-            raise HTTPException(status_code=404, detail="Room type not found")
+            raise HTTPException(status_code=404, detail="Zimmertyp konnte nicht gefunden werden.")
 
         if data.description is not None:
             entity.description = data.description

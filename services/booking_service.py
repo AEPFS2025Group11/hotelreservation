@@ -40,12 +40,13 @@ class BookingService:
         )
 
         if overlapping:
-            raise HTTPException(status_code=400, detail="Room is already booked in that time range")
+            pass
+        raise HTTPException(status_code=400, detail="Zimmer ist während dieser Zeitspanne bereits gebucht.")
 
         booking = Booking(**data.model_dump())
         saved_booking = self.booking_repo.create(booking)
         if not saved_booking:
-            raise HTTPException(status_code=500, detail="Booking was not created")
+            raise HTTPException(status_code=500, detail="Booking konnte nicht erstellt werden.")
         invoice = Invoice(
             booking_id=booking.id,
             issue_date=date.today(),
@@ -53,7 +54,7 @@ class BookingService:
         )
         saved_invoice = self.invoice_repo.create(invoice)
         if not saved_invoice:
-            raise HTTPException(status_code=500, detail="Invoice was not created")
+            raise HTTPException(status_code=500, detail="Invoice konnte nicht erstellt werden.")
         self.award_loyalty_points(saved_booking)
         logger.info(f"Booking {saved_booking.id} created and invoice generated")
         return BookingOut.model_validate(saved_booking)
@@ -69,7 +70,7 @@ class BookingService:
         booking = self.booking_repo.get_by_id(booking_id)
         if booking is None:
             logger.warning(f"Booking with ID {booking_id} not found")
-            raise HTTPException(status_code=404, detail="Booking not found")
+            raise HTTPException(status_code=404, detail="Booking konnte nicht gefunden werden.")
         return BookingOut.model_validate(booking)
 
     def update(self, booking_id: int, data: BookingUpdate) -> BookingOut:
@@ -77,7 +78,7 @@ class BookingService:
         booking = self.booking_repo.get_by_id(booking_id)
         if booking is None:
             logger.warning(f"Booking with ID {booking_id} not found for update")
-            raise HTTPException(status_code=404, detail="Booking not found")
+            raise HTTPException(status_code=404, detail="Booking konnte nicht gefunden werden.")
 
         if data.room_id is not None:
             booking.room_id = data.room_id
@@ -114,7 +115,7 @@ class BookingService:
         booking = self.booking_repo.get_by_id(booking_id)
         if booking is None:
             logger.warning(f"Booking with ID {booking_id} not found for deletion")
-            raise HTTPException(status_code=404, detail="Booking not found")
+            raise HTTPException(status_code=404, detail="Booking konnte nicht gefunden werden.")
 
         deleted = self.booking_repo.delete(booking_id)
         logger.info(f"Booking ID {booking_id} deleted successfully")
@@ -124,20 +125,22 @@ class BookingService:
         booking = self.booking_repo.get_by_id(booking_id)
         if not booking:
             logger.warning(f"Booking {booking_id} not found for cancellation")
-            raise HTTPException(status_code=404, detail="Booking not found")
+            raise HTTPException(status_code=404, detail="Booking konnte nicht gefunden werden.")
 
         if booking.is_cancelled:
             logger.info(f"Booking {booking_id} is already cancelled")
-            raise HTTPException(status_code=400, detail="Booking is already cancelled")
+            raise HTTPException(status_code=400, detail="Booking ist bereits storniert.")
 
         now = datetime.now().date()
         if now >= booking.check_in:
             logger.warning(f"Booking {booking_id} cannot be cancelled – check-in already started or in the past")
-            raise HTTPException(status_code=400, detail="Cannot cancel booking that has already started or passed")
+            raise HTTPException(status_code=400,
+                                detail="Vergangene oder laufende Buchungen können nicht storniert werden.")
 
         if booking.check_in - timedelta(days=1) <= now:
             logger.warning(f"Booking {booking_id} cannot be cancelled – less than 24h before check-in")
-            raise HTTPException(status_code=400, detail="Cancellation not allowed less than 24h before check-in")
+            raise HTTPException(status_code=400,
+                                detail="Stornierung innerhalb der letzten 24h vor dem Check-in sind nicht erlaubt.")
 
         try:
             booking.is_cancelled = True

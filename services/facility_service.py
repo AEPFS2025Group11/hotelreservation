@@ -25,7 +25,7 @@ class FacilityService:
         facility = self.repo.get_by_id(id_)
         if not facility:
             logger.warning(f"Facility with ID {id_} not found")
-            raise HTTPException(status_code=404, detail="Facility not found")
+            raise HTTPException(status_code=404, detail="Facility konnte nicht gefunden werden.")
         return FacilityOut.model_validate(facility)
 
     def create(self, data: FacilityIn) -> FacilityOut:
@@ -40,7 +40,7 @@ class FacilityService:
         facility = self.repo.get_by_id(id_)
         if not facility:
             logger.warning(f"Facility ID {id_} not found for update")
-            raise HTTPException(status_code=404, detail="Facility not found")
+            raise HTTPException(status_code=404, detail="Facility konnte nicht gefunden werden.")
 
         if data.facility_name is not None:
             facility.facility_name = data.facility_name

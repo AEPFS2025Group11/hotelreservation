@@ -19,13 +19,13 @@ def login(data: LoginUser):
 
     if not user:
         print("❌ Kein Benutzer mit dieser E-Mail gefunden:", data.email)
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Email und Passwort stimmen nicht überein.")
 
     print("✅ Benutzer gefunden:", user.email)
 
     if not verify_password(data.password, user.hashed_password):
         print("❌ Passwort stimmt nicht")
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Email und Passwort stimmen nicht überein.")
 
     print("✅ Passwort korrekt")
     token = create_access_token(user.id, user.role)
@@ -42,7 +42,7 @@ def register(data: RegisterUser):
 
     existing_user = db.query(User).filter_by(email=data.email).first()
     if existing_user:
-        raise HTTPException(status_code=400, detail="Email bereits registriert")
+        raise HTTPException(status_code=400, detail="Email ist bereits registriert.")
 
     new_user = User(
         email=data.email,

@@ -41,11 +41,11 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 
     user_id = payload.get("sub")
     if not user_id:
-        raise HTTPException(status_code=401, detail="Token missing user ID")
+        raise HTTPException(status_code=401, detail="Token fehlt für User ID.")
 
     db = SessionLocal()
     user = db.query(User).filter(User.id == int(user_id)).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="User konnte nicht gefunden werden.")
 
     return user

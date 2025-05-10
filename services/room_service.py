@@ -32,12 +32,12 @@ class RoomService:
                     f"check_in={check_in}, check_out={check_out}")
 
         if check_in and check_out and check_in > check_out:
-            raise HTTPException(status_code=400, detail="Check-out date must be after check-in date")
+            raise HTTPException(status_code=400, detail="Check-Out Datum muss nach dem Check-In Datum liegen.")
 
         rooms = self.room_repo.get_filtered(city, capacity, check_in, check_out)
 
         if not rooms:
-            raise HTTPException(status_code=404, detail="No rooms found")
+            raise HTTPException(status_code=404, detail="Keine Zimmer gefunden.")
 
         room_dtos = []
         nights = (check_out - check_in).days if check_in and check_out else None
@@ -63,7 +63,7 @@ class RoomService:
         room = self.room_repo.get_by_id(room_id)
         if room is None:
             logger.warning(f"Room with ID {room_id} not found")
-            raise HTTPException(status_code=404, detail=f"Room with id {room_id} not found")
+            raise HTTPException(status_code=404, detail=f"Zimmer mit ID {room_id} konnte nicht gefunden werden.")
 
         room_dto = RoomOut.model_validate(room)
 
@@ -83,7 +83,7 @@ class RoomService:
         room_type = self.room_type_repo.get_by_id(room.type_id)
         if room_type is None:
             logger.warning(f"Room type with ID {room.type_id} not found")
-            raise HTTPException(status_code=404, detail="Room type not found")
+            raise HTTPException(status_code=404, detail="Zimmer Typ konnte nicht gefunden werden.")
         facilities = self.facility_repo.get_by_ids(room.facility_ids)
 
         room_entity = Room(
@@ -97,7 +97,7 @@ class RoomService:
         created_room = self.room_repo.create(room_entity)
         if created_room is None:
             logger.error("Room creation failed due to unknown internal error")
-            raise HTTPException(status_code=500, detail="An error occurred while creating the room")
+            raise HTTPException(status_code=500, detail="Fehler beim erstellen des Raumes.")
         logger.info(f"Room created with ID {created_room.id}")
         return RoomOut.model_validate(created_room)
 
@@ -106,7 +106,7 @@ class RoomService:
         room_entity = self.room_repo.get_by_id(room_id)
         if room_entity is None:
             logger.warning(f"Room with ID {room_id} not found for update")
-            raise HTTPException(status_code=404, detail="Room not found")
+            raise HTTPException(status_code=404, detail="Zimmer konnnte nicht gefunden werden.")
 
         if data.room_number is not None:
             room_entity.room_number = data.room_number
@@ -119,7 +119,7 @@ class RoomService:
             facilities_in_same_session = [self.room_repo.db.merge(f) for f in facilities]
             room_entity.facilities = facilities_in_same_session
             if len(facilities) != len(data.facility_ids):
-                raise HTTPException(status_code=400, detail="One or more facilities not found")
+                raise HTTPException(status_code=400, detail="Ausstattung konnte nicht gefunden werden.")
             room_entity.facilities = facilities
 
         updated_room = self.room_repo.update(room_entity)
@@ -131,7 +131,7 @@ class RoomService:
         room = self.room_repo.get_by_id(room_id)
         if room is None:
             logger.warning(f"Room with ID {room_id} not found for deletion")
-            raise HTTPException(status_code=404, detail=f"Room with id {room_id} not found")
+            raise HTTPException(status_code=404, detail=f"Zimmer mit ID {room_id} konnte nicht gefunden werden.")
         deleted_room = self.room_repo.delete(room_id)
         logger.info(f"Room with ID {room_id} successfully deleted")
         return RoomOut.model_validate(deleted_room)
@@ -139,7 +139,7 @@ class RoomService:
     def update_price(self, room_id: int, new_price: float) -> RoomOut:
         room = self.room_repo.get_by_id(room_id)
         if not room:
-            raise HTTPException(status_code=404, detail="Room not found")
+            raise HTTPException(status_code=404, detail="Zimmer konnte nicht gefunden werden.")
         room.price_per_night = new_price
         return RoomOut.model_validate(self.room_repo.update(room))
 

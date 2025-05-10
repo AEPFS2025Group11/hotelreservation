@@ -33,17 +33,17 @@ class PaymentService:
         booking = self.booking_repo.get_by_id(data.booking_id)
 
         if not invoice or not booking:
-            raise HTTPException(status_code=404, detail="Invoice or booking not found")
+            raise HTTPException(status_code=404, detail="Invoice oder Buchung konnte nicht gefunden werden.")
 
         if booking.is_cancelled:
             logger.warning(f"Payment rejected: Booking {booking.id} is cancelled")
-            raise HTTPException(status_code=400, detail="Cannot pay for a cancelled booking")
+            raise HTTPException(status_code=400, detail="Stornierte Buchung kann nicht bezahlt werden.")
 
         payments_before = self.payment_repo.get_by_invoice_id(invoice.id)
         already_paid = sum(p.amount for p in payments_before if p.status == PaymentStatus.PAID)
         if already_paid >= invoice.total_amount:
             logger.info(f"Rechnung wurde bereits bezahlt")
-            raise HTTPException(status_code=400, detail="Invoice already paid")
+            raise HTTPException(status_code=400, detail="Rechnung bereits bezahlt.")
 
         payment = Payment(
             booking_id=data.booking_id,
@@ -80,7 +80,7 @@ class PaymentService:
         payment = self.payment_repo.get_by_id(payment_id)
 
         if not payment:
-            raise HTTPException(status_code=404, detail="Payment not found")
+            raise HTTPException(status_code=404, detail="Zahlung konnte nicht gefunden werden.")
 
         payment.status = "cancelled"
         payment.paid_at = None

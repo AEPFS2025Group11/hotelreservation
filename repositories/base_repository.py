@@ -19,7 +19,7 @@ class BaseRepository:
         obj = self.db.query(self.model).get(id_)
         if obj is None:
             logger.warning(f"{self.model.__name__} with ID {id_} not found")
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
+            raise HTTPException(status_code=404, detail=f"{self.model.__name__} konnte nicht gefunden werden.")
         return obj
 
     def create(self, entity):
@@ -42,7 +42,7 @@ class BaseRepository:
         obj = self.db.query(self.model).get(id_)
         if not obj:
             logger.warning(f"{self.model.__name__} with ID {id_} not found")
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
+            raise HTTPException(status_code=404, detail=f"{self.model.__name__} konnte nicht gefunden werden.")
         self.db.delete(obj)
         self.db.commit()
         return obj

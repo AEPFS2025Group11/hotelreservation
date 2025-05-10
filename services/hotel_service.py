@@ -36,7 +36,7 @@ class HotelService:
                     f"capacity={capacity}, check_in={check_in}, check_out={check_out}")
         if check_in and check_out and check_in > check_out:
             logger.warning("Invalid date range: check_out < check_in")
-            raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
+            raise HTTPException(status_code=400, detail="Check-Out muss nach dem Check-In liegen")
 
         hotels = self.hotel_repo.get_filtered(city, min_stars, capacity, check_in, check_out)
         logger.info(f"{len(hotels)} hotel(s) found")
@@ -47,7 +47,7 @@ class HotelService:
         hotel = self.hotel_repo.get_by_id(hotel_id)
         if not hotel:
             logger.warning(f"Hotel ID {hotel_id} not found")
-            raise HTTPException(status_code=404, detail="Hotel not found")
+            raise HTTPException(status_code=404, detail="Hotel konnte nicht gefunden werden.")
         return HotelOut.model_validate(hotel)
 
     def create(self, hotel_data: HotelIn) -> HotelOut:
@@ -66,7 +66,7 @@ class HotelService:
         hotel = self.hotel_repo.get_by_id(hotel_id)
         if not hotel:
             logger.warning(f"Hotel ID {hotel_id} not found for update")
-            raise HTTPException(status_code=404, detail="Hotel not found")
+            raise HTTPException(status_code=404, detail="Hotel konnte nicht gefunden werden.")
 
         if data.name is not None:
             hotel.name = data.name
@@ -82,7 +82,7 @@ class HotelService:
         hotel = self.hotel_repo.get_by_id(hotel_id)
         if not hotel:
             logger.warning(f"Hotel ID {hotel_id} not found for deletion")
-            raise HTTPException(status_code=404, detail="Hotel not found")
+            raise HTTPException(status_code=404, detail="Hotel konnte nicht gefunden werden.")
 
         deleted = self.hotel_repo.delete(hotel_id)
         logger.info(f"Hotel ID {hotel_id} deleted")
@@ -99,11 +99,11 @@ class HotelService:
         hotel = self.hotel_repo.get_by_id(hotel_id)
         if not hotel:
             logger.warning(f"Hotel ID {hotel_id} not found when fetching rooms")
-            raise HTTPException(status_code=404, detail="Hotel not found")
+            raise HTTPException(status_code=404, detail="Hotel konnte nicht gefunden werden.")
 
         if check_in and check_out and check_in > check_out:
             logger.warning("Invalid date range for room search")
-            raise HTTPException(status_code=400, detail="Check out must be greater than check_in")
+            raise HTTPException(status_code=400, detail="Check-Out muss nach dem Check-In liegen.")
 
         rooms = self.room_repo.get_by_hotel_id(hotel_id, capacity, check_in, check_out)
         logger.info(f"{len(rooms)} room(s) found for hotel ID {hotel_id}")
