@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.orm import relationship
 
 from app.util.base import Base
@@ -14,6 +14,8 @@ class Address(Base):
     street = Column(String, nullable=False, index=True)
     city = Column(String, nullable=False, index=True)
     zip_code = Column(String, nullable=False, index=True)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
 
     hotel = relationship("Hotel", back_populates="address", uselist=False)
 

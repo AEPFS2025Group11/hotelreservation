@@ -11,10 +11,12 @@ CREATE TABLE hotel
 CREATE TABLE address
 (
     -- Author: AEP
-    id       INTEGER PRIMARY KEY,
-    street   TEXT NOT NULL,
-    city     TEXT NOT NULL,
-    zip_code TEXT
+    id        INTEGER PRIMARY KEY,
+    street    TEXT  NOT NULL,
+    city      TEXT  NOT NULL,
+    zip_code  TEXT,
+    latitude  FLOAT NOT NULL,
+    longitude FLOAT NOT NULL
 );
 
 
@@ -87,11 +89,11 @@ CREATE TABLE room_facility
 
 CREATE TABLE review
 (
-    id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
     booking_id INTEGER NOT NULL,
-    created_at DATE NOT NULL,
-    rating  INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    comment TEXT,
+    created_at DATE    NOT NULL,
+    rating     INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment    TEXT,
 
     FOREIGN KEY (booking_id) REFERENCES booking (id) ON DELETE CASCADE
 );
@@ -129,22 +131,23 @@ CREATE TABLE user
     FOREIGN KEY (address_id) REFERENCES address (id) ON DELETE SET NULL
 );
 
-INSERT INTO address (id, street, city, zip_code)
-VALUES (1, 'Bahnhofstrasse 1', 'Zürich', '8001'),
-       (2, 'Rue du Rhône 42', 'Genève', '1204'),
-       (3, 'Pilatusstrasse 15', 'Luzern', '6003'),
-       (4, 'Marktgasse 59', 'Bern', '3011'),
-       (5, 'Freiestrasse 10', 'Basel', '4051'),
-       (6, 'Seestrasse 18', 'Zürich', '8002'),
-       (7, 'Avenue de la Gare 12', 'Lausanne', '1003'),
-       (8, 'Kasernenstrasse 25', 'Zug', '6300'),
-       (9, 'Dorfstrasse 7', 'St. Moritz', '7500'),
-       (10, 'Via San Gottardo 15', 'Lugano', '6900'),
-       (11, 'Bahnhofplatz 2', 'Winterthur', '8400'),
-       (12, 'Poststrasse 3', 'Chur', '7000'),
-       (13, 'Schulhausstrasse 9', 'St. Gallen', '9000'),
-       (14, 'Rue de Lausanne 35', 'Neuchâtel', '2000'),
-       (15, 'Hauptstrasse 66', 'Thun', '3600');
+INSERT INTO address (id, street, city, zip_code, latitude, longitude)
+VALUES (1, 'Bahnhofstrasse 1', 'Zürich', '8001', 47.3672965, 8.5398712),
+       (2, 'Rue du Rhône 42', 'Genève', '1204', 46.2041891, 6.1470323),
+       (3, 'Pilatusstrasse 15', 'Luzern', '6003', 47.0489776, 8.3067156),
+       (4, 'Marktgasse 59', 'Bern', '3011', 46.9480308, 7.4444615),
+       (5, 'Freiestrasse 10', 'Basel', '4051', 47.5573507, 7.5887005),
+       (6, 'Seestrasse 18', 'Zürich', '8002', 47.3334169, 8.543374),
+       (7, 'Avenue de la Gare 12', 'Lausanne', '1003', 46.517212, 6.6348053),
+       (8, 'Kasernenstrasse 25', 'Zürich', '8004', 47.3744475, 8.532174),
+       (9, 'Via Tegiatscha 17', 'St. Moritz', '7500', 46.4859092, 9.8373648),
+       (10, 'Via San Gottardo 15', 'Lugano', '6900', 46.0085741, 8.949269),
+       (11, 'Bahnhofplatz 2', 'Winterthur', '8400', 47.4989681, 8.7242451),
+       (12, 'Poststrasse 3', 'Chur', '7000', 46.8503409, 9.5322316),
+       (13, 'Schulhausstrasse 9', 'St. Gallen', '9000', 47.3441839, 9.5233077),
+       (14, 'Rue de Lausanne 35', 'Neuchâtel', '2000', 47.0590718, 6.7501532),
+       (15, 'Hauptstrasse 66', 'Thun', '3600', 46.7195108, 7.5439082);
+
 
 INSERT INTO hotel (id, name, stars, address_id)
 VALUES (1, 'Hotel Baur au Lac', 5, 1),

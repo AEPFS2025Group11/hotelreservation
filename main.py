@@ -6,7 +6,7 @@ from sqlalchemy import event, Engine
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api import address_api, hotel_api, room_api, booking_api, room_type_api, facility_api, invoice_api, \
-    review_api, payment_api, statistics_api, user_api
+    review_api, payment_api, statistics_api, user_api, map_api
 from app.auth import auth_api
 
 logging.basicConfig(
@@ -48,6 +48,7 @@ app.include_router(review_api.router)
 app.include_router(payment_api.router)
 app.include_router(statistics_api.router)
 app.include_router(auth_api.router)
+app.include_router(map_api.router)
 
 
 @app.get("/")

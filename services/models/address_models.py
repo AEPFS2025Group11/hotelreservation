@@ -14,5 +14,7 @@ class AddressOut(AddressIn):
     street: str
     city: str
     zip_code: str
+    latitude: float
+    longitude: float
 
     model_config = {'from_attributes': True}
