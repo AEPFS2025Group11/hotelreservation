@@ -39,6 +39,9 @@ class BookingService:
         self.room_repo = RoomRepository(db=db)
 
     def create(self, booking: BookingIn) -> BookingOut:
+        now = date.today()
+        if booking.check_in <= now and booking.check_out <= now:
+            raise HTTPException(status_code=500, detail="Die Zeitspanne darf nicht in der Vergangenheit liegen.")
         self._ensure_availability(booking)
         user = self._get_user(booking)
         room = self._get_room(booking)
