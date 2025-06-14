@@ -581,7 +581,11 @@ Verwendete Methode:
 
 ### US2:
 
-TODO
+http://localhost:5049/api/users/4/bookings
+
+Verwendete Methode:
+
+- get_bookings_by_user()
 
 ### US3:
 
