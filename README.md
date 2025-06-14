@@ -1,7 +1,7 @@
 # 🏨 HotelReservation
 
-Dieses Repository wird im Rahmen des Moduls **"FS25 Anwendungsentwicklung mit Python"** (Gruppe A & B) von der Gruppe *
-*B-team11** verwendet.
+Dieses Repository wird im Rahmen des Moduls **"FS25 Anwendungsentwicklung mit Python"** von Denis Vögeli verwendet. Alle
+User Stories wurden ausschliesslich durch ihn umgesetzt.
 
 ---
 
@@ -13,7 +13,7 @@ Nachfolgende Schritte sind nötig um die Web-Applikation starten zu können.
 
 Im Frontend wurde das Angular Framework eingesetzt.
 
-#### Frontend klonen
+#### 1. Frontend klonen
 
 Öffne die git bash und klone das Repository mittels SSH:
 
@@ -21,15 +21,20 @@ Im Frontend wurde das Angular Framework eingesetzt.
 git clone git@github.com:AEPFS2025Group11/hotelreservation_frontend.git
 ```
 
-#### Abhängigkeiten installieren
+#### 2. IDE starten
 
-Stelle sicher, dass npm installiert ist und führe folgenden Command aus:
+Starte eine beliebige IDE und öffne das Projekt. Bei der Umsetzung des Frontends wurde IntelliJ verwendet.
+
+#### 3. Abhängigkeiten installieren
+
+Stelle sicher, dass npm installiert ist (ansonsten befolge
+diese [Anleitung](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)) und führe folgenden Command aus:
 
 ```bash
 npm ci
 ```
 
-#### Frontend starten
+#### 4. Frontend starten
 
 Das Frontend kannst du mit folgendem Command starten:
 
@@ -43,7 +48,7 @@ Hinweis: Um die CORS-Policy im Backend umgehen zu können wird manuell ein Proxy
 
 Das Backend wurde mittels FastAPI implementiert und basiert auf der Programmiersprache Python.
 
-#### Backend klonen
+#### 1. Backend klonen
 
 Klone das Backend via git bash und SSH:
 
@@ -51,7 +56,11 @@ Klone das Backend via git bash und SSH:
 git clone git@github.com:AEPFS2025Group11/hotelreservation_frontend.git
 ```
 
-#### Abhängigkeiten installieren
+#### 2. IDE starten
+
+Starte eine beliebige IDE und öffne das Projekt. Bei der Umsetzung des Backends wurde PyCharm verwendet.
+
+#### 3. Abhängigkeiten installieren
 
 Installiere die notwendigen libraries und Abhängigkeiten:
 
@@ -59,7 +68,7 @@ Installiere die notwendigen libraries und Abhängigkeiten:
 pip install -r path/to/requirements.txt
 ```
 
-#### Backend starten
+#### 4. Backend starten
 
 Das Backend kannst du mit folgendem Command starten:
 
@@ -76,7 +85,7 @@ REST-Schnittstelle des Backends. Möchte man das Backend via GUI testen, müssen
 sein.
 
 In der Aufgabenstellung wurden zwei verschiedene Rollen identifiziert und in der User Datenbank angelegt. Diese Rollen
-haben jeweils unterschiedliche User Stories.
+decken jeweils unterschiedliche User Stories ab.
 
 ### Admin
 
@@ -132,7 +141,7 @@ Folgende API's sind zum Teil geschützt und nur durch den Admin Account ansprech
 
 Hint: Die geschützen Routen sind erkennbar am '/admin' am Ende der Route.
 
-#### Teseten als User
+#### Testen als User
 
 Gleiches Vorgehen wie beim Admin User nur kann die Email mit einer beliebigen Email aus der Datenbank getauscht werden.
 Das Passwort ist dasselbe.
@@ -145,6 +154,8 @@ Alternativ kann via Registrierungs-Formular ein neuer User erstellt werden.
 |--------------------------|----------|-------|
 | admin                    | asdf     | admin |
 | any user from table user | asdf     | user  |  
+
+Hint: Das Passwort ist in der Datenbank mit HS256 gehasht. Auf ein Salting wurde verzichtet.
 
 ---
 
@@ -181,20 +192,20 @@ In diesem Kapitel werden die grundlegenden **Software- und Architekturentscheidu
 
 ---
 
-# 🏗️ Backend Architektur
+## 🏗️ Backend Architektur
 
 Dieses Dokument beschreibt die Architektur des Backend-Systems, basierend auf einer N-Tier Architektur mit FastAPI,
 SQLAlchemy und weiteren unterstützenden Libraries.
 
 ---
 
-## 🔄 N-Tier Architektur
+### 🔄 N-Tier Architektur
 
 Die Anwendung ist in klar getrennte Schichten unterteilt, um Wartbarkeit, Testbarkeit und Skalierbarkeit zu
 gewährleisten. Die Schichten kommunizieren jeweils von aussen nach innen und haben kein Kenntnis über vorherige
 Schichten.
 
-#### 📁 Projektstruktur
+### 📁 Projektstruktur
 
 ```text
 backend/
@@ -214,13 +225,13 @@ backend/
 └── README.md             # Projektbeschreibung
 ```
 
-### 📍 API (Application Programming Interface)
+#### 📍 API (Application Programming Interface)
 
 - Definiert die HTTP-Endpunkte (REST).
 - Handhabt eingehende Anfragen und sendet Antworten.
 - Nutzt Pydantic-Modelle zur Validierung und Serialisierung.
 
-### ⚙️ Services
+#### ⚙️ Services
 
 - Enthält die zentrale Geschäftslogik.
 - Verarbeitet validierte Daten aus der API-Schicht.
@@ -231,13 +242,13 @@ backend/
 - Repräsentieren strukturierte Daten, die zwischen Schichten ausgetauscht werden.
 - Basieren auf Pydantic für automatische Validierung und Typsicherheit.
 
-### 🗃️ Repositories
+#### 🗃️ Repositories
 
 - Zuständig für den Datenzugriff (CRUD-Operationen).
 - Verwenden SQLAlchemy für ORM-Funktionalität.
 - Trennen Persistenzlogik von der Geschäftslogik.
 
-### 🧬 Entities
+#### 🧬 Entities
 
 - Datenbankmodelle, die mit Tabellenstrukturen korrespondieren.
 - Definiert mithilfe von SQLAlchemy ORM.
@@ -398,6 +409,8 @@ app/main.
 
 ## Login via JWT
 
+Das Login erfolgt über JWT (JSON Web Tokens) Standard.
+
 ### Passwort Hashing
 
 ![img_3.png](img_3.png)
@@ -415,3 +428,247 @@ app/util/jwt.py
 ![img_5.png](img_5.png)
 
 app/auth/dependencies.py
+
+# User Stories «Hotelreservierungssystem»
+
+Nachfolgend alle umgesetzten User Stories und die Referenzen auf den entsprechenden Source Code.
+
+## Minimale User Stories
+
+Dieser Abschnitt enthält eine Liste von minimalen und optionalen User Stories, die im
+Rahmen dieser Projektarbeit implementiert werden sollten.
+
+--> Es wurden alle User Stories umgesetzt
+
+### US1:
+
+http://localhost:5049/api/hotels/
+
+Verwendete Methode:
+
+- get_hotels()
+
+Mit folgenden Query Params können die Hotels gefiltert werden:
+
+### US2:
+
+http://localhost:5049/api/rooms/
+
+Verwendete Methode:
+
+- get_rooms()
+
+Mit folgenden Query Params können die Zimmer gefiltert werden:
+
+### US3:
+
+http://localhost:5049/api/hotels/
+
+Verwendete Methode:
+
+- create_hotel()
+- update_hotel()
+- delete_hotel()
+
+### US4:
+
+http://localhost:5049/api/bookings/
+
+Verwendete Methode:
+
+- create_booking()
+
+### US5:
+
+http://localhost:5049/api/bookings/
+
+Verwendete Methode:
+
+- create_booking()
+
+In nachfolgendem Codeausschnitt ist ersichtlich, dass die Rechnung beim erstellen einer Buchung erstellt wird.
+
+````python
+    def create(self, booking: BookingIn) -> BookingOut:
+   self._ensure_availability(booking)
+   user = self._get_user(booking)
+   room = self._get_room(booking)
+   hotel = self._get_hotel(room.hotel_id)
+   booking = Booking(**booking.model_dump())
+   saved_booking = self.booking_repo.create(booking)
+   if not saved_booking:
+      raise HTTPException(status_code=500, detail="Booking konnte nicht erstellt werden.")
+   self._generate_invoice(booking=saved_booking)
+   self._award_loyalty_points(saved_booking)
+   logger.info(f"Booking {saved_booking.id} created and invoice generated")
+   try:
+      send_booking_confirmation(
+         to_email=user.email,
+         guest_name=user.first_name,
+         hotel_name=hotel.name,
+         booking_id=saved_booking.id,
+         check_in=saved_booking.check_in,
+         check_out=saved_booking.check_out,
+         room_type=room.type.description,
+      )
+   except Exception as e:
+      logger.warning(f"Fehler beim Senden der Buchungsbestätigung: {e}")
+   return BookingOut.model_validate(saved_booking)
+````
+
+### US6:
+
+http://localhost:5049/api/bookings/
+
+Verwendete Methode:
+
+- cancel_booking()
+
+### US7:
+
+Pfad zur ausgelagerten Hilfsmethode für das Berechnen des dynamischen Preises:
+
+app/util/dynamic_pricing.py
+
+### US8:
+
+http://localhost:5049/api/bookings/
+
+Verwendete Methode:
+
+- get_bookings()
+
+Hint: Das GET Command auf die base url dieses Controllers ist ausschliesslich dem Admin user vorbehalten.
+
+### US9:
+
+http://localhost:5049/api/rooms/admin/
+
+Verwendete Methode:
+
+- get_rooms()
+
+### US10:
+
+http://localhost:5049/api/rooms/admin/
+
+Verwendete Methode:
+
+- create_room()
+- update_room()
+- delete_room()
+- update_price() PATCH
+
+## User Stories mit DB-Schemaänderung
+
+Die folgenden User Stories erfordern eine Änderung des Datenbankschemas, z.B. das
+Hinzufügen neuer Tabellen, die Definition neuer Beziehungen und die Generierung
+neuer Daten. Implementiert **mindestens zwei** der folgenden User Stories oder fügt
+eure eigenen User Stories hinzu, so dass ihr mindestens eine neue Tabelle, eine
+entsprechende Beziehung und Daten hinzufügen müsst.
+
+--> Alle User Stories wurden umgesetzt
+
+### US1:
+
+http://localhost:5049/api/bookings/
+
+Verwendete Methode:
+
+- create_booking()
+- update_booking()
+- delete_booking()
+
+### US2:
+
+TODO
+
+### US3:
+
+http://localhost:5049/api/reviews/
+
+Verwendete Methode:
+
+- add_review()
+- get_review_by_id()
+- get_review_by_booking_id()
+- update_review()
+- delete_review()
+
+### US4:
+
+http://localhost:5049/api/reviews/
+
+Verwendete Methode:
+
+- get_reviews_by_hotel_id()
+
+### US5:
+
+http://localhost:5049/api/bookings/
+
+Verwendete Methode:
+
+- create_booking()
+
+### US6:
+
+http://localhost:5049/api/payment/
+
+Verwendete Methode:
+
+- create_payment()
+
+## User Stories mit Datenvisualisierung
+
+In den folgenden User Stories geht es um die Visualisierung von Daten mit dem
+Deepnote-Block «Charts» (https://deepnote.com/docs/chart-blocks). Man muss die
+Ergebnisse einer SQL-Abfrage in einem «Dataframe» speichern und eine geeignete
+Visualisierung auswählen. Wählt eine der folgenden User Stories oder definiert eine
+eigene User Story, in der ihr Daten mit dem «Charts»-Block visualisieren könnt. Ihr
+könnt euch an einer einfachen Anleitung orientieren, um die passende Visualisierung zu
+wählen, z.B. https://www.atlassian.com/data/charts/how-to-choose-pie-chart-vs-bar
+chart .
+
+--> Alle User Stories wurden umgesetzt
+
+### US1:
+
+http://localhost:5049/api/statistics/occupancy-by-room-type/
+
+Verwendete Methode:
+
+- occupancy_by_room_type()
+
+### US2:
+
+http://localhost:5049/api/statistics/demographics/
+
+Verwendete Methode:
+
+- get_demographics()
+
+## Optionale User Stories
+
+Die Umsetzung der folgenden User Stories erfordert zusätzliche Untersuchungen oder
+Selbststudium, z. B. Dateiverarbeitung, Bibliotheksintegration oder andere
+fortgeschrittene Konzepte. Wenn Ihr Euch selbst herausfordern wollt, wählt aus diesen
+User Stories, aber erst nachdem Ihr die minimalen User Stories implementiert habt!
+
+--> US3 und US4 wurden umgesetzt
+
+### US3:
+
+http://localhost:5049/api/nearby-places/
+
+Verwendete Methode:
+
+- get_nearby_places()
+
+### US4:
+
+Pfad zur Methode für die Erstellung einer Buchungsbestätigung:
+
+app/util/booking_confirmation.py
+
+
