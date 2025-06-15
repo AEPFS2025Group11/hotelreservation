@@ -1,11 +1,11 @@
 import logging
 from datetime import date
-from typing import Optional
+from typing import Optional, Type
 
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from app.entities import Room
+from app.entities import Room, Hotel
 from app.entities.address import Address
 from app.entities.booking import Booking
 from app.entities.hotel import Hotel
@@ -29,7 +29,7 @@ class HotelRepository(BaseRepository):
             check_out: Optional[date] = None,
             limit: Optional[int] = None,
             offset: Optional[int] = None
-    ) -> list[Hotel]:
+    ) -> list[Type[Hotel]]:
         logger.info(f"Filtering hotels with parameters: city='{city}', min_stars={min_stars}, "
                     f"capacity={capacity}, check_in={check_in}, check_out={check_out}, "
                     f"limit={limit}, offset={offset}")
