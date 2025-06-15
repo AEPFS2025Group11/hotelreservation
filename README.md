@@ -46,6 +46,8 @@ Alle User Stories wurden ausschliesslich durch **Denis Vögeli** umgesetzt.
 - [🛠️ Verbesserungen](#-verbesserungen)
     - [♻️ Redundanzen beheben](#-redundanzen-beheben)
     - [⚠️ Exception Handling optimieren](#-exception-handling-optimieren)
+  - [⚠️ Fehlerbehebung](#-fehlerbehebung)
+  - [⚠️ UUID einsetzen](#-uuid-einsetzen)
 
 ---
 
@@ -1057,3 +1059,41 @@ vom Controller in entsprechende HTTP-Responses übersetzt werden.
 
 ➡️ **Ziel**: Klare Trennung von Business-Logik (Service Layer) und Präsentationsschicht (Controller Layer).
 
+### ⚠️ Fehlerbehebung
+
+Aktuell treten einige kleinere Fehler auf, die nicht eindeutig reproduzierbar sind. Solche flaky Fehler erschweren die
+Entwicklung und können im Betrieb zu unerwartetem Verhalten führen. Aufgrund des zeitlichen Aufwands wurden sie bislang
+nicht näher analysiert oder dokumentiert.
+
+Dies ist problematisch, da:
+
+- die Ursache der Fehler unklar bleibt,
+
+- Zuverlässigkeit und Stabilität der Anwendung beeinträchtigt werden können,
+
+- eine saubere Einführung der Anwendung dadurch gefährdet ist.
+
+***Lösung***:
+Vor der Einführung ist eine systematische Analyse und Behebung dieser Fehler notwendig.
+Gegebenenfalls sind erweiterte Logging-Mechanismen oder zusätzliche Tests erforderlich, um die Ursachen aufzudecken.
+
+➡️ **Ziel**: Fehlerfreie Einführung der Anwendung auf stabiler technischer Basis.
+
+### ⚠️ UUID einsetzen
+
+Derzeit werden in einigen Tabellen fortlaufende numerische IDs verwendet. Für zukünftige Erweiterbarkeit und bessere
+Integrationsfähigkeit sollten jedoch UUIDs (Universally Unique Identifiers) eingesetzt werden.
+
+Dies ist problematisch, da:
+
+- fortlaufende IDs leicht erratbar sind und potenzielle Sicherheitsrisiken bergen,
+
+- bei verteilten Systemen oder Datenmigrationen ID-Kollisionen auftreten können,
+
+- UUIDs eine bessere Entkopplung zwischen Systemkomponenten ermöglichen.
+
+***Lösung***:
+Die Datenbankmodelle und zugehörigen Schnittstellen sollen auf UUIDs als Primärschlüssel umgestellt werden. Dabei sind
+auch Migrationspfade für bestehende Datenbestände zu berücksichtigen.
+
+➡️ **Ziel**: Zukunftssichere und robuste Identifikation von Entitäten im gesamten System.
