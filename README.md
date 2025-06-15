@@ -43,6 +43,9 @@ Alle User Stories wurden ausschliesslich durch **Denis Vögeli** umgesetzt.
     - [🧱 User Stories mit DB-Schemaänderung](#-user-stories-mit-db-schemaänderung)
     - [📊 User Stories mit Datenvisualisierung](#-user-stories-mit-datenvisualisierung)
     - [✨ Optionale User Stories](#-optionale-user-stories)
+- [🛠️ Verbesserungen](#-verbesserungen)
+    - [♻️ Redundanzen beheben](#-redundanzen-beheben)
+    - [⚠️ Exception Handling optimieren](#-exception-handling-optimieren)
 
 ---
 
@@ -250,7 +253,6 @@ In diesem Kapitel werden die grundlegenden **Software- und Architekturentscheidu
 
 Dieses Dokument beschreibt die Architektur des Backend-Systems, basierend auf einer N-Tier Architektur mit FastAPI,
 SQLAlchemy und weiteren unterstützenden Libraries.
-
 
 ### 🔄 N-Tier Architektur
 
@@ -838,23 +840,25 @@ Verwendete Methode:
 
 ````python
     def _award_loyalty_points(self, booking: Booking):
-    user_id = booking.user_id
-    recent_bookings = (
-        self.booking_repo.db.query(Booking)
-        .filter(
-            Booking.user_id == user_id,
-            Booking.is_cancelled == False,
-            Booking.check_out <= date.today(),
-            Booking.check_out >= date.today() - timedelta(days=DAYS)
-        )
-        .count()
-    )
 
-    if recent_bookings >= AMOUNT_RECENT_BOOKINGS:
-        user = self.booking_repo.db.query(User).get(user_id)
-        user.loyalty_points += LOYALTY_POINTS
-        self.booking_repo.db.commit()
-        logger.info(f"Awarded loyalty points to user ID {user_id}")
+
+user_id = booking.user_id
+recent_bookings = (
+    self.booking_repo.db.query(Booking)
+    .filter(
+        Booking.user_id == user_id,
+        Booking.is_cancelled == False,
+        Booking.check_out <= date.today(),
+        Booking.check_out >= date.today() - timedelta(days=DAYS)
+    )
+    .count()
+)
+
+if recent_bookings >= AMOUNT_RECENT_BOOKINGS:
+    user = self.booking_repo.db.query(User).get(user_id)
+    user.loyalty_points += LOYALTY_POINTS
+    self.booking_repo.db.commit()
+    logger.info(f"Awarded loyalty points to user ID {user_id}")
 ````
 
 ### US6:
@@ -933,4 +937,46 @@ Pfad zur Methode für die Erstellung einer Buchungsbestätigung:
 
 app/util/booking_confirmation.py
 
+## 🛠️ Verbesserungen
+
+Nachfolgende Unterkapitel gehen auf die notwendigen Verbesserungen ein welche es benötigt um die Software produktiv
+einführen zu können.
+
+### ♻️ Redundanzen beheben
+
+Die vorhandenen Redundanzen sind **nicht zwingend produktionskritisch**, sollten jedoch aus Gründen der **Wartbarkeit**
+und **Lesbarkeit** reduziert werden.
+
+Bei der bisherigen Umsetzung wurde dies **nicht konsequent im Detail verfolgt**. Zudem wurde **Clean-Code-Prinzipien**
+nicht in allen Abschnitten durchgängig eingehalten.
+
+**Empfehlungen für die Zukunft**:
+
+- **Redundante Codeabschnitte identifizieren und zusammenführen**.
+- **Code-Qualität durch Refactoring verbessern**, insbesondere durch:
+    - Vermeidung von langen Methoden,
+    - Sprechende Namensgebung,
+    - Einhaltung von SRP (Single Responsibility Principle).
+- **Wiederverwendbare Logik klar auslagern**, z. B. in eigene Klassen oder Module.
+
+➡️ **Ziel**: Ein wartbarer, klar strukturierter und langfristig erweiterbarer Code.
+
+### ⚠️ Exception Handling optimieren
+
+Die **N-Tier Architecture** sieht vor, dass jede Schicht **ausschliesslich mit der direkt darunterliegenden Schicht
+kommuniziert** und keine Kenntnis über deren interne Details hat. Aktuell gibt es jedoch **Service-Methoden, die
+HTTP-Exceptions direkt behandeln**.
+
+Dies ist **problematisch**, da:
+
+- HTTP-Exceptions eine **clientbezogene Verantwortung** darstellen,
+- der **Service Layer nicht direkt mit dem Client kommunizieren** sollte,
+- und somit die **Trennung der Schichten** verletzt wird.
+
+**Lösung**:  
+Das **Exception Handling muss in Zukunft vollständig auf Controller-Ebene erfolgen**.  
+Der Service sollte stattdessen eigene **domänenspezifische Ausnahmen** werfen (z.B. `UserNotFoundException`), die dann
+vom Controller in entsprechende HTTP-Responses übersetzt werden.
+
+➡️ **Ziel**: Klare Trennung von Business-Logik (Service Layer) und Präsentationsschicht (Controller Layer).
 
