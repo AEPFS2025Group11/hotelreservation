@@ -5,6 +5,41 @@ User Stories wurden ausschliesslich durch ihn umgesetzt.
 
 ---
 
+## Inhaltsverzeichnis
+
+- [Anleitung für das Starten der Web-Applikation](#anleitung-für-das-starten-der-web-applikation)
+    - [📦 Angular Frontend](#-angular-frontend)
+    - [🐍 Python Backend (FastAPI)](#-python-backend-fastapi)
+
+- [Testen via GUI](#testen-via-gui)
+
+- [Testen via API](#testen-via-api)
+
+- [🚀 Wichtige Befehle](#-wichtige-befehle)
+    - [Starten des Frontends](#-starten-des-frontends)
+    - [Starten des Backends](#-starten-des-backends)
+    - [📄 Generieren der aktuellen API-Dokumentation (OpenAPI)](#-generieren-der-aktuellen-api-dokumentation-openapi)
+
+- [Dokumentation](#-dokumentation)
+    - [🏗️ Backend Architektur](#-backend-architektur)
+    - [🔄 N-Tier Architektur](#-n-tier-architektur)
+    - [📁 Projektstruktur](#-projektstruktur)
+
+- [📚 Eingesetzte Libraries](#-eingesetzte-libraries)
+
+- [Hervorzuhebende Codeausschnitte](#hervorzuhebende-codeausschnitte)
+    - [Datenbank Änderungen](#datenbank-änderungen)
+    - [Login via JWT](#login-via-jwt)
+    - [Varia](#ausschalten-der-cors-policy)
+
+- [User Stories «Hotelreservierungssystem»](#user-stories-hotelreservierungssystem)
+  -[Minimale User Stories](#minimale-user-stories)
+    - [User Stories mit DB-Schemaänderung](#user-stories-mit-db-schemaänderung)
+    - [User Stories mit Datenvisualisierung](#user-stories-mit-datenvisualisierung)
+    - [Optionale User Stories](#optionale-user-stories)
+
+---
+
 ## Anleitung für das Starten der Web-Applikation
 
 Nachfolgende Schritte sind nötig um die Web-Applikation starten zu können.
@@ -108,7 +143,7 @@ eine Buchung tätigen, muss man sich anmelden. Dieses Vorgehen benötigt jedoch 
 
 TODO: Bild Login User
 
-## Testen der API
+## Testen via API
 
 Alternativ kann man die REST-Schnittstelle auch manuell mittels HTTP-Requests testen.
 
@@ -128,7 +163,7 @@ Möchte man die API als ADMIN via Postman testen, muss man folgende Schritte bef
    "password": "asdf"
    }
 2. Empfangenes Token als Bearer Token beim Authentication Tab in Postman hinterlegen.
-   ![img.png](img.png)
+   ![img.png](images/img.png)
 
 Mit dieser Einstellung können die Admin Endpoints getestet werden. Diese sind geschützt und können nur durch den Admin
 angesprochen werden.
@@ -388,7 +423,7 @@ CREATE TABLE user
 );
 ````
 
-## Anpassung der INSERT-Statements
+### Anpassung der INSERT-Statements
 
 Um unnötige Redundanz zu vermeiden wurde darauf verzichtet die Anpassungen der INSERT-Statements in dieser Dokumentation
 zu ergänzen. Bitte schaue im nachfolgenden SQL-Skript welches sich in diesem Projekt befindet selbstständig nach.
@@ -397,15 +432,19 @@ app/database/Hotel_Reservation_Sample_Script.sql
 
 ### Einsatz von Fremdschlüssel Beziehungen in SQLite
 
-![img_1.png](img_1.png)
+Um sicherzustellen, dass die Fremdschlüssel Beziehungen funktionieren, mussten diese explizit aktiviert werden.
 
 app/main.py
 
-### Ausschalten der CORS Policy
+````python
+    @event.listens_for(Engine, "connect")
 
-![img_2.png](img_2.png)
 
-app/main.
+def enforce_foreign_keys(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+````
 
 ## Login via JWT
 
@@ -413,21 +452,102 @@ Das Login erfolgt über JWT (JSON Web Tokens) Standard.
 
 ### Passwort Hashing
 
-![img_3.png](img_3.png)
+Die Funktion hash_password nimmt ein Klartext-Passwort entgegen und gibt einen sicheren Hash davon zurück.
 
 app/util/password.py
 
+````python
+    from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+````
+
 ### Ausstellen des JWT Tokens
 
-![img_4.png](img_4.png)
+Create_access_token erstellt das für die Anmeldung notwendige JWT Token.
 
 app/util/jwt.py
 
+````python
+    from datetime import datetime, timedelta
+
+from jose import jwt, JWTError
+
+SECRET_KEY = "supersecretkey"
+ALGORITHM = "HS256"
+
+
+def create_access_token(user_id: int, role: str, expires_delta=timedelta(hours=1)):
+    to_encode = {
+        "sub": str(user_id),
+        "role": role,
+        "exp": datetime.now() + expires_delta
+    }
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_token(token: str):
+    try:
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        return None
+````
+
 ### Admin Rolle prüfen
 
-![img_5.png](img_5.png)
+Um Endpoints zu schützen und explizit für den Admin User freizugeben, wurde folgender Code erstellt.
 
 app/auth/dependencies.py
+
+````python
+    from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+
+from app.util.enums import Role
+from app.util.jwt import decode_token
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+
+
+def get_current_user_role(token: str = Depends(oauth2_scheme)) -> str:
+    payload = decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Ungültiges token.")
+    return payload["role"]
+
+
+def admin_only(role: str = Depends(get_current_user_role)):
+    if role != Role.ADMIN:
+        raise HTTPException(status_code=403, detail="Admin Rechte benötigt.")
+
+````
+
+## Varia
+
+Im Kapitel Varia, werden Codeausschnitte aufgezeigt, welche spannend sein könnten, jedoch nicht eindeutig einer User
+Story oder direkt für das Projekt relevant waren.
+
+### Ausschalten der CORS Policy
+
+app/main.
+
+````python
+    app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+````
 
 # User Stories «Hotelreservierungssystem»
 
@@ -438,27 +558,44 @@ Nachfolgend alle umgesetzten User Stories und die Referenzen auf den entsprechen
 Dieser Abschnitt enthält eine Liste von minimalen und optionalen User Stories, die im
 Rahmen dieser Projektarbeit implementiert werden sollten.
 
---> Es wurden alle User Stories umgesetzt
+> **_NOTE:_**  Es wurden alle User Stories umgesetzt.
 
 ### US1:
 
 http://localhost:5049/api/hotels/
 
-Verwendete Methode:
+Verwendete Methode des Hotel API Controllers:
 
 - get_hotels()
 
 Mit folgenden Query Params können die Hotels gefiltert werden:
 
+- city: Optional[str] = None
+- min_stars: Optional[int] = None
+- capacity: Optional[int] = None
+- check_in: Optional[date] = None
+- check_out: Optional[date] = None
+
+Ansicht im GUI:
+![img_4.png](images/img_4.png)
+
 ### US2:
 
 http://localhost:5049/api/rooms/
 
-Verwendete Methode:
+Verwendete Methode des Room API Controllers:
 
 - get_rooms()
 
 Mit folgenden Query Params können die Zimmer gefiltert werden:
+
+- city: Optional[str] = None
+- capacity: Optional[int] = None
+- check_in: Optional[date] = None
+- check_out: Optional[date] = None
+
+Ansicht im GUI:
+![img_5.png](images/img_5.png)
 
 ### US3:
 
@@ -478,6 +615,22 @@ Verwendete Methode:
 
 - create_booking()
 
+Folgendermassen muss eine Buchungsanfrage aus dem Frontend aussehen.
+
+````python
+    class BookingIn(BaseModel):
+
+
+user_id: int
+room_id: int
+check_in: date
+check_out: date
+is_cancelled: bool = False
+total_amount: float
+
+model_config = {'from_attributes': True}
+````
+
 ### US5:
 
 http://localhost:5049/api/bookings/
@@ -486,34 +639,36 @@ Verwendete Methode:
 
 - create_booking()
 
-In nachfolgendem Codeausschnitt ist ersichtlich, dass die Rechnung beim erstellen einer Buchung erstellt wird.
+In nachfolgendem Codeausschnitt ist ersichtlich, dass die Rechnung beim Erstellen einer Buchung erstellt wird.
 
 ````python
     def create(self, booking: BookingIn) -> BookingOut:
-   self._ensure_availability(booking)
-   user = self._get_user(booking)
-   room = self._get_room(booking)
-   hotel = self._get_hotel(room.hotel_id)
-   booking = Booking(**booking.model_dump())
-   saved_booking = self.booking_repo.create(booking)
-   if not saved_booking:
-      raise HTTPException(status_code=500, detail="Booking konnte nicht erstellt werden.")
-   self._generate_invoice(booking=saved_booking)
-   self._award_loyalty_points(saved_booking)
-   logger.info(f"Booking {saved_booking.id} created and invoice generated")
-   try:
-      send_booking_confirmation(
-         to_email=user.email,
-         guest_name=user.first_name,
-         hotel_name=hotel.name,
-         booking_id=saved_booking.id,
-         check_in=saved_booking.check_in,
-         check_out=saved_booking.check_out,
-         room_type=room.type.description,
-      )
-   except Exception as e:
-      logger.warning(f"Fehler beim Senden der Buchungsbestätigung: {e}")
-   return BookingOut.model_validate(saved_booking)
+
+
+self._ensure_availability(booking)
+user = self._get_user(booking)
+room = self._get_room(booking)
+hotel = self._get_hotel(room.hotel_id)
+booking = Booking(**booking.model_dump())
+saved_booking = self.booking_repo.create(booking)
+if not saved_booking:
+    raise HTTPException(status_code=500, detail="Booking konnte nicht erstellt werden.")
+self._generate_invoice(booking=saved_booking)
+self._award_loyalty_points(saved_booking)
+logger.info(f"Booking {saved_booking.id} created and invoice generated")
+try:
+    send_booking_confirmation(
+        to_email=user.email,
+        guest_name=user.first_name,
+        hotel_name=hotel.name,
+        booking_id=saved_booking.id,
+        check_in=saved_booking.check_in,
+        check_out=saved_booking.check_out,
+        room_type=room.type.description,
+    )
+except Exception as e:
+    logger.warning(f"Fehler beim Senden der Buchungsbestätigung: {e}")
+return BookingOut.model_validate(saved_booking)
 ````
 
 ### US6:
@@ -524,7 +679,25 @@ Verwendete Methode:
 
 - cancel_booking()
 
+In diesem Codeausschnitt ist ebenfalls ersichtlich, dass eine Rechnung ebenfalls storniert wird, falls eine Buchung
+gecancelt wird:
+
+````python
+    if booking.invoice:
+    invoice = self.invoice_repo.get_by_booking_id(booking.id)
+if not invoice:
+    logger.error(f"Invoice not found for booking {booking.id}")
+else:
+    invoice.total_amount = 0
+    invoice.status = InvoiceStatus.CANCELLED
+    self.invoice_repo.update(invoice)
+````
+
 ### US7:
+
+Der Preis wird an verschiedenen Orten dynamisch berechnet. Dies wird dem Benutzer aber nicht gezeigt und ist nur durch
+den Code im Backend ersichtlich. In den Hochsaison Monaten (7,8,9) steigen die Preise bis um den Faktor 1.2. Im Winter
+wiederum sinken die Preise um Faktor 0.8
 
 Pfad zur ausgelagerten Hilfsmethode für das Berechnen des dynamischen Preises:
 
@@ -540,6 +713,9 @@ Verwendete Methode:
 
 Hint: Das GET Command auf die base url dieses Controllers ist ausschliesslich dem Admin user vorbehalten.
 
+Ansicht im GUI:
+![img_3.png](images/img_3.png)
+
 ### US9:
 
 http://localhost:5049/api/rooms/admin/
@@ -547,6 +723,9 @@ http://localhost:5049/api/rooms/admin/
 Verwendete Methode:
 
 - get_rooms()
+
+Ansicht im GUI:
+![img_1.png](images/img_1.png)
 
 ### US10:
 
@@ -559,6 +738,9 @@ Verwendete Methode:
 - delete_room()
 - update_price() PATCH
 
+Ansicht im GUI:
+![img_2.png](images/img_2.png)
+
 ## User Stories mit DB-Schemaänderung
 
 Die folgenden User Stories erfordern eine Änderung des Datenbankschemas, z.B. das
@@ -567,7 +749,7 @@ neuer Daten. Implementiert **mindestens zwei** der folgenden User Stories oder f
 eure eigenen User Stories hinzu, so dass ihr mindestens eine neue Tabelle, eine
 entsprechende Beziehung und Daten hinzufügen müsst.
 
---> Alle User Stories wurden umgesetzt
+> **_NOTE:_**  Es wurden alle User Stories umgesetzt.
 
 ### US1:
 
@@ -579,6 +761,11 @@ Verwendete Methode:
 - update_booking()
 - delete_booking()
 
+Ansicht in GUI:
+![img_6.png](images/img_6.png)
+
+Hint: Um auf die Bearbeitungs Ansicht zu gelangen, muss man auf einen Eintrag in der Buchungsübersicht klicken.
+
 ### US2:
 
 http://localhost:5049/api/users/4/bookings
@@ -586,6 +773,9 @@ http://localhost:5049/api/users/4/bookings
 Verwendete Methode:
 
 - get_bookings_by_user()
+
+Ansicht im GUI:
+![img_7.png](images/img_7.png)
 
 ### US3:
 
@@ -599,6 +789,9 @@ Verwendete Methode:
 - update_review()
 - delete_review()
 
+Ansicht im GUI:
+![img_8.png](images/img_8.png)
+
 ### US4:
 
 http://localhost:5049/api/reviews/
@@ -606,6 +799,11 @@ http://localhost:5049/api/reviews/
 Verwendete Methode:
 
 - get_reviews_by_hotel_id()
+
+Ansicht im GUI:
+![img_9.png](images/img_9.png)
+
+Hint: Bei einem Hotel findet man die Kundenbewertungen ganz unten.
 
 ### US5:
 
@@ -615,6 +813,27 @@ Verwendete Methode:
 
 - create_booking()
 
+````python
+    def _award_loyalty_points(self, booking: Booking):
+    user_id = booking.user_id
+    recent_bookings = (
+        self.booking_repo.db.query(Booking)
+        .filter(
+            Booking.user_id == user_id,
+            Booking.is_cancelled == False,
+            Booking.check_out <= date.today(),
+            Booking.check_out >= date.today() - timedelta(days=DAYS)
+        )
+        .count()
+    )
+
+    if recent_bookings >= AMOUNT_RECENT_BOOKINGS:
+        user = self.booking_repo.db.query(User).get(user_id)
+        user.loyalty_points += LOYALTY_POINTS
+        self.booking_repo.db.commit()
+        logger.info(f"Awarded loyalty points to user ID {user_id}")
+````
+
 ### US6:
 
 http://localhost:5049/api/payment/
@@ -622,6 +841,10 @@ http://localhost:5049/api/payment/
 Verwendete Methode:
 
 - create_payment()
+
+Ansicht im GUI:
+
+![img_10.png](images/img_10.png)
 
 ## User Stories mit Datenvisualisierung
 
@@ -634,7 +857,7 @@ könnt euch an einer einfachen Anleitung orientieren, um die passende Visualisie
 wählen, z.B. https://www.atlassian.com/data/charts/how-to-choose-pie-chart-vs-bar
 chart .
 
---> Alle User Stories wurden umgesetzt
+> **_NOTE:_**  Es wurden alle User Stories umgesetzt.
 
 ### US1:
 
@@ -644,6 +867,10 @@ Verwendete Methode:
 
 - occupancy_by_room_type()
 
+Ansicht im GUI:
+
+![img_11.png](images/img_11.png)
+
 ### US2:
 
 http://localhost:5049/api/statistics/demographics/
@@ -652,6 +879,10 @@ Verwendete Methode:
 
 - get_demographics()
 
+Ansicht im GUI:
+
+![img_12.png](images/img_12.png)
+
 ## Optionale User Stories
 
 Die Umsetzung der folgenden User Stories erfordert zusätzliche Untersuchungen oder
@@ -659,7 +890,7 @@ Selbststudium, z. B. Dateiverarbeitung, Bibliotheksintegration oder andere
 fortgeschrittene Konzepte. Wenn Ihr Euch selbst herausfordern wollt, wählt aus diesen
 User Stories, aber erst nachdem Ihr die minimalen User Stories implementiert habt!
 
---> US3 und US4 wurden umgesetzt
+> **_NOTE:_**  Es wurden US3 und US4 umgesetzt.
 
 ### US3:
 
@@ -668,6 +899,10 @@ http://localhost:5049/api/nearby-places/
 Verwendete Methode:
 
 - get_nearby_places()
+
+Ansicht im GUI:
+
+![img_13.png](images/img_13.png)
 
 ### US4:
 
