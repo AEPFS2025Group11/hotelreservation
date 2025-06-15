@@ -1,46 +1,52 @@
 # 🏨 HotelReservation
 
-Dieses Repository wird im Rahmen des Moduls **"FS25 Anwendungsentwicklung mit Python"** von Denis Vögeli verwendet. Alle
-User Stories wurden ausschliesslich durch ihn umgesetzt.
+Dieses Repository wird im Rahmen des Moduls **FS25 – Anwendungsentwicklung mit Python** verwendet.  
+Alle User Stories wurden ausschliesslich durch **Denis Vögeli** umgesetzt.
+
+---
+
+**👤 Autor:** Denis Vögeli  
+**📘 Modul:** Anwendungsentwicklung mit Python  
+**📅 Semester:** Frühlingssemester 2025
 
 ---
 
 ## Inhaltsverzeichnis
 
-- [Anleitung für das Starten der Web-Applikation](#anleitung-für-das-starten-der-web-applikation)
+- [🛠️ Anleitung für das Starten der Web-Applikation](#-anleitung-für-das-starten-der-web-applikation)
     - [📦 Angular Frontend](#-angular-frontend)
     - [🐍 Python Backend (FastAPI)](#-python-backend-fastapi)
 
-- [Testen via GUI](#testen-via-gui)
+- [🧪 Testen via GUI](#-testen-via-gui)
 
-- [Testen via API](#testen-via-api)
+- [🔌 Testen via API](#-testen-via-api)
 
 - [🚀 Wichtige Befehle](#-wichtige-befehle)
-    - [Starten des Frontends](#-starten-des-frontends)
-    - [Starten des Backends](#-starten-des-backends)
+    - [🖥️ Starten des Frontends](#🖥-starten-des-frontends)
+    - [🖥️ Starten des Backends](#🖥-starten-des-backends)
     - [📄 Generieren der aktuellen API-Dokumentation (OpenAPI)](#-generieren-der-aktuellen-api-dokumentation-openapi)
 
-- [Dokumentation](#-dokumentation)
+- [📚 Dokumentation](#-dokumentation)
     - [🏗️ Backend Architektur](#-backend-architektur)
     - [🔄 N-Tier Architektur](#-n-tier-architektur)
     - [📁 Projektstruktur](#-projektstruktur)
 
-- [📚 Eingesetzte Libraries](#-eingesetzte-libraries)
+- [📦 Eingesetzte Libraries](#-eingesetzte-libraries)
 
-- [Hervorzuhebende Codeausschnitte](#hervorzuhebende-codeausschnitte)
-    - [Datenbank Änderungen](#datenbank-änderungen)
-    - [Login via JWT](#login-via-jwt)
-    - [Varia](#ausschalten-der-cors-policy)
+- [🧩 Hervorzuhebende Codeausschnitte](#-hervorzuhebende-codeausschnitte)
+    - [🛢️ Datenbank Änderungen](#-datenbank-änderungen)
+    - [🔐 Login via JWT](#-login-via-jwt)
+    - [⚙️ Varia (z. B. CORS Policy)](#-varia)
 
-- [User Stories «Hotelreservierungssystem»](#user-stories-hotelreservierungssystem)
-  -[Minimale User Stories](#minimale-user-stories)
-    - [User Stories mit DB-Schemaänderung](#user-stories-mit-db-schemaänderung)
-    - [User Stories mit Datenvisualisierung](#user-stories-mit-datenvisualisierung)
-    - [Optionale User Stories](#optionale-user-stories)
+- [🧾 User Stories «Hotelreservierungssystem»](#-user-stories-hotelreservierungssystem)
+    - [✅ Minimale User Stories](#-minimale-user-stories)
+    - [🧱 User Stories mit DB-Schemaänderung](#-user-stories-mit-db-schemaänderung)
+    - [📊 User Stories mit Datenvisualisierung](#-user-stories-mit-datenvisualisierung)
+    - [✨ Optionale User Stories](#-optionale-user-stories)
 
 ---
 
-## Anleitung für das Starten der Web-Applikation
+## 🛠️ Anleitung für das Starten der Web-Applikation
 
 Nachfolgende Schritte sind nötig um die Web-Applikation starten zu können.
 
@@ -113,7 +119,7 @@ uvicorn app.main:app --reload --host 127.0.0.1 --port 5049
 
 ---
 
-## Testen via GUI
+## 🧪 Testen via GUI
 
 Anstelle von Deepnote wurde für das GUI ein Angular Frontend gewählt. Dieses kommuniziert via HTTP mit der
 REST-Schnittstelle des Backends. Möchte man das Backend via GUI testen, müssen zuerst vorherige Schritte erledigt worden
@@ -129,7 +135,14 @@ Seiten.
 
 Diese sind:
 
-TODO: Bild Login Admin
+- Hotels verwalten
+- Zimmer verwalten
+- Buchungen verwalten
+- Statistik
+
+Startseite nach Login (Admin):
+
+![img_1.png](images/img_15.png)
 
 ### User
 
@@ -138,12 +151,18 @@ normalen, für den Kunden zugänglichen Seiten.
 
 Diese sind:
 
+- Hotelsuche
+- Zimmersuche
+- Meine Buchungen
+
+Startseite des Users:
+
+![img_2.png](images/img_16.png)
+
 Note: Es ist möglich ohne Anmeldung auf verschiedene Seiten (bspw. Hotel- oder Zimmersuche) zu gelangen. Will man dann
 eine Buchung tätigen, muss man sich anmelden. Dieses Vorgehen benötigt jedoch das Wissen über die eingesetzten Routes.
 
-TODO: Bild Login User
-
-## Testen via API
+## 🔌 Testen via API
 
 Alternativ kann man die REST-Schnittstelle auch manuell mittels HTTP-Requests testen.
 
@@ -196,13 +215,13 @@ Hint: Das Passwort ist in der Datenbank mit HS256 gehasht. Auf ein Salting wurde
 
 ## 🚀 Wichtige Befehle
 
-### 🔧 Starten des Frontends
+### 🖥️ Starten des Frontends
 
 ```bash
 ng serve --proxy-config proxy.conf.json
 ```
 
-### 🔧 Starten des Backends
+### 🖥️ Starten des Backends
 
 ```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 5049
@@ -232,7 +251,6 @@ In diesem Kapitel werden die grundlegenden **Software- und Architekturentscheidu
 Dieses Dokument beschreibt die Architektur des Backend-Systems, basierend auf einer N-Tier Architektur mit FastAPI,
 SQLAlchemy und weiteren unterstützenden Libraries.
 
----
 
 ### 🔄 N-Tier Architektur
 
@@ -302,9 +320,14 @@ backend/
 
 ---
 
-# Hervorzuhebende Codeausschnitte
+# 🧩 Hervorzuhebende Codeausschnitte
 
-## Datenbank Änderungen
+Im nachfolgenden Kapitel werden die wichtigsten Codeausschnitte und Datenbankänderungen erläutert.
+
+**Hint:** Es gibt noch viele weitere interessante Codeausschnitte, es wurden aufgrund des Aufwandes nicht alle
+aufgezeigt.
+
+## 🛢️ Datenbank Änderungen
 
 Für die Umsetzung gewisser User Stories mussten Tabellen erstellt oder ergänzt werden.
 
@@ -446,7 +469,7 @@ def enforce_foreign_keys(dbapi_connection, connection_record):
     cursor.close()
 ````
 
-## Login via JWT
+## 🔐 Login via JWT
 
 Das Login erfolgt über JWT (JSON Web Tokens) Standard.
 
@@ -530,7 +553,7 @@ def admin_only(role: str = Depends(get_current_user_role)):
 
 ````
 
-## Varia
+## ⚙️ Varia
 
 Im Kapitel Varia, werden Codeausschnitte aufgezeigt, welche spannend sein könnten, jedoch nicht eindeutig einer User
 Story oder direkt für das Projekt relevant waren.
@@ -549,11 +572,11 @@ app/main.
 )
 ````
 
-# User Stories «Hotelreservierungssystem»
+# 🧾 User Stories «Hotelreservierungssystem»
 
 Nachfolgend alle umgesetzten User Stories und die Referenzen auf den entsprechenden Source Code.
 
-## Minimale User Stories
+## ✅ Minimale User Stories
 
 Dieser Abschnitt enthält eine Liste von minimalen und optionalen User Stories, die im
 Rahmen dieser Projektarbeit implementiert werden sollten.
@@ -741,7 +764,7 @@ Verwendete Methode:
 Ansicht im GUI:
 ![img_2.png](images/img_2.png)
 
-## User Stories mit DB-Schemaänderung
+## 🧱 User Stories mit DB-Schemaänderung
 
 Die folgenden User Stories erfordern eine Änderung des Datenbankschemas, z.B. das
 Hinzufügen neuer Tabellen, die Definition neuer Beziehungen und die Generierung
@@ -846,7 +869,7 @@ Ansicht im GUI:
 
 ![img_10.png](images/img_10.png)
 
-## User Stories mit Datenvisualisierung
+## 📊 User Stories mit Datenvisualisierung
 
 In den folgenden User Stories geht es um die Visualisierung von Daten mit dem
 Deepnote-Block «Charts» (https://deepnote.com/docs/chart-blocks). Man muss die
@@ -883,7 +906,7 @@ Ansicht im GUI:
 
 ![img_12.png](images/img_12.png)
 
-## Optionale User Stories
+## ✨ Optionale User Stories
 
 Die Umsetzung der folgenden User Stories erfordert zusätzliche Untersuchungen oder
 Selbststudium, z. B. Dateiverarbeitung, Bibliotheksintegration oder andere
